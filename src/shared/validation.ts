@@ -27,14 +27,46 @@ export const submitFieldsSchema = z.object({
 });
 export type SubmitFields = z.infer<typeof submitFieldsSchema>;
 
-/** Field-level messages for the portal form. */
-export function fieldErrors(input: unknown): Partial<Record<keyof SubmitFields, string>> {
-  const r = submitFieldsSchema.safeParse(input);
-  if (r.success) return {};
-  const out: Partial<Record<keyof SubmitFields, string>> = {};
+/**
+ * "HR eyes only" personal-issue report. NOT anonymous: a name is required.
+ * Stored in a separate table that only the HR list can read.
+ */
+export const hrFieldsSchema = z.object({
+  full_name: z
+    .string('Please enter your name.')
+    .check(z.trim(), z.minLength(2, 'Please enter your name.'), z.maxLength(120, 'Please keep your name under 120 characters.')),
+  contact: z.optional(
+    z.string().check(z.trim(), z.maxLength(200, 'Please keep contact details under 200 characters.')),
+  ),
+  body: z
+    .string()
+    .check(
+      z.trim(),
+      z.minLength(BODY_MIN, `Please write at least ${BODY_MIN} characters.`),
+      z.maxLength(BODY_MAX, `Please keep it under ${BODY_MAX} characters.`),
+    ),
+  tracking_hash: trackingHashSchema,
+  website: z.optional(z.string().check(z.maxLength(0))),
+  elapsed_ms: z.coerce.number().check(z.int(), z.nonnegative()),
+});
+export type HrFields = z.infer<typeof hrFieldsSchema>;
+
+function issuesByField(r: { success: boolean; error?: { issues: { path: PropertyKey[]; message: string }[] } }) {
+  const out: Record<string, string> = {};
+  if (r.success || !r.error) return out;
   for (const issue of r.error.issues) {
-    const k = issue.path[0] as keyof SubmitFields;
+    const k = String(issue.path[0] ?? '');
     if (k && !out[k]) out[k] = issue.message;
   }
   return out;
+}
+
+/** Field-level messages for the anonymous portal form. */
+export function fieldErrors(input: unknown): Partial<Record<keyof SubmitFields, string>> {
+  return issuesByField(submitFieldsSchema.safeParse(input));
+}
+
+/** Field-level messages for the HR form. */
+export function hrFieldErrors(input: unknown): Partial<Record<keyof HrFields, string>> {
+  return issuesByField(hrFieldsSchema.safeParse(input));
 }

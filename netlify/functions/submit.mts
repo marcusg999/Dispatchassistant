@@ -6,11 +6,15 @@
  * photo (magic bytes, size, no EXIF) → insert. Returns only { ok: true }.
  *
  * Never logs or stores: body text, tracking hash, IP address, user-agent.
+ *
+ * mode=hr: the NAMED "HR eyes only" report. Name required, contact optional, no photo.
+ * Goes to the separate hr_reports table that only the HR list can read. The name is
+ * never logged.
  */
 import type { Config } from '@netlify/functions';
 import { randomUUID } from 'node:crypto';
 import { MIN_FORM_MS, PHOTO_MAX_BYTES } from '../../src/shared/domain';
-import { submitFieldsSchema } from '../../src/shared/validation';
+import { hrFieldsSchema, submitFieldsSchema } from '../../src/shared/validation';
 import { db, PHOTO_BUCKET } from '../lib/db';
 import { hasValidPortalKey, isSameOrigin, json, logEvent, notFound } from '../lib/http';
 import { checkPhoto } from '../lib/image';
@@ -51,6 +55,35 @@ export default async function handler(req: Request): Promise<Response> {
   // Bots: a filled honeypot or an inhumanly fast submit gets a fake success and is dropped.
   if (parsedRaw.website !== '' || Number(parsedRaw.elapsed_ms) < MIN_FORM_MS) {
     logEvent('submit', 'dropped', 'bot heuristics');
+    return json(200, { ok: true });
+  }
+
+  if (str('mode') === 'hr') {
+    if (form.get('photo')) return json(400, { ok: false, error: 'Photos can’t be attached to HR reports.' });
+    const hr = hrFieldsSchema.safeParse({
+      full_name: str('full_name'),
+      contact: str('contact') || undefined,
+      body: parsedRaw.body,
+      tracking_hash: parsedRaw.tracking_hash,
+      website: parsedRaw.website,
+      elapsed_ms: parsedRaw.elapsed_ms,
+    });
+    if (!hr.success) return json(400, { ok: false, error: hr.error.issues[0]?.message ?? 'Please check the form.' });
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      const ok = await verifyTurnstile(str('cf-turnstile-response'), process.env.TURNSTILE_SECRET_KEY);
+      if (!ok) return json(400, { ok: false, error: 'Please complete the quick check and try again.' });
+    }
+    const { error } = await db().from('hr_reports').insert({
+      full_name: hr.data.full_name,
+      contact: hr.data.contact ? hr.data.contact : null,
+      body: hr.data.body,
+      tracking_hash: hr.data.tracking_hash,
+    });
+    if (error) {
+      logEvent('submit', 'hr insert failed', error.code);
+      return json(error.code === '23505' ? 409 : 500, { ok: false, error: 'Something went wrong. Please try again.' });
+    }
+    logEvent('submit', 'accepted', 'hr report');
     return json(200, { ok: true });
   }
 

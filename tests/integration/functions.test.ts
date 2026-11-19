@@ -165,6 +165,77 @@ describe('POST /api/submit', () => {
   });
 });
 
+describe('POST /api/submit (mode=hr, named)', () => {
+  const hrForm = (over: Record<string, string | Blob | undefined> = {}) => {
+    const f = new FormData();
+    const base: Record<string, string | Blob | undefined> = {
+      mode: 'hr',
+      full_name: 'Sam Rivera',
+      contact: 'sam@example.com',
+      body: 'HR-BODY-MARKER: I need to talk about a scheduling conflict.',
+      tracking_hash: randomHash(),
+      website: '',
+      elapsed_ms: '6000',
+      ...over,
+    };
+    for (const [k, v] of Object.entries(base)) if (v !== undefined) f.set(k, v as string | Blob);
+    return { f, hash: base.tracking_hash as string };
+  };
+  const hrCreated: string[] = [];
+  afterAll(async () => {
+    if (hrCreated.length) await svc.from('hr_reports').delete().in('tracking_hash', hrCreated);
+  });
+
+  it('stores a named report in hr_reports (not in suggestions) and returns only { ok: true }', async () => {
+    const { f, hash } = hrForm();
+    hrCreated.push(hash);
+    const res = await post(f);
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+    const { data } = await svc.from('hr_reports').select('full_name, contact, status').eq('tracking_hash', hash).single();
+    expect(data).toEqual({ full_name: 'Sam Rivera', contact: 'sam@example.com', status: 'new' });
+    expect((await svc.from('suggestions').select('id').eq('tracking_hash', hash)).data).toHaveLength(0);
+  });
+
+  it('requires a name, allows no contact, refuses photos', async () => {
+    expect((await post(hrForm({ full_name: undefined }).f)).status).toBe(400);
+    expect((await post(hrForm({ full_name: ' ' }).f)).status).toBe(400);
+    const noContact = hrForm({ contact: undefined });
+    hrCreated.push(noContact.hash);
+    expect((await post(noContact.f)).status).toBe(200);
+    const withPhoto = hrForm({ photo: new Blob([readFileSync('tests/fixtures/clean.webp')], { type: 'image/webp' }) });
+    expect((await post(withPhoto.f)).status).toBe(400);
+  });
+
+  it('status lookup works for HR reports and returns only the three fields', async () => {
+    const { f, hash } = hrForm();
+    hrCreated.push(hash);
+    await post(f);
+    await svc.from('hr_reports').update({ status: 'reviewing', public_reply: 'HR will call you Tuesday.' }).eq('tracking_hash', hash);
+    const res = await status(new Request(`${ORIGIN}/api/status/${hash}`, { headers: { 'x-portal-key': LOCAL.portalKey } }), { params: { hash } });
+    const body = await res.json();
+    expect(Object.keys(body).sort()).toEqual(['public_reply', 'status', 'updated_at']);
+    expect(body).toMatchObject({ status: 'reviewing', public_reply: 'HR will call you Tuesday.' });
+    expect(JSON.stringify(body)).not.toContain('Sam Rivera');
+  });
+
+  it('never logs the name, contact or body', async () => {
+    const lines: string[] = [];
+    const orig = { log: console.log, error: console.error, warn: console.warn };
+    console.log = console.error = console.warn = (...a: unknown[]) => void lines.push(a.join(' '));
+    try {
+      const { f, hash } = hrForm({ full_name: 'NAME-MARKER Person', contact: 'CONTACT-MARKER' });
+      hrCreated.push(hash);
+      await post(f);
+      await post(hrForm({ tracking_hash: hash }).f);
+      const all = lines.join('\n');
+      for (const m of ['NAME-MARKER', 'CONTACT-MARKER', 'HR-BODY-MARKER', hash]) expect(all).not.toContain(m);
+    } finally {
+      Object.assign(console, orig);
+    }
+  });
+});
+
 describe('GET /api/status/:hash', () => {
   const get = (hash: string, key: string | null = LOCAL.portalKey) =>
     status(new Request(`${ORIGIN}/api/status/${hash}`, { headers: key ? { 'x-portal-key': key } : {} }), { params: { hash } });

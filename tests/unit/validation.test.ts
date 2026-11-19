@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fieldErrors, submitFieldsSchema, trackingHashSchema } from '../../src/shared/validation';
+import { fieldErrors, hrFieldErrors, hrFieldsSchema, submitFieldsSchema, trackingHashSchema } from '../../src/shared/validation';
 
 const HASH = 'a'.repeat(64);
 const valid = { body: 'The forklift horn is broken.', category: 'safety', tag: 'urgent', tracking_hash: HASH, website: '', elapsed_ms: '5000' };
@@ -53,5 +53,25 @@ describe('submitFieldsSchema', () => {
     expect(e.body).toMatch(/at least 10/);
     expect(e.category).toBe('Pick a category.');
     expect(e.tag).toBe('Pick how pressing this is.');
+  });
+});
+
+describe('hrFieldsSchema (named, HR eyes only)', () => {
+  const hr = { full_name: '  Sam Rivera ', body: 'I need to talk about a schedule conflict.', tracking_hash: HASH, website: '', elapsed_ms: '5000' };
+  it('requires a name and trims it; contact is optional', () => {
+    const r = hrFieldsSchema.safeParse(hr);
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.full_name).toBe('Sam Rivera');
+      expect(r.data.contact).toBeUndefined();
+    }
+    expect(hrFieldsSchema.safeParse({ ...hr, full_name: ' ' }).success).toBe(false);
+    expect(hrFieldsSchema.safeParse({ ...hr, full_name: undefined }).success).toBe(false);
+    expect(hrFieldsSchema.safeParse({ ...hr, contact: 'sam@example.com' }).success).toBe(true);
+    expect(hrFieldsSchema.safeParse({ ...hr, contact: 'x'.repeat(201) }).success).toBe(false);
+  });
+  it('gives friendly field errors', () => {
+    expect(hrFieldErrors({ ...hr, full_name: '' }).full_name).toBe('Please enter your name.');
+    expect(hrFieldErrors({ ...hr, body: 'short' }).body).toMatch(/at least 10/);
   });
 });

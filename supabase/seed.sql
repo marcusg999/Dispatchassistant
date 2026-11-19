@@ -45,3 +45,9 @@ insert into public.admin_notes (suggestion_id, body)
 select id, 'Called the truck vendor. Earliest slot is Monday.'
 from public.suggestions
 where tracking_hash = encode(sha256(convert_to('BRAVE-CANYON-ORBIT-MAPLE-1001', 'UTF8')), 'hex');
+
+-- HR eyes only (named reports; readable only by hr_staff). Seeded code: KNIGHT-LADDER-MEADOW-NOVEL-7007
+insert into public.hr_staff (email) values ('hr@example.com'), ('second-hr@example.com');
+insert into public.hr_reports (full_name, contact, body, tracking_hash)
+values ('Sample Person', 'call after 5pm', 'I need to talk to someone about a scheduling conflict with a family medical appointment.',
+        encode(sha256(convert_to('KNIGHT-LADDER-MEADOW-NOVEL-7007', 'UTF8')), 'hex'));

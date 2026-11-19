@@ -59,6 +59,17 @@ export interface BrandConfig {
     welcome: string;
     /** The honest privacy promise. Do not claim "untraceable". */
     promise: string;
+    /** The NAMED "HR eyes only" section for personal issues. */
+    hr: {
+      /** Short name of the reader, e.g. "HR". */
+      noun: string;
+      /** Label of the mode switch option. */
+      option: string;
+      /** One-line explanation under the option. */
+      optionHint: string;
+      /** The not-anonymous notice shown at the top of the HR form. */
+      notice: string;
+    };
   };
 }
 
@@ -92,6 +103,13 @@ export const brand: BrandConfig = {
     welcome:
       'Tell the office what would make the work safer, smoother or fairer. Big or small, it all gets read.',
     promise: 'Your name is never asked for or stored. Management sees only what you write.',
+    hr: {
+      noun: 'HR',
+      option: 'Personal issue · HR eyes only',
+      optionHint: 'Not anonymous. Your name goes to HR only.',
+      notice:
+        'This is not anonymous. Your name is required so HR can follow up with you. Only the HR team can read it: managers and other office staff can’t.',
+    },
   },
 };
 

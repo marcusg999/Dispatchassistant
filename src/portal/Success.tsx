@@ -4,12 +4,14 @@ import { forgetCode, rememberCode } from './storage';
 
 interface Props {
   code: string;
+  /** True when this was a NAMED "HR eyes only" report. */
+  hr?: boolean;
   onAnother: () => void;
   onCheck: () => void;
 }
 
 /** The success moment: the tracking code arrives on a swinging crate tag. */
-export function Success({ code, onAnother, onCheck }: Props) {
+export function Success({ code, hr = false, onAnother, onCheck }: Props) {
   const [copied, setCopied] = useState(false);
   const [remember, setRemember] = useState(false);
   const parts = code.split('-');
@@ -46,8 +48,17 @@ export function Success({ code, onAnother, onCheck }: Props) {
         Sent. Thank you.
       </h2>
       <p className="mt-3 max-w-[34rem] text-[1.0625rem] leading-relaxed">
-        Here is your tracking code. <strong>Save it now.</strong> It can&rsquo;t be recovered, because nobody,
-        including {brand.officeNoun}, knows which code is yours.
+        Here is your tracking code. <strong>Save it now.</strong>{' '}
+        {hr ? (
+          <>
+            Only {brand.portal.hr.noun} can read your report, and they may contact you directly. Use the code to see
+            their reply here.
+          </>
+        ) : (
+          <>
+            It can&rsquo;t be recovered, because nobody, including {brand.officeNoun}, knows which code is yours.
+          </>
+        )}
       </p>
 
       <div className="tag-stage mt-14">

@@ -103,6 +103,101 @@ export type Database = {
         };
         Relationships: [];
       };
+      hr_notes: {
+        Row: {
+          author_email: string;
+          body: string;
+          created_at: string;
+          id: string;
+          report_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_email?: string;
+          body: string;
+          created_at?: string;
+          id?: string;
+          report_id: string;
+        };
+        Update: {
+          author_email?: string;
+          body?: string;
+          created_at?: string;
+          id?: string;
+          report_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'hr_notes_report_id_fkey';
+            columns: ['report_id'];
+            isOneToOne: false;
+            referencedRelation: 'hr_reports';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      hr_reports: {
+        Row: {
+          body: string;
+          contact: string | null;
+          created_at: string;
+          deleted_at: string | null;
+          full_name: string;
+          id: string;
+          public_reply: string | null;
+          search: unknown;
+          status: Database['public']['Enums']['suggestion_status'];
+          tracking_hash: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          contact?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          full_name: string;
+          id?: string;
+          public_reply?: string | null;
+          search?: never;
+          status?: Database['public']['Enums']['suggestion_status'];
+          tracking_hash: string;
+          updated_at?: string;
+        };
+        Update: {
+          body?: string;
+          contact?: string | null;
+          created_at?: string;
+          deleted_at?: string | null;
+          full_name?: string;
+          id?: string;
+          public_reply?: string | null;
+          search?: never;
+          status?: Database['public']['Enums']['suggestion_status'];
+          tracking_hash?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      hr_staff: {
+        Row: {
+          added_by: string | null;
+          created_at: string;
+          email: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          added_by?: string | null;
+          created_at?: string;
+          email: string;
+        };
+        Update: {
+          added_by?: string | null;
+          created_at?: string;
+          email?: string;
+        };
+        Relationships: [];
+      };
       suggestions: {
         Row: {
           admin_tag: Database['public']['Enums']['priority_tag'];
@@ -165,7 +260,10 @@ export type Database = {
     Functions: {
       hard_delete_suggestion: { Args: { p_id: string }; Returns: undefined };
       hook_before_user_created: { Args: { event: Json }; Returns: Json };
+      hr_hard_delete: { Args: { p_id: string }; Returns: undefined };
+      hr_log_export: { Args: { p_format: string; p_row_count: number }; Returns: undefined };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_hr: { Args: Record<PropertyKey, never>; Returns: boolean };
       keep_alive: { Args: Record<PropertyKey, never>; Returns: number };
       log_export: { Args: { p_filters: Json; p_format: string; p_row_count: number }; Returns: undefined };
       portal_board: {

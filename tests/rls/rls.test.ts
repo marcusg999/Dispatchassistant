@@ -238,3 +238,91 @@ describe('hard delete', () => {
     expect(JSON.stringify(log.data)).not.toContain('HARD-DELETE-MARKER');
   });
 });
+
+describe('HR eyes only', () => {
+  const hrUser = userClient('hr@example.com');
+  let hrId = '';
+  beforeAll(async () => {
+    const { data, error } = await svc
+      .from('hr_reports')
+      .insert({ full_name: 'RLS Person', contact: 'call me', body: 'RLS HR test: private personal matter.', tracking_hash: randomBytes(32).toString('hex') })
+      .select('id')
+      .single();
+    if (error) throw error;
+    hrId = data.id;
+  });
+  afterAll(async () => {
+    await svc.from('hr_reports').delete().eq('id', hrId);
+  });
+
+  it('anon, outsiders and ADMINS cannot read HR reports, notes or the HR list', async () => {
+    for (const c of [anon, outsider, admin]) {
+      for (const t of ['hr_reports', 'hr_notes', 'hr_staff'] as const) {
+        const { data } = await c.from(t).select('*').limit(5);
+        expect(data ?? [], t).toHaveLength(0);
+      }
+      const upd = await c.from('hr_reports').update({ status: 'done' }).eq('id', hrId).select('id');
+      expect(upd.data ?? []).toHaveLength(0);
+    }
+    expect((await admin.rpc('is_hr')).data).toBe(false);
+    expect((await admin.rpc('hr_hard_delete', { p_id: hrId })).error).not.toBeNull();
+    expect((await admin.from('hr_staff').insert({ email: 'admin@example.com' })).error).not.toBeNull();
+  });
+
+  it('HR can read and triage HR reports but cannot see anonymous suggestions', async () => {
+    expect((await hrUser.rpc('is_hr')).data).toBe(true);
+    const { data } = await hrUser.from('hr_reports').select('full_name, body').eq('id', hrId).single();
+    expect(data?.full_name).toBe('RLS Person');
+    const upd = await hrUser.from('hr_reports').update({ status: 'reviewing', public_reply: 'We will talk soon.' }).eq('id', hrId).select('status').single();
+    expect(upd.data?.status).toBe('reviewing');
+    expect((await hrUser.from('hr_reports').update({ full_name: 'changed' } as never).eq('id', hrId)).error).not.toBeNull();
+    expect((await hrUser.from('suggestions').select('id').limit(5)).data ?? []).toHaveLength(0);
+    expect((await hrUser.from('admins').select('email')).data ?? []).toHaveLength(0);
+  });
+
+  it('HR notes are authored by the session; audit rows carry no names or text', async () => {
+    const note = await hrUser.from('hr_notes').insert({ report_id: hrId, body: 'HR-NOTE-MARKER', author_email: 'x@y.z' }).select('author_email').single();
+    expect(note.data?.author_email).toBe('hr@example.com');
+    const { data: rows } = await svc.from('audit_log').select('action, before, after').eq('suggestion_id', hrId);
+    expect(rows!.map((r) => r.action)).toEqual(expect.arrayContaining(['hr_status_change', 'hr_reply', 'hr_note_added']));
+    const raw = JSON.stringify(rows);
+    for (const m of ['RLS Person', 'call me', 'private personal matter', 'HR-NOTE-MARKER', 'We will talk soon']) expect(raw).not.toContain(m);
+  });
+
+  it('HR sees only HR audit rows; admins still see everything', async () => {
+    const hrRows = (await hrUser.from('audit_log').select('action').limit(200)).data ?? [];
+    expect(hrRows.length).toBeGreaterThan(0);
+    expect(hrRows.every((r) => r.action.startsWith('hr_'))).toBe(true);
+    const adminRows = (await admin.from('audit_log').select('action').like('action', 'hr\\_%').limit(5)).data ?? [];
+    expect(adminRows.length).toBeGreaterThan(0);
+  });
+
+  it('the last HR member cannot be removed; the hook allows HR emails to sign up', async () => {
+    const before = (await svc.from('hr_staff').select('email')).data!.map((r) => r.email);
+    try {
+      const others = before.filter((e) => e !== 'hr@example.com');
+      expect((await hrUser.from('hr_staff').delete().in('email', others)).error).toBeNull();
+      expect((await hrUser.from('hr_staff').delete().eq('email', 'hr@example.com')).error?.message).toMatch(/last HR/i);
+    } finally {
+      const now = (await svc.from('hr_staff').select('email')).data!.map((r) => r.email);
+      const missing = before.filter((e) => !now.includes(e));
+      if (missing.length) await svc.from('hr_staff').insert(missing.map((email) => ({ email })));
+    }
+    const res = await fetch(`${LOCAL.url}/auth/v1/signup`, {
+      method: 'POST',
+      headers: { apikey: LOCAL.publishable, 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'second-hr@example.com', password: 'a-long-password-123' }),
+    });
+    expect(JSON.stringify(await res.json())).not.toMatch(/not allowed/i);
+  });
+
+  it('HR hard delete removes the report', async () => {
+    const { data } = await svc
+      .from('hr_reports')
+      .insert({ full_name: 'Delete Me', body: 'to be removed permanently by HR', tracking_hash: randomBytes(32).toString('hex') })
+      .select('id')
+      .single();
+    expect((await hrUser.rpc('hr_hard_delete', { p_id: data!.id })).error).toBeNull();
+    expect((await svc.from('hr_reports').select('id').eq('id', data!.id)).data).toHaveLength(0);
+  });
+});

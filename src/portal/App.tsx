@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { brand, displayName } from '../brand/brand.config';
 import { SubmitForm } from './SubmitForm';
+import { HrForm } from './HrForm';
 import { Success } from './Success';
 import { StatusView } from './StatusView';
 import { BoardView } from './BoardView';
 
 type View = 'submit' | 'status' | 'board';
+export type Mode = 'anon' | 'hr';
 
 function viewFromHash(): View {
   const h = location.hash.replace('#', '');
@@ -15,6 +17,7 @@ function viewFromHash(): View {
 export function App() {
   const [view, setView] = useState<View>(viewFromHash);
   const [code, setCode] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>('anon');
   const [statusPrefill, setStatusPrefill] = useState('');
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export function App() {
 
   return (
     <div className="portal">
-      <WallPane />
+      <WallPane mode={view === 'submit' ? mode : 'anon'} />
       <main className="form-pane" aria-labelledby="main-heading">
         <nav className="tabs" aria-label="Suggestion box sections">
           {tabs.map((t) => (
@@ -67,6 +70,7 @@ export function App() {
             (code ? (
               <Success
                 code={code}
+                hr={mode === 'hr'}
                 onAnother={() => setCode(null)}
                 onCheck={() => {
                   setStatusPrefill(code);
@@ -74,7 +78,10 @@ export function App() {
                 }}
               />
             ) : (
-              <SubmitForm onSubmitted={setCode} />
+              <>
+                <ModeSwitch mode={mode} onChange={setMode} />
+                {mode === 'anon' ? <SubmitForm onSubmitted={setCode} /> : <HrForm onSubmitted={setCode} />}
+              </>
             ))}
           {view === 'status' && <StatusView prefill={statusPrefill} />}
           {view === 'board' && <BoardView />}
@@ -89,8 +96,32 @@ export function App() {
   );
 }
 
-function WallPane() {
+/** Choose between the anonymous suggestion box and the NAMED "HR eyes only" form. */
+function ModeSwitch({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) {
+  return (
+    <fieldset className="mode-switch">
+      <legend className="sr-only">What kind of message is this?</legend>
+      <label className="mode-option">
+        <input type="radio" name="mode" value="anon" checked={mode === 'anon'} onChange={() => onChange('anon')} />
+        <span className="mode-body">
+          <span className="mode-name">Suggestion</span>
+          <span className="mode-hint">Anonymous. No name asked.</span>
+        </span>
+      </label>
+      <label className="mode-option mode-option-hr">
+        <input type="radio" name="mode" value="hr" checked={mode === 'hr'} onChange={() => onChange('hr')} />
+        <span className="mode-body">
+          <span className="mode-name">{brand.portal.hr.option}</span>
+          <span className="mode-hint">{brand.portal.hr.optionHint}</span>
+        </span>
+      </label>
+    </fieldset>
+  );
+}
+
+function WallPane({ mode }: { mode: Mode }) {
   const [first, ...rest] = brand.portal.headline.split(' ');
+  const hr = mode === 'hr';
   return (
     <header className="wall-pane">
       <div className="flex items-center justify-between gap-4">
@@ -113,15 +144,17 @@ function WallPane() {
       </div>
 
       <section className="label-plate" aria-label="How this box works">
-        <p className="text-[0.9375rem] font-bold leading-snug">{brand.portal.promise}</p>
+        <p className="text-[0.9375rem] font-bold leading-snug" aria-live="polite">
+          {hr ? `${brand.portal.hr.noun} eyes only. This one is not anonymous.` : brand.portal.promise}
+        </p>
         <dl>
           <dt className="plate-extra">Medium</dt>
-          <dd className="plate-extra">Your words. A photo, if you like.</dd>
+          <dd className="plate-extra">{hr ? 'Your words and your name.' : 'Your words. A photo, if you like.'}</dd>
           <dt className="plate-extra">Length</dt>
           <dd className="plate-extra">10 to 4,000 characters</dd>
           <dt>Provenance</dt>
           <dd>
-            <strong>Anonymous</strong>
+            <strong>{hr ? `Named · ${brand.portal.hr.noun} only` : 'Anonymous'}</strong>
           </dd>
         </dl>
       </section>
