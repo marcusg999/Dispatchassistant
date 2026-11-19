@@ -106,6 +106,7 @@ export function devApi(): Plugin {
         let mod: string | null = null;
         if (url.pathname === '/api/submit') mod = 'submit';
         else if (url.pathname === '/api/board') mod = 'board';
+        else if (url.pathname === '/api/incident-photo') mod = 'incident-photo';
         else if (url.pathname.startsWith('/api/status/')) mod = 'status';
         if (!mod) return next();
         try {

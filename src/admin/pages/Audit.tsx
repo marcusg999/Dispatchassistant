@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { STATUS_LABEL, TAG_LABEL, type Status, type Tag } from '../../shared/domain';
-import { AUDIT_PAGE, listAudit, type AuditRow } from '../data';
+import { type AuditRow } from '../data';
+import { AUDIT_MODULE_PAGE, listAuditByModule, type AuditModule } from '../dispatch/people/peopleData';
 import { Link } from '../router';
 import { ErrorNote, fmtDateTime } from '../components/ui';
 
@@ -65,10 +66,55 @@ export function describeAudit(r: AuditRow): string {
       return `Exported ${a?.rows} HR reports (XLSX)`;
     case 'hr_backup':
       return `Downloaded HR backup (${a?.rows} reports)`;
+    case 'dispatch_conflict_override':
+      return `Saved over warnings. Reason: “${a?.reason ?? ''}”`;
+    case 'dispatch_export':
+      return `Exported dispatch sheet (${String(a?.format).toUpperCase()}${a?.office_notes ? ', with office notes' : ''})`;
+    case 'dispatch_role_added':
+      return `Staff role added: ${a?.email} as ${a?.role}`;
+    case 'dispatch_role_changed':
+      return `Staff role changed: ${a?.email} ${b?.role} → ${a?.role}`;
+    case 'dispatch_role_removed':
+      return `Staff role removed: ${b?.email} (${b?.role})`;
+    case 'dispatch_jobs_status':
+      return `Job ${a?.job_number ?? ''} status ${b?.status} → ${a?.status}`;
+    case 'dispatch_jobs_soft_delete':
+      return `Job ${b?.job_number ?? ''} moved to trash`;
     default:
+      if (r.action.startsWith('dispatch_')) return describeDispatch(r.action, a ?? b);
       return r.action;
   }
 }
+
+const DISPATCH_TABLE_LABEL: Record<string, string> = {
+  jobs: 'Job',
+  job_stops: 'Stop',
+  job_items: 'Item',
+  job_assignments: 'Crew assignment',
+  job_assets: 'Asset assignment',
+  job_checklist_items: 'Checklist item',
+  crew_members: 'Crew member',
+  crew_skills: 'Crew skill',
+  crew_certifications: 'Certification',
+  time_off: 'Time off',
+  assets: 'Asset',
+  incident_reports: 'Incident report',
+  incident_photos: 'Incident photo',
+  checklist_templates: 'Checklist template',
+  skills: 'Skill',
+  certification_types: 'Certification type',
+  app_settings: 'Setting',
+};
+
+function describeDispatch(action: string, row: J): string {
+  const m = action.match(/^dispatch_(.+)_(insert|update|delete)$/);
+  if (!m) return action;
+  const what = DISPATCH_TABLE_LABEL[m[1]] ?? m[1];
+  const verb = m[2] === 'insert' ? (m[1].startsWith('job_ass') ? 'added' : 'created') : m[2] === 'update' ? 'edited' : 'removed';
+  const name = (row?.job_number ?? row?.display_name ?? row?.name ?? row?.label ?? '') as string;
+  return `${what} ${verb}${name ? `: ${name}` : ''}`;
+}
+
 
 export function Audit() {
   const [page, setPage] = useState(0);
@@ -76,17 +122,18 @@ export function Audit() {
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [module, setModule] = useState<AuditModule>('all');
 
   useEffect(() => {
-    listAudit(page)
+    listAuditByModule(page, module)
       .then((r) => {
         setRows(r.rows);
         setCount(r.count);
       })
       .catch((e: Error) => setError(e.message));
-  }, [page]);
+  }, [page, module]);
 
-  const pages = Math.max(1, Math.ceil(count / AUDIT_PAGE));
+  const pages = Math.max(1, Math.ceil(count / AUDIT_MODULE_PAGE));
 
   return (
     <div>
@@ -96,14 +143,40 @@ export function Audit() {
         Append-only: nobody, including admins, can edit or delete entries.
       </p>
       <ErrorNote error={error} />
-      <div className="a-panel mt-6 overflow-x-auto">
+      <fieldset className="mt-4">
+        <legend className="a-label">Module</legend>
+        <div className="flex flex-wrap gap-1.5">
+          {(
+            [
+              ['all', 'All'],
+              ['suggestions', 'Suggestions'],
+              ['dispatch', 'Dispatch'],
+              ['hr', 'HR'],
+            ] as const
+          ).map(([k, label]) => (
+            <button
+              key={k}
+              type="button"
+              className="a-toggle"
+              aria-pressed={module === k}
+              onClick={() => {
+                setPage(0);
+                setModule(k);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+      <div className="a-panel mt-4 overflow-x-auto">
         <table className="a-table">
           <thead>
             <tr>
               <th scope="col">When</th>
               <th scope="col">Who</th>
               <th scope="col">What</th>
-              <th scope="col">Suggestion</th>
+              <th scope="col">Record</th>
               <th scope="col">
                 <span className="sr-only">Details</span>
               </th>
@@ -117,10 +190,14 @@ export function Audit() {
                   <td className="whitespace-nowrap">{r.actor_email}</td>
                   <td>{describeAudit(r)}</td>
                   <td>
-                    {r.suggestion_id && r.action !== 'hard_delete' && r.action !== 'hr_hard_delete' ? (
+                    {r.suggestion_id && r.action !== 'hard_delete' && r.action !== 'hr_hard_delete' && r.action !== 'dispatch_jobs_delete' ? (
                       <Link
                         href={
-                          r.action.startsWith('hr_') ? `/admin/hr/r/${r.suggestion_id}` : `/admin/s/${r.suggestion_id}`
+                          r.action.startsWith('hr_')
+                            ? `/admin/hr/r/${r.suggestion_id}`
+                            : r.action.startsWith('dispatch_')
+                              ? `/admin/dispatch/jobs/${r.suggestion_id}`
+                              : `/admin/s/${r.suggestion_id}`
                         }
                         className="underline"
                       >

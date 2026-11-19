@@ -94,3 +94,149 @@
   color: var(--brand-danger);
   font-weight: 800;
 }
+
+/* print sheet */
+.dsheet {
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--brand-line);
+  padding: 1.5rem 1.75rem;
+  max-width: 60rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.dsheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  border-bottom: 2px solid #111;
+  padding-bottom: 0.5rem;
+}
+.dsheet-note {
+  color: #444;
+  font-style: italic;
+}
+.dsheet-job {
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid #999;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.dsheet-job:first-of-type {
+  border-top: 0;
+}
+.dsheet-jobhead h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.dsheet-num {
+  display: inline-block;
+  border: 1.5px solid #111;
+  padding: 0 0.35rem;
+  margin-right: 0.35rem;
+  font-variant-numeric: tabular-nums;
+}
+.dsheet h3 {
+  margin-top: 0.85rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.dsheet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.75rem;
+}
+.dsheet-grid dt {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #444;
+}
+.dsheet-stops {
+  display: grid;
+  gap: 0.5rem;
+}
+.dsheet-stops li {
+  border-left: 3px solid #111;
+  padding-left: 0.6rem;
+}
+.dsheet-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dsheet-table th,
+.dsheet-table td {
+  border: 1px solid #999;
+  padding: 0.3rem 0.4rem;
+  text-align: left;
+  vertical-align: top;
+}
+.dsheet-table th {
+  background: #eee;
+  font-size: 0.75rem;
+}
+.dsheet-flags li {
+  font-weight: 700;
+}
+.dsheet-glyph {
+  display: inline-block;
+  min-width: 1.1em;
+  text-align: center;
+  border: 1px solid #111;
+}
+.dsheet-check {
+  columns: 2;
+  column-gap: 1.5rem;
+}
+.dsheet-check li {
+  display: flex;
+  gap: 0.4rem;
+  break-inside: avoid;
+}
+.dsheet-box {
+  font-size: 1.1em;
+  line-height: 1.2;
+}
+.dsheet-notes p {
+  white-space: pre-wrap;
+}
+.dsheet-office {
+  border: 1px dashed #111;
+  padding: 0.25rem 0.5rem 0.5rem;
+  margin-top: 0.75rem;
+}
+.dsheet-foot {
+  margin-top: 1.25rem;
+  font-size: 0.7rem;
+  color: #555;
+}
+@media print {
+  .dsheet {
+    border: 0;
+    padding: 0;
+    max-width: none;
+    font-size: 11pt;
+  }
+  .dsheet-break {
+    break-before: page;
+    page-break-before: always;
+    border-top: 0;
+    margin-top: 0;
+  }
+  body,
+  #root,
+  main {
+    background: #fff !important;
+  }
+  main {
+    max-width: none !important;
+  }
+}
