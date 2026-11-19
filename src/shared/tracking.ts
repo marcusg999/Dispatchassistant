@@ -13,7 +13,9 @@ const WORD_COUNT = 4;
 const DIGITS = 4;
 
 /** Uniform integer in [0, max) using rejection sampling over 32-bit values. */
-function randomBelow(max: number, rng: (a: Uint32Array) => Uint32Array): number {
+type Rng = (a: Uint32Array<ArrayBuffer>) => unknown;
+
+function randomBelow(max: number, rng: Rng): number {
   const limit = Math.floor(0x1_0000_0000 / max) * max;
   const buf = new Uint32Array(1);
   for (;;) {
@@ -22,9 +24,9 @@ function randomBelow(max: number, rng: (a: Uint32Array) => Uint32Array): number 
   }
 }
 
-const defaultRng = (a: Uint32Array) => crypto.getRandomValues(a);
+const defaultRng: Rng = (a) => crypto.getRandomValues(a);
 
-export function generateTrackingCode(rng: (a: Uint32Array) => Uint32Array = defaultRng): string {
+export function generateTrackingCode(rng: Rng = defaultRng): string {
   const words = Array.from({ length: WORD_COUNT }, () => WORDS[randomBelow(WORDS.length, rng)].toUpperCase());
   const digits = String(randomBelow(10 ** DIGITS, rng)).padStart(DIGITS, '0');
   return [...words, digits].join('-');
