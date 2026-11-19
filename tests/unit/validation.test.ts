@@ -22,6 +22,11 @@ describe('submitFieldsSchema', () => {
     expect(submitFieldsSchema.safeParse({ ...valid, body: 'x'.repeat(4001) }).success).toBe(false);
   });
 
+  it('accepts every priority tag, including the gentle ones', () => {
+    for (const tag of ['just_sayin', 'casual', 'important', 'urgent', 'crucial'])
+      expect(submitFieldsSchema.safeParse({ ...valid, tag }).success, tag).toBe(true);
+  });
+
   it('rejects unknown categories and tags', () => {
     expect(submitFieldsSchema.safeParse({ ...valid, category: 'hr' }).success).toBe(false);
     expect(submitFieldsSchema.safeParse({ ...valid, tag: 'meh' }).success).toBe(false);

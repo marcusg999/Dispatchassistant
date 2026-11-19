@@ -187,7 +187,7 @@ export type Database = {
       };
     };
     Enums: {
-      priority_tag: 'important' | 'urgent' | 'crucial';
+      priority_tag: 'just_sayin' | 'casual' | 'important' | 'urgent' | 'crucial';
       suggestion_category:
         'safety' | 'trucks_equipment' | 'scheduling_dispatch' | 'crating_shop' | 'pay_policy' | 'other';
       suggestion_status: 'new' | 'reviewing' | 'planned' | 'done' | 'declined';
@@ -301,7 +301,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      priority_tag: ['important', 'urgent', 'crucial'],
+      priority_tag: ['just_sayin', 'casual', 'important', 'urgent', 'crucial'],
       suggestion_category: ['safety', 'trucks_equipment', 'scheduling_dispatch', 'crating_shop', 'pay_policy', 'other'],
       suggestion_status: ['new', 'reviewing', 'planned', 'done', 'declined'],
     },

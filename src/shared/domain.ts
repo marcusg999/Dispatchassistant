@@ -14,17 +14,26 @@ export const CATEGORY_LABEL: Record<Category, string> = {
   other: 'Other',
 };
 
-export const TAGS = ['important', 'urgent', 'crucial'] as const;
+/** Ascending urgency (matches the Postgres enum order). */
+export const TAGS = ['just_sayin', 'casual', 'important', 'urgent', 'crucial'] as const;
 export type Tag = (typeof TAGS)[number];
-export const TAG_LABEL: Record<Tag, string> = { important: 'Important', urgent: 'Urgent', crucial: 'Crucial' };
+export const TAG_LABEL: Record<Tag, string> = {
+  just_sayin: 'I’m just sayin’',
+  casual: 'Casual',
+  important: 'Important',
+  urgent: 'Urgent',
+  crucial: 'Crucial',
+};
 /** One-line plain-language hint shown under each choice on the form. */
 export const TAG_HINT: Record<Tag, string> = {
+  just_sayin: 'Just putting it out there. No action needed.',
+  casual: 'Small thing. Whenever there’s time.',
   important: 'Worth fixing. No rush.',
   urgent: 'Causing problems now. Needs attention soon.',
   crucial: 'Someone could get hurt, or art could be damaged.',
 };
 /** Numeric rank for "sort by priority" (higher = more pressing). */
-export const TAG_RANK: Record<Tag, number> = { important: 1, urgent: 2, crucial: 3 };
+export const TAG_RANK: Record<Tag, number> = { just_sayin: 0, casual: 1, important: 2, urgent: 3, crucial: 4 };
 
 export const STATUSES = ['new', 'reviewing', 'planned', 'done', 'declined'] as const;
 export type Status = (typeof STATUSES)[number];

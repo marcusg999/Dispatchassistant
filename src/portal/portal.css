@@ -397,6 +397,12 @@
 .press input:checked + .press-body .press-tick::after {
   transform: scale(1);
 }
+.swatch-just_sayin {
+  background: var(--tag-just_sayin-bg);
+}
+.swatch-casual {
+  background: var(--tag-casual-bg);
+}
 .swatch-important {
   background: var(--tag-important-bg);
 }

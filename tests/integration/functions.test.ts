@@ -68,6 +68,20 @@ describe('POST /api/submit', () => {
     expect(data).toMatchObject({ category: 'trucks_equipment', submitter_tag: 'urgent', admin_tag: 'urgent', status: 'new', photo_path: null });
   });
 
+  it('accepts the "I’m just sayin’" and "Casual" tags, and they sort below Important', async () => {
+    const a = form({ tag: 'just_sayin' });
+    const b = form({ tag: 'casual' });
+    const c = form({ tag: 'important' });
+    created.push(a.hash, b.hash, c.hash);
+    for (const x of [a, b, c]) expect((await post(x.f)).status).toBe(200);
+    const { data } = await svc
+      .from('suggestions')
+      .select('submitter_tag')
+      .in('tracking_hash', [a.hash, b.hash, c.hash])
+      .order('admin_tag', { ascending: false });
+    expect(data!.map((r) => r.submitter_tag)).toEqual(['important', 'casual', 'just_sayin']);
+  });
+
   it('stores no identity columns', async () => {
     const { data } = await svc.from('suggestions').select('*').limit(1).single();
     const cols = Object.keys(data!);

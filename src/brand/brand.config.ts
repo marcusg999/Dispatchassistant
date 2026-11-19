@@ -49,7 +49,7 @@ export interface BrandConfig {
     danger: string;
   };
   /** Priority tag colors. Used in admin chips and the Excel/Word export column. */
-  tagColors: Record<'important' | 'urgent' | 'crucial', { bg: string; fg: string }>;
+  tagColors: Record<'just_sayin' | 'casual' | 'important' | 'urgent' | 'crucial', { bg: string; fg: string }>;
   portal: {
     /** Small caps eyebrow above the headline, like an exhibition label number. */
     eyebrow: string;
@@ -80,6 +80,8 @@ export const brand: BrandConfig = {
     danger: '#A1160E',
   },
   tagColors: {
+    just_sayin: { bg: '#F1EEE8', fg: '#141413' },
+    casual: { bg: '#CFD8D1', fg: '#141413' },
     important: { bg: '#DCD8D0', fg: '#141413' },
     urgent: { bg: '#FF5A1F', fg: '#141413' },
     crucial: { bg: '#141413', fg: '#FFFFFF' },
@@ -102,6 +104,7 @@ export function displayName(b: BrandConfig = brand): string {
 export function brandCssVars(b: BrandConfig = brand): string {
   const c = b.colors;
   const t = b.tagColors;
+  const tagVars = Object.entries(t).flatMap(([k, v]) => [`--tag-${k}-bg:${v.bg}`, `--tag-${k}-fg:${v.fg}`]);
   const lines = [
     `--brand-wall:${c.wall}`,
     `--brand-paper:${c.paper}`,
@@ -112,12 +115,7 @@ export function brandCssVars(b: BrandConfig = brand): string {
     `--brand-accent-text:${c.accentText}`,
     `--brand-focus:${c.focus}`,
     `--brand-danger:${c.danger}`,
-    `--tag-important-bg:${t.important.bg}`,
-    `--tag-important-fg:${t.important.fg}`,
-    `--tag-urgent-bg:${t.urgent.bg}`,
-    `--tag-urgent-fg:${t.urgent.fg}`,
-    `--tag-crucial-bg:${t.crucial.bg}`,
-    `--tag-crucial-fg:${t.crucial.fg}`,
+    ...tagVars,
   ];
   return `:root{${lines.join(';')}}`;
 }

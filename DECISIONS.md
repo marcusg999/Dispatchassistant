@@ -57,3 +57,9 @@ A running log of product and engineering decisions: what was chosen, and why. Ne
 - `npm audit`: a moderate advisory in `uuid` (transitive via `exceljs`) is fixed with an `overrides` entry (`uuid ^11.1.1`). Result: 0 vulnerabilities.
 - `exceljs` (not the outdated `xlsx` package) for spreadsheets, `docx` for Word.
 - `@preact/preset-vite` was skipped (peer conflict with the React plugin's Babel); plain aliases do the job.
+
+## 2026-11-19: Two gentler priority tags
+
+- Added **"I’m just sayin’"** (`just_sayin`) and **"Casual"** (`casual`) at the product owner's request, via a new migration (`20261119000500_more_priority_tags.sql`, `ALTER TYPE … ADD VALUE`), not by editing the original migration.
+- Order (ascending urgency, which drives "sort by priority" in Postgres): just_sayin < casual < important < urgent < crucial. Form, admin chips, filters and exports all follow `TAGS` in `src/shared/domain.ts`.
+- Colors: just_sayin uses a near-paper tint with a hairline, casual a muted sage. Both pass AA with ink text (checked by the brand contrast test) and come from `brand.config.ts` like the other tags.

@@ -116,6 +116,15 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
+.tag-just_sayin {
+  background: var(--tag-just_sayin-bg);
+  color: var(--tag-just_sayin-fg);
+  box-shadow: inset 0 0 0 1px var(--brand-line);
+}
+.tag-casual {
+  background: var(--tag-casual-bg);
+  color: var(--tag-casual-fg);
+}
 .tag-important {
   background: var(--tag-important-bg);
   color: var(--tag-important-fg);

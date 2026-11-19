@@ -15,6 +15,8 @@ describe('brand config', () => {
     ['accentText on paper', c.accentText, c.paper],
     ['accentText on wall', c.accentText, c.wall],
     ['danger on paper', c.danger, c.paper],
+    ['just sayin tag', brand.tagColors.just_sayin.fg, brand.tagColors.just_sayin.bg],
+    ['casual tag', brand.tagColors.casual.fg, brand.tagColors.casual.bg],
     ['important tag', brand.tagColors.important.fg, brand.tagColors.important.bg],
     ['urgent tag', brand.tagColors.urgent.fg, brand.tagColors.urgent.bg],
     ['crucial tag', brand.tagColors.crucial.fg, brand.tagColors.crucial.bg],
