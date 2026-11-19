@@ -43,7 +43,8 @@ We do **not** claim submissions are untraceable. Writing style, timing, specific
 | Control | Where |
 | --- | --- |
 | Admin sessions are kept in `sessionStorage`: closing the browser signs out | `src/admin/supabase.ts` |
-| Sign-in is Google only, so Google account protections (2-step verification, device management) apply. **Require 2-step verification on admin Google accounts** | SETUP_CHECKLIST |
+| Sign-in is email + password (12+ chars, letters and digits, email-confirmed) or Google. Google accounts bring their own 2-step verification: **require it on admin Google accounts**. Password changes trigger a notification email; changing a password requires a recent sign-in | SETUP_CHECKLIST 4.2 |
+| Lost password: one-time, one-hour reset link to the account's email. Lost email: another admin swaps the address. Lockout: break-glass SQL by the project owner | README → Sign-in and account recovery |
 | Any admin can remove a compromised admin instantly (Admin → Admins); RLS stops access on the next request | `admins` table, `private.is_admin()` |
 | Revoke sessions: Supabase → Authentication → Users → the user → sign out / delete user | dashboard |
 | Every admin action is in an append-only audit log (who, what, before/after, when) | `audit_log`, triggers |
@@ -82,9 +83,21 @@ We do **not** claim submissions are untraceable. Writing style, timing, specific
 
 ---
 
+### Password guessing and account discovery
+
+| Control | Where |
+| --- | --- |
+| Only allow-listed emails can ever have an account (before-user-created hook), so guessing needs a real admin email | migrations |
+| Supabase Auth rate-limits sign-in, sign-up and email sending per IP | Supabase platform |
+| Sign-in, sign-up and reset show generic messages that don't reveal whether an email is on the list | `src/admin/pages/SignIn.tsx` |
+| Email links use one-time `token_hash` values that are removed from the address bar after use | `src/admin/pages/AuthConfirm.tsx` |
+| Sessions live in `sessionStorage` and end when the browser closes | `src/admin/supabase.ts` |
+
+Residual: a phished admin password works until it's changed. Prefer Google with 2-step verification for admins who can use it, and keep the admin list short.
+
 ## Controls summary
 
-- **CSP per area.** Portal (`/s/*`): `default-src 'self'`, `connect-src 'self'`, no third parties. Admin (`/admin`, `/admin/*`, `/auth/callback`): same, plus only this project's Supabase origin in `connect-src` / `img-src` (generated into `_headers` at build). APIs: `default-src 'none'`.
+- **CSP per area.** Portal (`/s/*`): `default-src 'self'`, `connect-src 'self'`, no third parties. Admin (`/admin`, `/admin/*`, `/auth/callback`, `/auth/confirm`): same, plus only this project's Supabase origin in `connect-src` / `img-src` (generated into `_headers` at build). APIs: `default-src 'none'`.
 - **Headers** on everything (`netlify.toml`): HSTS, `X-Frame-Options: DENY`, `frame-ancestors 'none'`, `Referrer-Policy: no-referrer`, `X-Content-Type-Options: nosniff`, COOP/CORP same-origin, restrictive `Permissions-Policy`, `X-Robots-Tag: noindex`.
 - **Same-origin APIs, no CORS.** No `Access-Control-Allow-Origin` anywhere; cross-origin POSTs are rejected.
 - **No `dangerouslySetInnerHTML`**, no inline scripts or styles (the flyer QR is rendered as an SVG path).

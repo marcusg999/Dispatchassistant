@@ -2,7 +2,7 @@
 
 An office-operations aid for companies that handle art and build crates, built as a **white-label** product: every name, color and line of copy comes from one file, `src/brand/brand.config.ts`.
 
-**Phase 1 (this repo today): the anonymous suggestion box.** Crews open a private link, write what's on their mind, optionally attach a photo, and get a tracking code. Nobody is asked for a name, email or login. The office reads, triages and replies in a private admin console that requires a Google sign-in from an allow-listed address.
+**Phase 1 (this repo today): the anonymous suggestion box.** Crews open a private link, write what's on their mind, optionally attach a photo, and get a tracking code. Nobody is asked for a name, email or login. The office reads, triages and replies in a private admin console that requires sign-in (email + password, or Google) from an allow-listed address.
 
 Later phases (dispatch board, estimates, industry news) are listed in [ROADMAP.md](ROADMAP.md). Every future module will require sign-in; only the suggestion box is anonymous.
 
@@ -100,7 +100,7 @@ npm run dev
 
 Seeded tracking codes to try on the status screen: `BRAVE-CANYON-ORBIT-MAPLE-1001`, `CLEVER-HARBOR-PILOT-STONE-2002`, `DAWN-FOREST-LUMBER-OCEAN-3003`. Seeded admins: `admin@example.com`, `second-admin@example.com`.
 
-**Admin sign-in locally.** The console signs in with Google only. To use real Google sign-in locally, put `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` in `.env` (and add your Google email to `public.admins`), then restart `supabase start`. Without Google credentials, use the seeded-session approach the E2E tests use (`tests/e2e/helpers.ts → signInAsAdmin`): it creates a local user for an allow-listed email and injects the session.
+**Admin sign-in locally.** Use email + password: for an email already in `public.admins` (seed: `admin@example.com`), choose **First time? Create your password** on `/admin`, then open the confirmation email in the local mail catcher at http://127.0.0.1:54324 (Mailpit, started by `supabase start`). **Forgot password?** emails land there too. To use real Google sign-in locally, put `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` and `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` in `.env` (and add your Google email to `public.admins`), then restart `supabase start`. Without Google credentials, use the seeded-session approach the E2E tests use (`tests/e2e/helpers.ts → signInAsAdmin`): it creates a local user for an allow-listed email and injects the session.
 
 Production-like preview of the built site (same routing as `_redirects`, real functions):
 
@@ -224,6 +224,17 @@ Free Supabase projects pause after a period of inactivity. `netlify/functions/ke
   ```
 
 ---
+
+## Sign-in and account recovery
+
+- **Email + password** (primary) or **Google**, for emails on the admin or HR list only. The before-user-created hook refuses every other address.
+- **First time:** someone an admin has added picks **First time? Create your password** (12+ characters, letters and numbers), then confirms by email.
+- **Forgot password:** **Forgot password?** emails a one-time link (valid one hour, works on any device) to `/auth/confirm`, where they choose a new password. The account owner gets a "password changed" email.
+- **Lost email or Google account:** another admin adds the new email on the Admins page and removes the old one; the person then creates a password for the new email.
+- **Everyone locked out:** break-glass SQL in SETUP_CHECKLIST 4.5.
+- **Change password:** click your email in the console header (Account page).
+- Production needs custom SMTP so reset emails arrive (SETUP_CHECKLIST 4.2a), and the email templates from `supabase/templates/` pasted into the dashboard (4.2b).
+- Messages are generic ("if that email is on the list…") so the sign-in page can't be used to discover who is an admin.
 
 ## HR eyes only (named personal issues)
 

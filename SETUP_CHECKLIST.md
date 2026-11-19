@@ -74,12 +74,35 @@ More admins can be added later from the console (Admin → Admins).
 3. Hook type **Postgres**, schema **public**, function **`hook_before_user_created`**.
 4. Enable and **Save**.
 
-### 4.2 Providers: Google only
+### 4.2 Providers: email + password, and Google
+
+Admins (and HR) can sign in with **email + password** or with **Google**. Only emails on the admin or HR list can ever get an account (the hook in 4.1).
 
 1. **Authentication** → **Sign In / Providers**.
-2. **Email**: turn **off** (admins sign in with Google only).
-3. Make sure **Allow new users to sign up** stays on (the hook above does the allow-listing).
-4. **Google**: you'll come back here in step 5.4 to paste the client ID and secret.
+2. **Email**: keep it **on**, and turn **Confirm email** **on** (a new password only works after the emailed link is opened). Leave **Secure email change** on.
+3. Same page, password settings: **Minimum password length** `12`, **Password requirements** "Letters and digits". Turn on **Secure password change**. (Leaked-password protection is a paid-plan option; turn it on if you upgrade.)
+4. Make sure **Allow new users to sign up** stays on (the hook does the allow-listing).
+5. **Google**: you'll come back here in step 5.4 to paste the client ID and secret. Google is optional; skip section 5 if everyone will use email + password.
+
+### 4.2a Email delivery (needed for confirmations and password resets)
+
+Supabase's built-in email only delivers to members of your Supabase organization and is heavily rate-limited, so password-reset and confirmation emails won't reliably reach admins without your own SMTP.
+
+1. Create an account with any transactional email provider that offers SMTP (many have a free tier) and verify a sending domain or address.
+2. Supabase → **Authentication** → **Emails** → **SMTP Settings** → enable custom SMTP and enter the host, port, user, password, sender email and sender name (for example, the app name).
+3. Send yourself a test: on the sign-in page use **Forgot password?** with an admin email and check the inbox.
+
+### 4.2b Email templates (links that work on any device)
+
+Supabase → **Authentication** → **Emails** → **Templates**. Replace the body of these templates with the files in `supabase/templates/` (the subjects are in `supabase/config.toml`):
+
+| Template | File |
+| --- | --- |
+| Confirm signup | `supabase/templates/confirmation.html` |
+| Reset password | `supabase/templates/recovery.html` |
+| Password changed (notification; enable it) | `supabase/templates/password_changed_notification.html` |
+
+These templates send a one-time `token_hash` link to `/auth/confirm`, which works even if it's opened in a different browser or on a phone.
 
 ### 4.3 URL configuration
 
@@ -87,14 +110,26 @@ More admins can be added later from the console (Admin → Admins).
 2. **Site URL**: `https://dispatch-bro-app.netlify.app`
 3. **Redirect URLs**: add both:
    - `https://dispatch-bro-app.netlify.app/auth/callback`
+   - `https://dispatch-bro-app.netlify.app/auth/confirm`
    - `http://localhost:5173/auth/callback`
+   - `http://localhost:5173/auth/confirm`
 4. **Save**.
 
 ### 4.4 Recommended: session limits
 
 Authentication → **Sessions**: if your plan offers it, set an **inactivity timeout** (e.g. 8h) and/or **time-box**. The console already stores sessions in `sessionStorage`, so closing the browser signs the admin out.
 
-## 5. Google Cloud OAuth client
+### 4.5 Break-glass recovery (if every admin is locked out)
+
+Normal recovery: **Forgot password?** on the sign-in page, or another admin replaces a lost email on the Admins page. If nobody can sign in at all, the Supabase project owner can:
+
+1. Supabase → **SQL Editor** → run `insert into public.admins (email) values ('new-email@example.com');` (use `public.hr_staff` for HR).
+2. On the sign-in page, choose **First time? Create your password** with that email and open the confirmation link.
+3. Remove any address that's no longer valid from the Admins page.
+
+Keep at least two admins (and two HR members) so this is rarely needed.
+
+## 5. Google Cloud OAuth client (optional)
 
 1. Go to console.cloud.google.com → project picker → **New project** (e.g. `dispatch-bro-auth`) → **Create** → select it.
 2. **APIs & Services** → **OAuth consent screen** (may appear as "Google Auth Platform → Branding/Audience"):

@@ -79,3 +79,14 @@ Product owner asked for a named section for personal issues. Choices confirmed i
 ## 2026-11-19: Product name
 
 - Default product name changed to **Dispatch Bro** (`brand.config.ts` → `appName`; package name `dispatch-bro`). The local Supabase `project_id` in `supabase/config.toml` stays `dispatch-buddy`: it only names local Docker containers and changing it means restarting the local stack.
+
+## 2026-11-19: Email + password sign-in with recovery
+
+- Admin and HR sign-in now offers **email + password** (primary) alongside Google, at the product owner's request.
+- **Who can have an account:** unchanged. The before-user-created hook only admits emails on the admin or HR list, so "First time? Create your password" works only for people an admin (or HR) has already added.
+- **Confirmation required** before a password works; passwords need 12+ characters with letters and digits; changing a password needs a recent sign-in and sends a notification email.
+- **Recovery:** "Forgot password?" sends a one-time link. Email templates use `token_hash` + `verifyOtp` on `/auth/confirm` instead of PKCE, because PKCE links fail when opened in a different browser (the code verifier lives in the requesting tab's `sessionStorage`). Lost email/Google account → another admin replaces the email. Total lockout → break-glass SQL (SETUP_CHECKLIST 4.5).
+- **No account enumeration:** all three forms answer generically.
+- Auth state callback work is deferred with `setTimeout` to avoid a supabase-js auth-lock deadlock when real sign-in events fire.
+- Production depends on custom SMTP; Supabase's built-in mailer is restricted and rate-limited.
+- Local E2E reads real emails from Mailpit (`supabase start` now includes it; local `email_sent` limit raised to 60/hour, local only).
