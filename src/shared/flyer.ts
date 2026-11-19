@@ -26,6 +26,7 @@ export const FLYER_COPY = {
     'No names. No sign-in. No email.',
     `Tell ${brand.officeNoun} what would make the work safer, smoother or fairer.`,
     'Scan the code with your phone camera. It takes under a minute.',
+    `Personal issue? Choose “${brand.portal.hr.option}” inside. That one asks your name, and only ${brand.portal.hr.noun} sees it.`,
   ],
   footer: brand.portal.promise,
 };
