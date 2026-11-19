@@ -1,4 +1,5 @@
 @import '../styles/base.css';
+@import './dispatch/dispatch.css';
 
 /* Admin console: same type and palette as the portal, calmer and denser. */
 

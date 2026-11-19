@@ -1,0 +1,96 @@
+/* Dispatch module: same tokens as the console, data-dense. Imported by admin.css. */
+.flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 1.5rem;
+  padding: 0 0.4rem;
+  border: 1.5px solid var(--brand-ink);
+  background: var(--brand-paper);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  line-height: 1.1;
+}
+.flag-glyph {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1rem;
+  font-weight: 850;
+}
+.flag-badge-big {
+  min-height: 2.75rem;
+  padding: 0.35rem 0.7rem;
+  font-size: 1rem;
+  font-weight: 750;
+  background: var(--brand-accent);
+}
+.flag-badge-big .flag-glyph {
+  font-size: 1.25rem;
+}
+@media (max-width: 1279px) {
+  .sr-only-sm {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+.job-status {
+  display: inline-flex;
+  align-items: center;
+  height: 1.4rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--brand-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.job-status-draft {
+  border-style: dashed;
+  color: var(--brand-muted);
+}
+.job-status-scheduled {
+  background: var(--brand-paper);
+}
+.job-status-in_progress {
+  background: var(--brand-accent);
+}
+.job-status-completed {
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+}
+.job-status-cancelled {
+  text-decoration: line-through;
+  color: var(--brand-muted);
+}
+
+.conflict-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 1.5rem;
+  padding: 0 0.45rem;
+  background: var(--brand-paper);
+  border: 1.5px solid var(--brand-danger);
+  color: var(--brand-danger);
+  font-size: 0.6875rem;
+  font-weight: 750;
+}
+.conflict-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-left: 4px solid var(--brand-danger);
+  background: var(--brand-paper);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+.conflict-row > span:first-child {
+  color: var(--brand-danger);
+  font-weight: 800;
+}
