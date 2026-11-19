@@ -13,6 +13,9 @@ import { Tools } from './pages/Tools';
 import { HrInbox } from './pages/HrInbox';
 import { HrDetail } from './pages/HrDetail';
 import { HrStaff } from './pages/HrStaff';
+import { SignIn } from './pages/SignIn';
+import { AuthConfirm } from './pages/AuthConfirm';
+import { Account } from './pages/Account';
 
 type Gate = 'loading' | 'signed-out' | 'not-admin' | 'allowed';
 
@@ -35,8 +38,9 @@ export function App() {
       setGate(admin || hr ? 'allowed' : 'not-admin');
     };
     supabase.auth.getSession().then(({ data }) => resolve(data.session));
+    // Defer: calling Supabase inside the auth callback can deadlock supabase-js's auth lock.
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      void resolve(s);
+      setTimeout(() => void resolve(s), 0);
     });
     return () => {
       alive = false;
@@ -50,6 +54,8 @@ export function App() {
 
   if (!configured)
     return <Centered title="Not configured">Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.</Centered>;
+  // Emailed links (confirm account, reset password) are handled before the role gate.
+  if (path === '/auth/confirm') return <AuthConfirm onDone={() => undefined} />;
   if (gate === 'loading') return <Centered title="Loading…" />;
   if (gate === 'signed-out') return <SignIn />;
   if (gate === 'not-admin')
@@ -82,6 +88,7 @@ export function App() {
   else if (path === '/admin/admins') page = adminOnly(<Admins />);
   else if (path === '/admin/audit') page = <Audit />;
   else if (path === '/admin/tools') page = adminOnly(<Tools />);
+  else if (path === '/admin/account') page = <Account email={session?.user.email ?? ''} />;
   else page = roles.admin ? <Inbox /> : <HrInbox />;
 
   const nav = [
@@ -121,7 +128,12 @@ export function App() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3 py-2 text-[0.8125rem] text-muted">
-            <span className="hidden sm:inline">{session?.user.email}</span>
+            <Link href="/admin/account" className="hidden underline sm:inline" aria-current={path === '/admin/account' ? 'page' : undefined}>
+              {session?.user.email}
+            </Link>
+            <Link href="/admin/account" className="underline sm:hidden">
+              Account
+            </Link>
             <button className="a-btn a-btn-sm" onClick={() => supabase.auth.signOut()}>
               Sign out
             </button>
@@ -142,33 +154,5 @@ function Centered({ title, children }: { title: string; children?: React.ReactNo
         {children && <div className="mt-3 text-[0.9375rem] leading-relaxed">{children}</div>}
       </div>
     </main>
-  );
-}
-
-function SignIn() {
-  const [error, setError] = useState<string | null>(null);
-  const params = new URLSearchParams(location.search);
-  const oauthError = params.get('error_description');
-  return (
-    <Centered title="Sign in">
-      <p className="text-muted">Admins only. Use the Google account your office added to the admin list.</p>
-      <button
-        className="a-btn a-btn-primary mt-6 w-full"
-        onClick={async () => {
-          const { error: e } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: { redirectTo: `${location.origin}/auth/callback`, queryParams: { prompt: 'select_account' } },
-          });
-          if (e) setError(e.message);
-        }}
-      >
-        Continue with Google
-      </button>
-      {(error || oauthError) && (
-        <p role="alert" className="mt-3 text-danger">
-          {oauthError ? 'That account isn’t allowed to sign in.' : error}
-        </p>
-      )}
-    </Centered>
   );
 }
