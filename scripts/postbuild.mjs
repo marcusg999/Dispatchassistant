@@ -6,10 +6,12 @@
  *
  * Netlify does not serve _redirects/_headers to visitors, so the key in _redirects stays private.
  */
-import { writeFileSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const onNetlify = Boolean(process.env.NETLIFY || process.env.CONTEXT);
+// Locally / in CI, pick up .env (Netlify injects real env vars instead). Existing env wins.
+if (!onNetlify && existsSync('.env')) process.loadEnvFile('.env');
 const key = process.env.PORTAL_KEY ?? '';
 const supabaseUrl = process.env.VITE_SUPABASE_URL ?? '';
 

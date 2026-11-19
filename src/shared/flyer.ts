@@ -4,6 +4,7 @@
  * the module matrix, so no inline HTML injection or data: URLs are needed.
  */
 import QRCode from 'qrcode';
+import { brand } from '../brand/brand.config';
 
 export function qrPath(text: string): { size: number; d: string } {
   const qr = QRCode.create(text, { errorCorrectionLevel: 'M' });
@@ -17,15 +18,16 @@ export function qrPath(text: string): { size: number; d: string } {
   return { size, d };
 }
 
+/** Flyer copy, derived from the brand config so it rebrands with everything else. */
 export const FLYER_COPY = {
-  eyebrow: 'Suggestion box',
-  headline: 'Speak freely.',
+  eyebrow: brand.portal.eyebrow,
+  headline: brand.portal.headline,
   lines: [
     'No names. No sign-in. No email.',
-    'Tell the office what would make the work safer, smoother or fairer.',
+    `Tell ${brand.officeNoun} what would make the work safer, smoother or fairer.`,
     'Scan the code with your phone camera. It takes under a minute.',
   ],
-  footer: 'Your name is never asked for or stored. Management sees only what you write.',
+  footer: brand.portal.promise,
 };
 
 /** Accepts only a portal link of the shape https://host/s/<key>. */

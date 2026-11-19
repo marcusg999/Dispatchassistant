@@ -6,6 +6,14 @@ import { PORTAL, fillSuggestion, readTrackingCode, svc } from './helpers';
 
 const hashOf = (code: string) => createHash('sha256').update(code).digest('hex');
 
+// Remove rows (and photos) these specs created, so local data stays tidy.
+test.afterAll(async () => {
+  const { data } = await svc.from('suggestions').select('id, photo_path').like('body', 'E2E:%');
+  const photos = (data ?? []).map((r) => r.photo_path).filter(Boolean) as string[];
+  if (photos.length) await svc.storage.from('suggestion-photos').remove(photos);
+  if (data?.length) await svc.from('suggestions').delete().in('id', data.map((r) => r.id));
+});
+
 test('submit without a photo, then check status with the tracking code', async ({ page }) => {
   await page.goto(PORTAL);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Speak freely/);

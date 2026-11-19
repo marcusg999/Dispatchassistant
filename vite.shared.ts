@@ -26,9 +26,26 @@ export function brandPlugin(): Plugin {
       if (id === RESOLVED) return brandCssVars(brand);
     },
     transformIndexHtml(html) {
-      return html.replaceAll('%APP_NAME%', escapeHtml(displayName(brand)));
+      return html
+        .replaceAll('%APP_NAME%', escapeHtml(displayName(brand)))
+        .replace('</head>', '    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />\n  </head>');
+    },
+    // Brand-colored favicon (a crate tag), generated so it rebrands with the config.
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'favicon.svg', source: faviconSvg() });
+    },
+    configureServer(server) {
+      server.middlewares.use('/favicon.svg', (_req, res) => {
+        res.setHeader('content-type', 'image/svg+xml');
+        res.end(faviconSvg());
+      });
     },
   };
+}
+
+function faviconSvg() {
+  const c = brand.colors;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M9 3h14l5 5v21H4V8z" fill="${c.accent}" stroke="${c.ink}" stroke-width="2"/><circle cx="16" cy="9" r="2.5" fill="${c.paper}" stroke="${c.ink}" stroke-width="1.5"/><path d="M9 17h14M9 22h9" stroke="${c.ink}" stroke-width="2.5"/></svg>`;
 }
 
 function escapeHtml(s: string) {
