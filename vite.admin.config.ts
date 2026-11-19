@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { brandPlugin } from './vite.shared';
+import { brandPlugin } from './vite.shared.ts';
 
 export default defineConfig({
   plugins: [
@@ -18,6 +18,8 @@ export default defineConfig({
     emptyOutDir: false,
     target: 'es2020',
     sourcemap: false,
+    // exceljs + docx are lazy-loaded on first export; that chunk is large by nature.
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       input: { admin: 'admin.html' },
       output: {

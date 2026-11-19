@@ -11,7 +11,7 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { brand, brandCssVars, displayName } from './src/brand/brand.config';
+import { brand, brandCssVars, displayName } from './src/brand/brand.config.ts';
 
 const VIRTUAL = 'virtual:brand.css';
 const RESOLVED = '\0virtual:brand.css';

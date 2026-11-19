@@ -9,7 +9,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
-import { brandPlugin, devApi, devRoutes } from './vite.shared';
+import { brandPlugin, devApi, devRoutes } from './vite.shared.ts';
 
 export default defineConfig(({ mode }) => {
   // Make .env values (PORTAL_KEY, SUPABASE_URL, SUPABASE_SECRET_KEY…) visible to the in-process functions.

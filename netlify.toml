@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Netlify configuration
+#
+# Routing (/s/<PORTAL_KEY>, /admin, /auth/callback, everything else → 404) and the
+# admin CSP (which needs the Supabase origin) are generated at build time into
+# dist/_redirects and dist/_headers by scripts/postbuild.mjs, because they depend
+# on environment variables. Changing PORTAL_KEY therefore needs a redeploy.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# ── Security headers for every response ──────────────────────────────────────
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "no-referrer"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+    Permissions-Policy = "accelerometer=(), autoplay=(), camera=(), display-capture=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), usb=(), xr-spatial-tracking=(), browsing-topics=()"
+    X-Robots-Tag = "noindex, nofollow"
+
+# Portal: same-origin only. No Supabase, no third parties. blob: is for the local photo preview.
+[[headers]]
+  for = "/s/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Cache-Control = "no-store"
+
+# JSON APIs never render HTML.
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'none'; frame-ancestors 'none'"
+
+# Hashed assets are immutable.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

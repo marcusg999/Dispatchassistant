@@ -7,7 +7,7 @@
 import { defineConfig } from 'vite';
 import tailwind from '@tailwindcss/vite';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { brandPlugin } from './vite.shared';
+import { brandPlugin } from './vite.shared.ts';
 
 export default defineConfig(() => ({
   plugins: [
