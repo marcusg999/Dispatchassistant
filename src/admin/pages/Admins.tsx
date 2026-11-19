@@ -10,7 +10,10 @@ export function Admins() {
   const [error, setError] = useState<string | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
 
-  const reload = () => listAdmins().then(setAdmins).catch((e: Error) => setError(e.message));
+  const reload = () =>
+    listAdmins()
+      .then(setAdmins)
+      .catch((e: Error) => setError(e.message));
   useEffect(() => {
     void reload();
     supabase.auth.getUser().then(({ data }) => setMe(data.user?.email?.toLowerCase() ?? ''));
@@ -58,40 +61,46 @@ export function Admins() {
       </form>
       <ErrorNote error={error} />
 
-      <table className="a-table a-panel mt-6">
-        <thead>
-          <tr>
-            <th scope="col">Email</th>
-            <th scope="col">Added by</th>
-            <th scope="col">Added</th>
-            <th scope="col">
-              <span className="sr-only">Actions</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {admins?.map((a) => (
-            <tr key={a.email} className="!cursor-default">
-              <td className="font-semibold">
-                {a.email}
-                {a.email === me && <span className="ml-2 font-normal text-muted">(you)</span>}
-              </td>
-              <td className="text-muted">{a.added_by ?? '·'}</td>
-              <td className="whitespace-nowrap text-muted">{fmtDateTime(a.created_at)}</td>
-              <td className="text-right">
-                <button
-                  className="a-btn a-btn-sm a-btn-danger"
-                  disabled={onlyOne}
-                  title={onlyOne ? 'The last admin can’t be removed' : undefined}
-                  onClick={() => setRemoving(a.email)}
-                >
-                  Remove
-                </button>
-              </td>
+      <div className="a-panel mt-6 overflow-x-auto">
+        <table className="a-table">
+          <thead>
+            <tr>
+              <th scope="col">Email</th>
+              <th scope="col" className="hidden sm:table-cell">
+                Added by
+              </th>
+              <th scope="col" className="hidden sm:table-cell">
+                Added
+              </th>
+              <th scope="col">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {admins?.map((a) => (
+              <tr key={a.email} className="!cursor-default">
+                <td className="font-semibold break-all">
+                  {a.email}
+                  {a.email === me && <span className="ml-2 font-normal text-muted">(you)</span>}
+                </td>
+                <td className="hidden text-muted sm:table-cell">{a.added_by ?? '·'}</td>
+                <td className="hidden whitespace-nowrap text-muted sm:table-cell">{fmtDateTime(a.created_at)}</td>
+                <td className="text-right">
+                  <button
+                    className="a-btn a-btn-sm a-btn-danger"
+                    disabled={onlyOne}
+                    title={onlyOne ? 'The last admin can’t be removed' : undefined}
+                    onClick={() => setRemoving(a.email)}
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {onlyOne && <p className="mt-2 text-muted">You’re the only admin. Add another before removing yourself.</p>}
 
       <Confirm
