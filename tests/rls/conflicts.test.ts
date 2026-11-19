@@ -223,8 +223,8 @@ describe('access, board view and overrides', () => {
       .eq('suggestion_id', x)
       .eq('action', 'dispatch_conflict_override')
       .single();
-    expect(data.actor_email).toBe('dispatcher@example.com');
-    expect(data.after).toEqual({ reason });
-    expect((data.before.conflicts as { code: string }[]).map((k) => k.code)).toContain('two_person_short');
+    expect(data!.actor_email).toBe('dispatcher@example.com');
+    expect(data!.after).toEqual({ reason });
+    expect(((data!.before as { conflicts: { code: string }[] }).conflicts).map((k) => k.code)).toContain('two_person_short');
   });
 });

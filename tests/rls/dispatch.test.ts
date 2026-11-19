@@ -114,7 +114,6 @@ const SPECS: Spec[] = [
 ];
 
 const OFFICE_WRITE = ['crew_members', 'crew_skills', 'crew_certifications', 'time_off', 'assets', 'jobs', 'job_stops', 'job_items', 'job_assignments', 'job_assets', 'job_checklist_items', 'incident_reports'];
-const ADMIN_LOOKUPS = ['app_settings', 'skills', 'certification_types', 'checklist_templates'];
 
 function canInsert(role: string, table: string) {
   if (role === 'admin') return table !== 'incident_photos';
