@@ -63,3 +63,15 @@ A running log of product and engineering decisions: what was chosen, and why. Ne
 - Added **"I’m just sayin’"** (`just_sayin`) and **"Casual"** (`casual`) at the product owner's request, via a new migration (`20261119000500_more_priority_tags.sql`, `ALTER TYPE … ADD VALUE`), not by editing the original migration.
 - Order (ascending urgency, which drives "sort by priority" in Postgres): just_sayin < casual < important < urgent < crucial. Form, admin chips, filters and exports all follow `TAGS` in `src/shared/domain.ts`.
 - Colors: just_sayin uses a near-paper tint with a hairline, casual a muted sage. Both pass AA with ink text (checked by the brand contrast test) and come from `brand.config.ts` like the other tags.
+
+## 2026-11-19: "HR eyes only" named reports
+
+Product owner asked for a named section for personal issues. Choices confirmed in the interview:
+- **Separate section**, not a category: a switch at the top of the portal form. The HR form says it is not anonymous before anything is typed, and the wall label changes to "Named · HR only". The anonymous form is unchanged.
+- **Only an HR list can read them**: new `hr_staff` allow-list and `private.is_hr()`. RLS gives admins no access to `hr_reports`/`hr_notes`/`hr_staff`. HR manages its own list (first member via SQL), so admins can't grant themselves access from the console. A last-HR-member guard prevents lockout.
+- **Fields**: name required (2–120), contact optional (≤200), body 10–4000, **no photo** (keeps the named path simple and avoids image metadata on identified reports).
+- **Exposure**: never on the board or in the general exports/backup; HR has its own Excel export and JSON backup, both audited. Audit rows for HR actions (`hr_*`) carry no names, contact details or text. Admins see those rows (action, actor, time); HR sees only `hr_*` rows.
+- Separate table (not a flag on `suggestions`) so the anonymous table keeps zero identity columns and its tests still prove that.
+- Same `/api/submit` endpoint with `mode=hr` (the portal still talks to exactly three functions); `portal_status` now looks in both tables and returns the same three fields.
+- The before-user-created hook now allows emails on either the admin list or the HR list.
+- Known gap: the HR Excel export has no filter-summary row (the anonymous export does).

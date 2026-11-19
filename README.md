@@ -225,6 +225,17 @@ Free Supabase projects pause after a period of inactivity. `netlify/functions/ke
 
 ---
 
+## HR eyes only (named personal issues)
+
+The portal has a second section, **"Personal issue · HR eyes only"**, chosen with the switch at the top of the form. Unlike the suggestion box it is **not anonymous**: a name is required and a phone or email is optional. No photo is allowed.
+
+- Stored in `hr_reports` (migration `20261119000600_hr_reports.sql`), separate from the anonymous `suggestions` table.
+- Readable only by emails in `hr_staff`. **Admins can't see HR reports**, and HR members can't see anonymous suggestions unless they're also admins.
+- HR members sign in to the same console with Google and get **HR inbox** (status, reply, private HR notes, trash/delete, Excel export, JSON backup) and **HR team** (manage the HR list; the last member can't be removed).
+- The submitter gets a tracking code like any other, and the status screen shows HR's reply.
+- Add the first HR member with SQL (SETUP_CHECKLIST step 3.4). After that, HR manages its own list.
+- Copy (labels, the not-anonymous notice) lives in `brand.config.ts` → `portal.hr`.
+
 ## Rebrand for a new client
 
 Everything visible comes from `src/brand/brand.config.ts`. Don't put a company name anywhere else (a unit test fails if the app name appears outside that file).

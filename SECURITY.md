@@ -6,6 +6,8 @@ Dispatch Buddy Phase 1 is an anonymous suggestion box plus a private admin conso
 
 > "Your name is never asked for or stored. Management sees only what you write."
 
+**Exception, clearly separated: "HR eyes only".** The portal has a second, opt-in section for personal issues that is **not anonymous**: it requires a name (contact optional) and says so before anything is typed. Those reports go to a separate table, `hr_reports`, that only the HR list (`hr_staff`) can read: admins cannot, which the database enforces with RLS. The anonymous `suggestions` table still has no identity columns. HR reports never appear on the board or in the general exports or backup, and their audit rows record actions only: no names, contact details or text.
+
 We do **not** claim submissions are untraceable. Writing style, timing, specific details and photos can point to a person, and hosting platforms keep their own operational logs (see "Residual risks").
 
 ---

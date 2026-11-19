@@ -59,6 +59,12 @@ This creates every table, policy, trigger, function and the private `suggestion-
 
 More admins can be added later from the console (Admin → Admins).
 
+4. Add the first **HR** member (the only people who can read "HR eyes only" reports; admins can't). It can be the same person as an admin or someone else:
+   ```sql
+   insert into public.hr_staff (email) values ('FIRST_HR@example.com');
+   ```
+   After that, HR members manage the HR list themselves in the console (HR team page). Admins can't see or change it.
+
 ## 4. Supabase Auth settings
 
 ### 4.1 Before User Created hook (only allow-listed emails can become users)
