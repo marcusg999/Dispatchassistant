@@ -513,7 +513,7 @@ function RosterCard({
           </span>
         )}
         <span className="min-w-0">
-          <span className="block truncate font-semibold">{name}</span>
+          <span className="block font-semibold leading-tight">{name}</span>
           <span className="block truncate text-[0.6875rem] text-muted">{sub}</span>
           {onJobs.length > 0 && <span className="block text-[0.6875rem] font-semibold">On {onJobs.join(', ')}</span>}
           {unavailable && kind === 'crew' && <span className="block text-[0.6875rem] font-semibold text-danger">Unavailable today</span>}
