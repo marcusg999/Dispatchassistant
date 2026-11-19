@@ -240,3 +240,287 @@
     max-width: none !important;
   }
 }
+
+/* people & crew */
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 1.4rem;
+  padding: 0 0.45rem;
+  background: var(--brand-wall);
+  border: 1px solid var(--brand-line);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.cert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 1.5rem;
+  padding: 0 0.45rem;
+  border: 1.5px solid var(--brand-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cert-expired {
+  border-color: var(--brand-danger);
+  color: var(--brand-danger);
+}
+.cert-soon {
+  background: var(--brand-wall);
+}
+.cal-grid {
+  width: 100%;
+  min-width: 42rem;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.cal-grid th {
+  padding: 0.4rem;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+  border-bottom: 1.5px solid var(--brand-ink);
+  text-align: left;
+}
+.cal-grid td {
+  height: 6.5rem;
+  vertical-align: top;
+  padding: 0.3rem;
+  border: 1px solid var(--brand-line);
+}
+.cal-out {
+  background: var(--brand-wall);
+  color: var(--brand-muted);
+}
+.cal-today .cal-date {
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+}
+.cal-date {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.cal-entry {
+  margin-top: 0.2rem;
+  padding: 0.1rem 0.3rem;
+  border-left: 3px solid var(--brand-ink);
+  background: var(--brand-wall);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+/* Crew mobile screens: sunlight-readable, 16px+ text, 44px+ targets */
+.crew-page {
+  background: var(--brand-paper);
+  min-height: 100dvh;
+  font-size: 1rem;
+}
+.crew-head {
+  padding: 1rem 1rem 0.5rem;
+  border-bottom: 2px solid var(--brand-ink);
+}
+.crew-section-h {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 0.8125rem;
+  font-stretch: 118%;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.crew-empty {
+  padding: 1rem;
+  border: 1.5px dashed var(--brand-line);
+  font-size: 1rem;
+  color: var(--brand-muted);
+}
+.crew-card {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--brand-paper);
+  border: 2px solid var(--brand-ink);
+  box-shadow: 5px 5px 0 0 var(--brand-line);
+}
+.crew-call {
+  margin: -1rem -1rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--brand-accent);
+  border-bottom: 2px solid var(--brand-ink);
+}
+.crew-stop,
+.crew-item {
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--brand-ink);
+}
+.crew-sub-h {
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+  font-stretch: 115%;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+}
+.crew-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  font-size: 1.0625rem;
+  font-weight: 650;
+  color: var(--brand-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+.access-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.6rem;
+  border: 1.5px solid var(--brand-ink);
+  background: var(--brand-wall);
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+.crew-check {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 52px;
+  padding: 0.35rem 0.6rem;
+  border: 1.5px solid var(--brand-line);
+  font-size: 1.0625rem;
+  cursor: pointer;
+}
+.crew-check input {
+  width: 1.6rem;
+  height: 1.6rem;
+  accent-color: var(--brand-ink);
+  flex: none;
+}
+.crew-check-ro {
+  cursor: default;
+  color: var(--brand-muted);
+}
+.crew-check:has(input:checked) {
+  background: var(--brand-wall);
+}
+.crew-incident-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  margin-top: 1.25rem;
+  padding: 0 1rem;
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+  border: 2px solid var(--brand-ink);
+  font-size: 1rem;
+  font-stretch: 115%;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.crew-incident-btn[disabled] {
+  opacity: 0.7;
+}
+.crew-alert {
+  margin: 0.75rem 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--brand-danger);
+  color: var(--brand-danger);
+  font-weight: 650;
+}
+.crew-notice {
+  padding: 0.85rem 1rem;
+  border: 2px solid var(--brand-ink);
+  border-left: 8px solid var(--brand-accent);
+  background: var(--brand-wall);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.crew-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 1.0625rem;
+  font-weight: 750;
+}
+.crew-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 0.85rem;
+  border: 0;
+  border-bottom: 2px solid var(--brand-ink);
+  background: var(--brand-wall);
+  color: var(--brand-ink);
+  font: inherit;
+  font-size: 1.0625rem;
+  border-radius: 0;
+}
+.crew-err {
+  margin-top: 0.35rem;
+  font-weight: 650;
+  color: var(--brand-danger);
+}
+.crew-choice {
+  position: relative;
+  display: flex;
+}
+.crew-choice input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.crew-choice span {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  border: 2px solid var(--brand-ink);
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+.crew-choice input:checked + span {
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+}
+.crew-choice input:focus-visible + span {
+  outline: 3px solid var(--brand-focus);
+  outline-offset: 2px;
+}
+.crew-photo-add {
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  border: 2px dashed var(--brand-ink);
+  background: transparent;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.crew-photo-x {
+  position: absolute;
+  top: -0.6rem;
+  right: -0.6rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid var(--brand-paper);
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+  font-weight: 800;
+  cursor: pointer;
+}

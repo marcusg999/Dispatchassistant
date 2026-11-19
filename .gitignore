@@ -12,3 +12,4 @@ playwright-report/
 flyer-out/
 *.log
 .DS_Store
+tests/e2e/.tmp/
