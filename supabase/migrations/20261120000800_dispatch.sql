@@ -357,7 +357,9 @@ as $$
 begin
   if new.checked_at is not null and (tg_op = 'INSERT' or old.checked_at is null) then
     new.checked_at := now();
-    new.checked_by := private.current_email();
+    -- Signed-in users can't spoof this; seed/service writes may supply a name.
+    new.checked_by := case when private.current_email() = 'system' then coalesce(new.checked_by, 'system')
+                           else private.current_email() end;
   elsif new.checked_at is null then
     new.checked_by := null;
   else
