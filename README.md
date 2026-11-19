@@ -81,6 +81,7 @@ Set in `.env`:
 | `SUPABASE_SECRET_KEY` | `SECRET_KEY` (`sb_secret_…`, the local well-known key) |
 | `VITE_SUPABASE_URL` | same as `SUPABASE_URL` |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | `PUBLISHABLE_KEY` (`sb_publishable_…`) |
+| `SUPABASE_JWT_SECRET` | `JWT_SECRET` (local tests only: the RLS suite signs test JWTs with it; never set in Netlify) |
 
 Apply migrations and seed data:
 

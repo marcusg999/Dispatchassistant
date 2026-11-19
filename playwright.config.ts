@@ -1,4 +1,8 @@
+import { existsSync } from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+
+// Test helpers read local Supabase keys from .env.
+if (existsSync('.env')) process.loadEnvFile('.env');
 
 /**
  * E2E against the production build served by scripts/serve.mjs (same routing as
