@@ -56,7 +56,7 @@ type Route = 'portal' | 'admin' | '404';
 
 export function routeFor(pathname: string, portalKey: string | undefined): Route {
   if (portalKey && (pathname === `/s/${portalKey}` || pathname === `/s/${portalKey}/`)) return 'portal';
-  if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/auth/callback') return 'admin';
+  if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/auth/callback' || pathname === '/auth/confirm') return 'admin';
   return '404';
 }
 
