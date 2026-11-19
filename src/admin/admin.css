@@ -1,0 +1,227 @@
+@import '../styles/base.css';
+
+/* Admin console: same type and palette as the portal, calmer and denser. */
+
+body {
+  font-size: 0.875rem;
+}
+
+.a-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.9rem;
+  border: 1.5px solid var(--brand-ink);
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+  font: inherit;
+  font-weight: 650;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.a-btn:hover {
+  background: var(--brand-wall);
+}
+.a-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.a-btn-primary {
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+}
+.a-btn-primary:hover {
+  background: #000;
+}
+.a-btn-accent {
+  background: var(--brand-accent);
+}
+.a-btn-accent:hover {
+  background: var(--brand-accent);
+  filter: brightness(0.95);
+}
+.a-btn-danger {
+  border-color: var(--brand-danger);
+  color: var(--brand-danger);
+}
+.a-btn-sm {
+  min-height: 36px;
+  padding: 0 0.65rem;
+}
+
+.a-input,
+.a-select,
+.a-textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1.5px solid var(--brand-ink);
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+  font: inherit;
+  padding: 0 0.7rem;
+  border-radius: 0;
+}
+.a-textarea {
+  padding: 0.6rem 0.7rem;
+  line-height: 1.5;
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.a-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-stretch: 112%;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+  margin-bottom: 0.35rem;
+}
+
+.a-panel {
+  background: var(--brand-paper);
+  border: 1px solid var(--brand-line);
+}
+
+.a-toggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--brand-ink);
+  background: var(--brand-paper);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  cursor: pointer;
+}
+.a-toggle[aria-pressed='true'] {
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  font-size: 0.6875rem;
+  font-stretch: 112%;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tag-just_sayin {
+  background: var(--tag-just_sayin-bg);
+  color: var(--tag-just_sayin-fg);
+  box-shadow: inset 0 0 0 1px var(--brand-line);
+}
+.tag-casual {
+  background: var(--tag-casual-bg);
+  color: var(--tag-casual-fg);
+}
+.tag-important {
+  background: var(--tag-important-bg);
+  color: var(--tag-important-fg);
+}
+.tag-urgent {
+  background: var(--tag-urgent-bg);
+  color: var(--tag-urgent-fg);
+}
+.tag-crucial {
+  background: var(--tag-crucial-bg);
+  color: var(--tag-crucial-fg);
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--brand-ink);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.a-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.a-table th {
+  text-align: left;
+  font-size: 0.6875rem;
+  font-stretch: 112%;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-muted);
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1.5px solid var(--brand-ink);
+  white-space: nowrap;
+}
+.a-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--brand-line);
+  vertical-align: top;
+}
+.a-table tbody tr {
+  cursor: pointer;
+}
+.a-table tbody tr:hover {
+  background: var(--brand-wall);
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  font-weight: 600;
+  color: var(--brand-muted);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+.nav-link[aria-current='page'] {
+  color: var(--brand-ink);
+  border-bottom-color: var(--brand-accent);
+}
+
+dialog.a-dialog {
+  border: 2px solid var(--brand-ink);
+  padding: 1.5rem;
+  max-width: 28rem;
+  width: calc(100% - 2rem);
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+}
+dialog.a-dialog::backdrop {
+  background: rgb(20 20 19 / 0.5);
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+  body {
+    background: #fff;
+  }
+  header,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .flyer {
+    aspect-ratio: auto;
+    height: 10in;
+  }
+}

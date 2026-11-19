@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-stats/
+.env
+.env.*
+!.env.example
+.netlify/
+supabase/.temp/
+supabase/.branches/
+test-results/
+playwright-report/
+flyer-out/
+*.log
+.DS_Store
