@@ -1,8 +1,12 @@
 # Roadmap
 
-Phase 1 (the anonymous suggestion box) is built. The phases below are **not built yet**; the Phase 1 architecture is designed not to block them.
+**Phase 1** (the anonymous suggestion box, HR eyes only, sign-in with recovery) and **Phase 2** (the dispatch board) are built. The phases below Phase 2 are **not built yet**.
 
-## Phase 2: Dispatch board
+## Phase 2: Dispatch board ✅ built
+
+See README → Dispatch board. Roles admin / dispatcher / viewer / crew; day board with drag and drop, week view, job editor, crew/assets/time off, conflict warnings, crew My jobs, named incidents, printable sheets.
+
+Original brief:
 
 - Add, edit and delete truckers/handlers, and drag and drop them onto jobs.
 - Pair crews with job details.
@@ -15,10 +19,19 @@ Phase 1 (the anonymous suggestion box) is built. The phases below are **not buil
 - All rates live in **admin-editable rate tables**, never hardcoded.
 - Itemized line items, and PDF and Word quote export.
 
+## Phase 3 notes from Phase 2
+
+- An accepted estimate converts into a Phase 2 job and reuses `job_items` (inches and pounds, validated). Add a `clients` table then (jobs currently have plain-text `client_name`).
+- Rates must live in admin-editable tables (dimensional-weight divisor, packing padding, distance tiers, insurance, surcharges, add-ons).
+
 ## Phase 4: Industry news and opportunities
 
 - An art-logistics and art-world news feed.
 - Alerts for upcoming exhibitions, installs and transport opportunities.
+
+## Future: SMS dispatch (not built)
+
+From a job or the day board, text the people on that job their job info, crew list, truck and call time. Preview and confirm, per-person call times, resend on change, delivery status, STOP/HELP handling, only crew with `sms_opt_in`, every send audited. Likely Twilio or similar via a Netlify Function (key server-side), with US A2P 10DLC registration. Phase 2 already stores E.164 phones with consent, call times with per-person overrides, and `buildJobSummary()` for the message text.
 
 ## Throughout
 

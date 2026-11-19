@@ -95,6 +95,22 @@ We do **not** claim submissions are untraceable. Writing style, timing, specific
 
 Residual: a phished admin password works until it's changed. Prefer Google with 2-step verification for admins who can use it, and keep the admin list short.
 
+### 7. Phase 2: a curious crew member
+
+Crew have **no direct access to any table**. They read and write only through four functions (`my_jobs`, `crew_set_checklist`, `crew_report_incident`, `my_incidents`) that return their own assigned jobs with an explicit list of fields: no office notes, client name, other jobs, roster, audit log, suggestions or HR. Teammates' names and phones on the same job are shown (product decision). Crew can tick a checklist only as team lead of that job, and file incidents only on their own jobs. Incident reports are **named**, and the form says so.
+
+### 8. Phase 2: a viewer trying to write
+
+Viewers get read policies only. Every insert, update and delete on dispatch tables requires `private.is_dispatcher()` (admin or dispatcher), and hard-deleting jobs requires admin. Managing roles requires admin. Tests prove each of these per role.
+
+### 9. Phase 2: crew and the suggestion box
+
+The anonymous box stays exactly as private as before:
+- New roles grant nothing on `suggestions`, `admin_notes`, `hr_*` or their storage (policies there still check `is_admin()` / `is_hr()` only).
+- No foreign keys from dispatch tables into suggestion or HR tables.
+- The portal is still a separate, sessionless build with no Supabase client. An E2E test signs a crew member in, then uses the portal in the same browser and proves the portal never reads auth storage and never sends an `Authorization` header; the stored suggestion has no link to the signed-in user.
+- Nothing in the dispatch module records who visited the portal.
+
 ## Controls summary
 
 - **CSP per area.** Portal (`/s/*`): `default-src 'self'`, `connect-src 'self'`, no third parties. Admin (`/admin`, `/admin/*`, `/auth/callback`, `/auth/confirm`): same, plus only this project's Supabase origin in `connect-src` / `img-src` (generated into `_headers` at build). APIs: `default-src 'none'`.
