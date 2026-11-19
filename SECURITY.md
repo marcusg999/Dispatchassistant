@@ -1,6 +1,6 @@
 # Security and privacy
 
-Dispatch Buddy Phase 1 is an anonymous suggestion box plus a private admin console. Privacy for submitters and access control for the console are product features, not afterthoughts. This document describes what we protect, against whom, how, and what risk remains.
+Dispatch Bro Phase 1 is an anonymous suggestion box plus a private admin console. Privacy for submitters and access control for the console are product features, not afterthoughts. This document describes what we protect, against whom, how, and what risk remains.
 
 ## What we promise submitters, exactly
 

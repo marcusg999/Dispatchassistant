@@ -75,3 +75,7 @@ Product owner asked for a named section for personal issues. Choices confirmed i
 - Same `/api/submit` endpoint with `mode=hr` (the portal still talks to exactly three functions); `portal_status` now looks in both tables and returns the same three fields.
 - The before-user-created hook now allows emails on either the admin list or the HR list.
 - Known gap: the HR Excel export has no filter-summary row (the anonymous export does).
+
+## 2026-11-19: Product name
+
+- Default product name changed to **Dispatch Bro** (`brand.config.ts` → `appName`; package name `dispatch-bro`). The local Supabase `project_id` in `supabase/config.toml` stays `dispatch-buddy`: it only names local Docker containers and changing it means restarting the local stack.
