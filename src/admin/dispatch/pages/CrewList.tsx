@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CREW_POSITION_LABEL, formatPhone, type CrewPosition } from '../../../shared/dispatch';
-import { listCrew, listSkills, type Skill } from '../data';
+import { listCertTypes, listCrew, listSkills, type CertType, type Skill } from '../data';
 import { Link, navigate } from '../../router';
 import { ErrorNote } from '../../components/ui';
 import { CERT_STATE_LABEL, certState } from '../people/certs';
@@ -10,15 +10,17 @@ type Crew = Awaited<ReturnType<typeof listCrew>>[number];
 export function CrewList({ canEdit }: { canEdit: boolean }) {
   const [crew, setCrew] = useState<Crew[] | null>(null);
   const [skills, setSkills] = useState<Skill[]>([]);
+  const [certTypes, setCertTypes] = useState<CertType[]>([]);
   const [q, setQ] = useState('');
   const [showInactive, setShowInactive] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([listCrew(), listSkills()])
-      .then(([c, s]) => {
+    Promise.all([listCrew(), listSkills(), listCertTypes()])
+      .then(([c, s, ct]) => {
         setCrew(c);
         setSkills(s);
+        setCertTypes(ct);
       })
       .catch((e: Error) => setError(e.message));
   }, []);
@@ -101,7 +103,7 @@ export function CrewList({ canEdit }: { canEdit: boolean }) {
                       <ul className="flex flex-wrap gap-1">
                         {warnings.map(({ cert, state }) => (
                           <li key={cert.id} className={`cert-badge cert-${state}`}>
-                            <span aria-hidden="true">{state === 'expired' ? '✕' : '!'}</span> {CERT_STATE_LABEL[state]}: {cert.type.replace('_', ' ')}
+                            <span aria-hidden="true">{state === 'expired' ? '✕' : '!'}</span> {CERT_STATE_LABEL[state]}: {certTypes.find((t) => t.slug === cert.type)?.label ?? cert.type}
                           </li>
                         ))}
                       </ul>
