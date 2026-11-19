@@ -43,6 +43,28 @@ export function describeAudit(r: AuditRow): string {
       return `Exported ${a?.rows} rows (${String(a?.format).toUpperCase()})`;
     case 'backup':
       return `Downloaded full backup (${a?.rows} suggestions)`;
+    case 'hr_status_change':
+      return `HR report status ${STATUS_LABEL[b?.status as Status] ?? b?.status} → ${STATUS_LABEL[a?.status as Status] ?? a?.status}`;
+    case 'hr_reply':
+      return a?.reply_set ? 'HR reply updated' : 'HR reply cleared';
+    case 'hr_soft_delete':
+      return 'HR report moved to trash';
+    case 'hr_restore':
+      return 'HR report restored';
+    case 'hr_hard_delete':
+      return 'HR report deleted permanently';
+    case 'hr_note_added':
+      return 'HR note added';
+    case 'hr_note_deleted':
+      return 'HR note deleted';
+    case 'hr_member_added':
+      return `HR member added: ${a?.email}`;
+    case 'hr_member_removed':
+      return `HR member removed: ${b?.email}`;
+    case 'hr_export':
+      return `Exported ${a?.rows} HR reports (XLSX)`;
+    case 'hr_backup':
+      return `Downloaded HR backup (${a?.rows} reports)`;
     default:
       return r.action;
   }
@@ -70,7 +92,8 @@ export function Audit() {
     <div>
       <h1 className="text-2xl font-[800] tracking-tight">Audit log</h1>
       <p className="mt-1 text-muted">
-        Every admin action, recorded by the database. Append-only: nobody, including admins, can edit or delete entries.
+        Every admin and HR action, recorded by the database (HR entries never include names or report text).
+        Append-only: nobody, including admins, can edit or delete entries.
       </p>
       <ErrorNote error={error} />
       <div className="a-panel mt-6 overflow-x-auto">
@@ -94,8 +117,13 @@ export function Audit() {
                   <td className="whitespace-nowrap">{r.actor_email}</td>
                   <td>{describeAudit(r)}</td>
                   <td>
-                    {r.suggestion_id && r.action !== 'hard_delete' ? (
-                      <Link href={`/admin/s/${r.suggestion_id}`} className="underline">
+                    {r.suggestion_id && r.action !== 'hard_delete' && r.action !== 'hr_hard_delete' ? (
+                      <Link
+                        href={
+                          r.action.startsWith('hr_') ? `/admin/hr/r/${r.suggestion_id}` : `/admin/s/${r.suggestion_id}`
+                        }
+                        className="underline"
+                      >
                         Open
                       </Link>
                     ) : (
@@ -116,8 +144,12 @@ export function Audit() {
                   <tr className="!cursor-default">
                     <td colSpan={5}>
                       <div className="grid gap-3 md:grid-cols-2">
-                        <pre className="overflow-x-auto bg-wall p-3 text-[0.75rem]">{JSON.stringify(r.before, null, 2) ?? 'null'}</pre>
-                        <pre className="overflow-x-auto bg-wall p-3 text-[0.75rem]">{JSON.stringify(r.after, null, 2) ?? 'null'}</pre>
+                        <pre className="overflow-x-auto bg-wall p-3 text-[0.75rem]">
+                          {JSON.stringify(r.before, null, 2) ?? 'null'}
+                        </pre>
+                        <pre className="overflow-x-auto bg-wall p-3 text-[0.75rem]">
+                          {JSON.stringify(r.after, null, 2) ?? 'null'}
+                        </pre>
                       </div>
                     </td>
                   </tr>

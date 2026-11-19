@@ -3,19 +3,24 @@ import type { Session } from '@supabase/supabase-js';
 import { brand, displayName } from '../brand/brand.config';
 import { configured, supabase } from './supabase';
 import { amIAdmin } from './data';
+import { amIHr } from './hrData';
 import { Link, navigate, usePath } from './router';
 import { Inbox } from './pages/Inbox';
 import { Detail } from './pages/Detail';
 import { Admins } from './pages/Admins';
 import { Audit } from './pages/Audit';
 import { Tools } from './pages/Tools';
+import { HrInbox } from './pages/HrInbox';
+import { HrDetail } from './pages/HrDetail';
+import { HrStaff } from './pages/HrStaff';
 
-type Gate = 'loading' | 'signed-out' | 'not-admin' | 'admin';
+type Gate = 'loading' | 'signed-out' | 'not-admin' | 'allowed';
 
 export function App() {
   const path = usePath();
   const [session, setSession] = useState<Session | null>(null);
   const [gate, setGate] = useState<Gate>('loading');
+  const [roles, setRoles] = useState({ admin: false, hr: false });
 
   useEffect(() => {
     let alive = true;
@@ -23,8 +28,11 @@ export function App() {
       if (!alive) return;
       setSession(s);
       if (!s) return setGate('signed-out');
-      // UX check only: the database enforces access with RLS regardless of what this says.
-      setGate((await amIAdmin()) ? 'admin' : 'not-admin');
+      // UX checks only: the database enforces access with RLS regardless of what these say.
+      const [admin, hr] = await Promise.all([amIAdmin(), amIHr()]);
+      if (!alive) return;
+      setRoles({ admin, hr });
+      setGate(admin || hr ? 'allowed' : 'not-admin');
     };
     supabase.auth.getSession().then(({ data }) => resolve(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
@@ -40,34 +48,61 @@ export function App() {
     if (path === '/auth/callback' && gate !== 'loading') navigate('/admin');
   }, [path, gate]);
 
-  if (!configured) return <Centered title="Not configured">Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.</Centered>;
+  if (!configured)
+    return <Centered title="Not configured">Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.</Centered>;
   if (gate === 'loading') return <Centered title="Loading…" />;
   if (gate === 'signed-out') return <SignIn />;
   if (gate === 'not-admin')
     return (
       <Centered title="This account isn’t allowed">
-        <p>
-          {session?.user.email} is not on the admin list. Ask an existing admin to add you.
-        </p>
+        <p>{session?.user.email} is not on the admin or HR list. Ask an existing admin (or HR member) to add you.</p>
         <button className="a-btn mt-4" onClick={() => supabase.auth.signOut()}>
           Sign out
         </button>
       </Centered>
     );
 
+  const notAvailable = (
+    <div className="a-panel max-w-xl p-6">
+      <h1 className="text-xl font-[800] tracking-tight">Not available for your account</h1>
+      <p className="mt-2 text-muted">This page is for a different role.</p>
+    </div>
+  );
+  const adminOnly = (el: React.ReactNode) => (roles.admin ? el : notAvailable);
+  const hrOnly = (el: React.ReactNode) => (roles.hr ? el : notAvailable);
+
   let page;
   const detail = path.match(/^\/admin\/s\/([0-9a-f-]{36})$/);
-  if (detail) page = <Detail id={detail[1]} />;
-  else if (path === '/admin/admins') page = <Admins />;
+  const hrDetail = path.match(/^\/admin\/hr\/r\/([0-9a-f-]{36})$/);
+  const isHrPath = path === '/admin/hr' || path.startsWith('/admin/hr/');
+  if (detail) page = adminOnly(<Detail id={detail[1]} />);
+  else if (hrDetail) page = hrOnly(<HrDetail id={hrDetail[1]} />);
+  else if (path === '/admin/hr/team') page = hrOnly(<HrStaff />);
+  else if (isHrPath) page = hrOnly(<HrInbox />);
+  else if (path === '/admin/admins') page = adminOnly(<Admins />);
   else if (path === '/admin/audit') page = <Audit />;
-  else if (path === '/admin/tools') page = <Tools />;
-  else page = <Inbox />;
+  else if (path === '/admin/tools') page = adminOnly(<Tools />);
+  else page = roles.admin ? <Inbox /> : <HrInbox />;
 
   const nav = [
-    { href: '/admin', label: 'Inbox', active: path === '/admin' || !!detail },
+    ...(roles.admin ? [{ href: '/admin', label: 'Inbox', active: path === '/admin' || !!detail }] : []),
+    ...(roles.hr
+      ? [
+          {
+            href: '/admin/hr',
+            label: 'HR inbox',
+            active: (isHrPath && path !== '/admin/hr/team') || (!roles.admin && path === '/admin'),
+          },
+          { href: '/admin/hr/team', label: 'HR team', active: path === '/admin/hr/team' },
+        ]
+      : []),
     { href: '/admin/audit', label: 'Audit log', active: path === '/admin/audit' },
-    { href: '/admin/admins', label: 'Admins', active: path === '/admin/admins' },
-    { href: '/admin/tools', label: 'Backup & flyer', active: path === '/admin/tools' },
+    ...(roles.admin
+      ? [
+          { href: '/admin/admins', label: 'Admins', active: path === '/admin/admins' },
+          { href: '/admin/tools', label: 'Backup & flyer', active: path === '/admin/tools' },
+        ]
+      : []),
   ];
 
   return (
