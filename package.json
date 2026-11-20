@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite -c vite.portal.config.ts",
     "dev:admin": "vite -c vite.admin.config.ts",
-    "build": "npm run build:portal && npm run build:admin && node scripts/postbuild.mjs",
+    "build": "npm run build:portal && npm run build:quote && npm run build:admin && node scripts/postbuild.mjs",
+    "build:quote": "vite build -c vite.quote.config.ts",
     "build:portal": "vite build -c vite.portal.config.ts",
     "build:admin": "vite build -c vite.admin.config.ts",
     "check:secrets": "node scripts/check-dist.mjs",

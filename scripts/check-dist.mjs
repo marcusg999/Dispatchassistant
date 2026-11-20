@@ -47,7 +47,8 @@ for (const file of walk(DIST)) {
   if (/SUPABASE_SECRET_KEY|SERVICE_ROLE/.test(text) && rel !== '_redirects') problems.push(`${rel}: references the secret key variable`);
   if (portalKey && rel !== '_redirects' && text.includes(portalKey)) problems.push(`${rel}: contains PORTAL_KEY`);
 
-  const isPortal = rel === 'portal.html' || /^assets\/portal-/.test(rel);
+  // The public portal AND the client quote page are sessionless builds: no Supabase, no admin code.
+  const isPortal = rel === 'portal.html' || rel === 'quote.html' || /^assets\/(portal|quote)-/.test(rel);
   if (isPortal) {
     if (/supabase/i.test(text)) problems.push(`${rel}: portal bundle mentions "supabase"`);
     if (pubKey && text.includes(pubKey)) problems.push(`${rel}: portal bundle contains the publishable key`);

@@ -38,6 +38,13 @@
     Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
     Cache-Control = "no-store"
 
+# Client quote page: same-origin only, like the portal. blob: is for the PDF download.
+[[headers]]
+  for = "/q/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+    Cache-Control = "no-store"
+
 # JSON APIs never render HTML.
 [[headers]]
   for = "/api/*"

@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
   // Make .env values (PORTAL_KEY, SUPABASE_URL, SUPABASE_SECRET_KEY…) visible to the in-process functions.
   Object.assign(process.env, loadEnv(mode, process.cwd(), ''));
   return {
-    plugins: [react(), tailwind(), brandPlugin(), devRoutes(['portal', 'admin']), devApi()],
+    plugins: [react(), tailwind(), brandPlugin(), devRoutes(['portal', 'admin', 'quote']), devApi()],
     appType: 'custom',
     server: { port: 5173, strictPort: true },
   };

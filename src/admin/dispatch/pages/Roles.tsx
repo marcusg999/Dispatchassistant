@@ -7,12 +7,13 @@ import { Link } from '../../router';
 import { Confirm, ErrorNote, fmtDateTime } from '../../components/ui';
 
 const ROLE_HINT: Record<StaffRole, string> = {
-  admin: 'Everything, including the suggestion box and staff roles.',
+  admin: 'Everything, including the suggestion box, prices and staff roles.',
+  estimator: 'Builds and sends estimates; sees prices and margins. No dispatch access.',
   dispatcher: 'Creates, edits and assigns jobs, crew, assets and time off.',
   viewer: 'Sees the board and details; can’t change anything.',
   crew: 'Sees only their own assigned jobs (My jobs).',
 };
-const ROLE_LABEL: Record<StaffRole, string> = { admin: 'Admin', dispatcher: 'Dispatcher', viewer: 'Viewer', crew: 'Crew' };
+const ROLE_LABEL: Record<StaffRole, string> = { admin: 'Admin', estimator: 'Estimator', dispatcher: 'Dispatcher', viewer: 'Viewer', crew: 'Crew' };
 
 export function Roles() {
   const [rows, setRows] = useState<StaffRoleRow[] | null>(null);

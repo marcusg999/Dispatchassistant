@@ -52,10 +52,11 @@ function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
-type Route = 'portal' | 'admin' | '404';
+type Route = 'portal' | 'admin' | 'quote' | '404';
 
 export function routeFor(pathname: string, portalKey: string | undefined): Route {
   if (portalKey && (pathname === `/s/${portalKey}` || pathname === `/s/${portalKey}/`)) return 'portal';
+  if (/^\/q\/[A-Za-z0-9_-]{20,64}$/.test(pathname)) return 'quote';
   if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/auth/callback' || pathname === '/auth/confirm') return 'admin';
   return '404';
 }
@@ -75,7 +76,7 @@ export function devRoutes(which: Route[]): Plugin {
           p.startsWith('/api/') ||
           /\.[a-z0-9]+$/i.test(p)
         ) {
-          if (p === '/portal.html' || p === '/admin.html') {
+          if (p === '/portal.html' || p === '/admin.html' || p === '/quote.html') {
             res.statusCode = 404;
             return res.end('Not found');
           }
@@ -87,7 +88,7 @@ export function devRoutes(which: Route[]): Plugin {
           res.setHeader('content-type', 'text/html');
           return res.end(readFileSync(resolve('public/404.html'), 'utf8'));
         }
-        const file = route === 'portal' ? 'portal.html' : 'admin.html';
+        const file = route === 'portal' ? 'portal.html' : route === 'quote' ? 'quote.html' : 'admin.html';
         const html = await server.transformIndexHtml(p, readFileSync(resolve(file), 'utf8'));
         res.setHeader('content-type', 'text/html');
         res.end(html);
