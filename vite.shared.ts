@@ -11,19 +11,24 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { brand, brandCssVars, displayName } from './src/brand/brand.config.ts';
+import { brand, brandCssVars, brandDarkCssVars, displayName } from './src/brand/brand.config.ts';
 
 const VIRTUAL = 'virtual:brand.css';
 const RESOLVED = '\0virtual:brand.css';
+/** Night-mode variables: imported by the admin console only (portal and quote stay light). */
+const VIRTUAL_DARK = 'virtual:brand-dark.css';
+const RESOLVED_DARK = '\0virtual:brand-dark.css';
 
 export function brandPlugin(): Plugin {
   return {
     name: 'brand',
     resolveId(id) {
       if (id === VIRTUAL) return RESOLVED;
+      if (id === VIRTUAL_DARK) return RESOLVED_DARK;
     },
     load(id) {
-      if (id === RESOLVED) return brandCssVars(brand);
+      if (id === RESOLVED) return brandCssVars(brand, { dark: false });
+      if (id === RESOLVED_DARK) return brandDarkCssVars(brand);
     },
     transformIndexHtml(html) {
       return html

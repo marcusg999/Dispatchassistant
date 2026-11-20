@@ -1,11 +1,99 @@
 import { Fragment, useEffect, useState } from 'react';
 import { STATUS_LABEL, TAG_LABEL, type Status, type Tag } from '../../shared/domain';
 import { type AuditRow } from '../data';
-import { AUDIT_MODULE_PAGE, listAuditByModule, type AuditModule } from '../dispatch/people/peopleData';
+import { AUDIT_MODULE_PAGE } from '../dispatch/people/peopleData';
+import { supabase } from '../supabase';
 import { Link } from '../router';
 import { ErrorNote, fmtDateTime } from '../components/ui';
 
 type J = Record<string, unknown> | null;
+type AuditModule = 'all' | 'suggestions' | 'dispatch' | 'hr' | 'estimates';
+
+/** Audit rows filtered by module (action prefix). RLS decides which rows exist at all. */
+async function listAudit(page: number, module: AuditModule) {
+  let q = supabase.from('audit_log').select('*', { count: 'exact' }).order('created_at', { ascending: false });
+  if (module === 'dispatch') q = q.like('action', 'dispatch\\_%');
+  else if (module === 'hr') q = q.like('action', 'hr\\_%');
+  else if (module === 'estimates') q = q.like('action', 'estimate\\_%');
+  else if (module === 'suggestions') q = q.not('action', 'like', 'dispatch\\_%').not('action', 'like', 'hr\\_%').not('action', 'like', 'estimate\\_%');
+  const r = await q.range(page * AUDIT_MODULE_PAGE, page * AUDIT_MODULE_PAGE + AUDIT_MODULE_PAGE - 1);
+  if (r.error) throw new Error(r.error.message);
+  return { rows: r.data ?? [], count: r.count ?? 0 };
+}
+
+const ESTIMATE_STATUS_LABEL: Record<string, string> = {
+  draft: 'Draft',
+  pending_approval: 'Waiting for approval',
+  approved: 'Approved',
+  sent: 'Sent',
+  viewed: 'Viewed by client',
+  accepted: 'Accepted',
+  declined: 'Declined',
+  expired: 'Expired',
+  converted: 'Converted to job',
+};
+const statusText = (v: unknown) => ESTIMATE_STATUS_LABEL[v as string] ?? String(v);
+
+const ESTIMATE_TABLE_LABEL: Record<string, string> = {
+  clients: 'Client',
+  client_contacts: 'Client contact',
+  rate_cards: 'Rate card',
+  packing_rules: 'Packing rule',
+  crew_size_rules: 'Crew rule',
+  terms_versions: 'Terms version',
+  estimates: 'Estimate',
+  estimate_stops: 'Estimate stop',
+  estimate_items: 'Estimate item',
+  quote_links: 'Quote link',
+  quote_acceptances: 'Quote acceptance',
+};
+
+/** Plain-language one-liner for estimate_* audit actions. */
+function describeEstimate(action: string, b: J, a: J): string {
+  switch (action) {
+    case 'estimate_status':
+      return `Estimate status ${statusText(b?.status)} → ${statusText(a?.status)}`;
+    case 'estimate_rate_card_activated':
+      return `Rate card activated${a?.effective_from ? ` (effective ${String(a.effective_from)})` : ''}`;
+    case 'estimate_rate_card_reviewed':
+      return 'Rate card marked reviewed';
+    case 'estimate_export':
+      return `Estimate exported (${String(a?.format ?? '').toUpperCase()}${a?.internal ? ', internal version with costs' : ''})`;
+    case 'estimate_rate_cards_update':
+      return `Rate card edited${a?.name ? `: ${String(a.name)}` : ''}`;
+    case 'estimate_rate_cards_insert':
+      return `Rate card created${a?.name ? `: ${String(a.name)}` : ''}`;
+    case 'estimate_rate_cards_delete':
+      return `Rate card deleted${b?.name ? `: ${String(b.name)}` : ''}`;
+    case 'estimate_quote_links_insert':
+      return 'Quote link created';
+    case 'estimate_quote_links_update':
+      if (a?.revoked_at && !b?.revoked_at) return 'Quote link revoked';
+      if ((a?.view_count as number) > ((b?.view_count as number) ?? 0)) return `Quote link viewed by client (view ${String(a?.view_count)})`;
+      return 'Quote link updated';
+    case 'estimate_quote_acceptances_insert':
+      return `Quote accepted by ${String(a?.accepted_name ?? 'client')}`;
+    case 'estimate_terms_versions_insert':
+      return `New terms version added${a?.version ? `: v${String(a.version)}` : ''}`;
+    case 'estimate_terms_versions_update':
+      return a?.is_current && !b?.is_current ? `Terms v${String(a.version)} made current` : 'Terms version updated';
+    case 'estimate_estimates_insert':
+      return `Estimate created${a?.estimate_number ? `: ${String(a.estimate_number)}` : ''}`;
+    case 'estimate_estimates_update':
+      return `Estimate edited or recalculated${a?.estimate_number ? `: ${String(a.estimate_number)}` : ''}`;
+    case 'estimate_estimates_delete':
+      return `Estimate deleted${b?.estimate_number ? `: ${String(b.estimate_number)}` : ''}`;
+    default: {
+      const m = action.match(/^estimate_(.+)_(insert|update|delete)$/);
+      if (!m) return action;
+      const what = ESTIMATE_TABLE_LABEL[m[1]] ?? m[1];
+      const verb = m[2] === 'insert' ? 'created' : m[2] === 'update' ? 'edited' : 'removed';
+      const row = a ?? b;
+      const name = (row?.name ?? row?.display_name ?? row?.description ?? row?.medium_match ?? '') as string;
+      return `${what} ${verb}${name ? `: ${name}` : ''}`;
+    }
+  }
+}
 
 /** Plain-language one-liner for an audit row. */
 export function describeAudit(r: AuditRow): string {
@@ -81,6 +169,7 @@ export function describeAudit(r: AuditRow): string {
     case 'dispatch_jobs_soft_delete':
       return `Job ${b?.job_number ?? ''} moved to trash`;
     default:
+      if (r.action.startsWith('estimate_')) return describeEstimate(r.action, b, a);
       if (r.action.startsWith('dispatch_')) return describeDispatch(r.action, a ?? b);
       return r.action;
   }
@@ -125,7 +214,7 @@ export function Audit() {
   const [module, setModule] = useState<AuditModule>('all');
 
   useEffect(() => {
-    listAuditByModule(page, module)
+    listAudit(page, module)
       .then((r) => {
         setRows(r.rows);
         setCount(r.count);
@@ -151,6 +240,7 @@ export function Audit() {
               ['all', 'All'],
               ['suggestions', 'Suggestions'],
               ['dispatch', 'Dispatch'],
+              ['estimates', 'Estimates'],
               ['hr', 'HR'],
             ] as const
           ).map(([k, label]) => (
@@ -197,7 +287,9 @@ export function Audit() {
                             ? `/admin/hr/r/${r.suggestion_id}`
                             : r.action.startsWith('dispatch_')
                               ? `/admin/dispatch/jobs/${r.suggestion_id}`
-                              : `/admin/s/${r.suggestion_id}`
+                              : r.action.startsWith('estimate_')
+                                ? `/admin/estimates/${r.suggestion_id}`
+                                : `/admin/s/${r.suggestion_id}`
                         }
                         className="underline"
                       >

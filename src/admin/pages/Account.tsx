@@ -3,6 +3,13 @@ import type { FormEvent } from 'react';
 import { supabase } from '../supabase';
 import { ErrorNote } from '../components/ui';
 import { MIN_PASSWORD, passwordProblem } from './SignIn';
+import { getThemePref, setThemePref, type ThemePref } from '../theme';
+
+const THEME_OPTIONS: { value: ThemePref; label: string; hint: string }[] = [
+  { value: 'light', label: 'Light', hint: 'Day mode' },
+  { value: 'dark', label: 'Dark', hint: 'Night mode' },
+  { value: 'system', label: 'Match this device', hint: 'Follows your device setting' },
+];
 
 /** Signed-in account settings: change password, and how recovery works. */
 export function Account({ email }: { email: string }) {
@@ -11,6 +18,7 @@ export function Account({ email }: { email: string }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [theme, setTheme] = useState<ThemePref>(getThemePref);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -37,6 +45,36 @@ export function Account({ email }: { email: string }) {
   return (
     <div className="max-w-xl space-y-6">
       <h1 className="text-2xl font-[800] tracking-tight">Your account</h1>
+      <section className="a-panel p-5" aria-labelledby="theme-h">
+        <h2 id="theme-h" className="text-base font-bold">
+          Appearance
+        </h2>
+        <fieldset className="mt-3">
+          <legend className="a-label">Day or night mode</legend>
+          <div className="flex flex-wrap gap-2">
+            {THEME_OPTIONS.map((o) => (
+              <label
+                key={o.value}
+                className={`flex min-h-[44px] cursor-pointer items-center gap-2 border-[1.5px] px-3 ${theme === o.value ? 'border-ink bg-wall font-semibold' : 'border-line'}`}
+              >
+                <input
+                  type="radio"
+                  name="theme"
+                  value={o.value}
+                  checked={theme === o.value}
+                  onChange={() => {
+                    setTheme(o.value);
+                    setThemePref(o.value);
+                  }}
+                />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <p className="mt-3 text-muted">Saved on this device. It changes the admin console only.</p>
+      </section>
+
       <section className="a-panel p-5" aria-labelledby="pw-h">
         <h2 id="pw-h" className="text-base font-bold">
           Change password

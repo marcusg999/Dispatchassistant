@@ -12,10 +12,14 @@
  *    • `ink` and `muted` on `paper` and on `wall`    ≥ 4.5 : 1
  *    • `ink` on `accent` (text on orange buttons)    ≥ 4.5 : 1
  *    • `accentText` on `paper`                       ≥ 4.5 : 1
+ *    • `onAccent` on `accent`                        ≥ 4.5 : 1
+ *  The same rules apply to `darkColors` and `darkTagColors` (night mode in the admin console).
  *  Run `npm test` and the contrast test checks these for you.
  *
  *  See README → "Rebrand for a new client".
  */
+
+export type TagColors = Record<'just_sayin' | 'casual' | 'important' | 'urgent' | 'crucial', { bg: string; fg: string }>;
 
 export interface BrandConfig {
   /** Product name shown in titles, headers, exports. */
@@ -39,8 +43,10 @@ export interface BrandConfig {
     muted: string;
     /** Hairlines and borders. */
     line: string;
-    /** Signal color for fills (buttons, tags, the success crate tag). Text on it is `ink`. */
+    /** Signal color for fills (buttons, tags, the success crate tag). */
     accent: string;
+    /** Text drawn ON the accent fill. Stays dark in both modes. */
+    onAccent: string;
     /** The accent darkened enough to be used as TEXT on `paper`. */
     accentText: string;
     /** Focus ring color. */
@@ -49,7 +55,11 @@ export interface BrandConfig {
     danger: string;
   };
   /** Priority tag colors. Used in admin chips and the Excel/Word export column. */
-  tagColors: Record<'just_sayin' | 'casual' | 'important' | 'urgent' | 'crucial', { bg: string; fg: string }>;
+  tagColors: TagColors;
+  /** Night-mode palette (admin console). Same keys as `colors`; the accent stays signal orange. */
+  darkColors: BrandConfig['colors'];
+  /** Night-mode priority tag colors. */
+  darkTagColors: TagColors;
   portal: {
     /** Small caps eyebrow above the headline, like an exhibition label number. */
     eyebrow: string;
@@ -86,6 +96,7 @@ export const brand: BrandConfig = {
     muted: '#58554F',
     line: '#C4BFB5',
     accent: '#FF5A1F',
+    onAccent: '#141413',
     accentText: '#A53A08',
     focus: '#1F4FFF',
     danger: '#A1160E',
@@ -96,6 +107,25 @@ export const brand: BrandConfig = {
     important: { bg: '#DCD8D0', fg: '#141413' },
     urgent: { bg: '#FF5A1F', fg: '#141413' },
     crucial: { bg: '#141413', fg: '#FFFFFF' },
+  },
+  darkColors: {
+    wall: '#0F0F0E',
+    paper: '#1A1A18',
+    ink: '#F2F0EB',
+    muted: '#A8A49B',
+    line: '#3D3B36',
+    accent: '#FF5A1F',
+    onAccent: '#141413',
+    accentText: '#FF8A57',
+    focus: '#7C9BFF',
+    danger: '#FF7A6E',
+  },
+  darkTagColors: {
+    just_sayin: { bg: '#262521', fg: '#F2F0EB' },
+    casual: { bg: '#2B3A31', fg: '#F2F0EB' },
+    important: { bg: '#3A3832', fg: '#F2F0EB' },
+    urgent: { bg: '#FF5A1F', fg: '#141413' },
+    crucial: { bg: '#F2F0EB', fg: '#141413' },
   },
   portal: {
     eyebrow: 'Suggestion box',
@@ -118,22 +148,34 @@ export function displayName(b: BrandConfig = brand): string {
   return b.companyName ? `${b.appName} · ${b.companyName}` : b.appName;
 }
 
-/** CSS custom properties generated from the config. Injected into every HTML page at build time. */
-export function brandCssVars(b: BrandConfig = brand): string {
-  const c = b.colors;
-  const t = b.tagColors;
+function varLines(c: BrandConfig['colors'], t: TagColors): string {
   const tagVars = Object.entries(t).flatMap(([k, v]) => [`--tag-${k}-bg:${v.bg}`, `--tag-${k}-fg:${v.fg}`]);
-  const lines = [
+  return [
     `--brand-wall:${c.wall}`,
     `--brand-paper:${c.paper}`,
     `--brand-ink:${c.ink}`,
     `--brand-muted:${c.muted}`,
     `--brand-line:${c.line}`,
     `--brand-accent:${c.accent}`,
+    `--brand-on-accent:${c.onAccent}`,
     `--brand-accent-text:${c.accentText}`,
     `--brand-focus:${c.focus}`,
     `--brand-danger:${c.danger}`,
     ...tagVars,
-  ];
-  return `:root{${lines.join(';')}}`;
+  ].join(';');
+}
+
+/** Night-mode rules only: explicit `data-theme="dark"`, or the device preference unless light is forced. */
+export function brandDarkCssVars(b: BrandConfig = brand): string {
+  const v = `color-scheme:dark;${varLines(b.darkColors, b.darkTagColors)}`;
+  return `:root[data-theme="dark"]{${v}}@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${v}}}`;
+}
+
+/**
+ * CSS custom properties generated from the config. Injected into every HTML page at build time.
+ * `dark: false` omits night mode (the public portal and quote page stay light).
+ */
+export function brandCssVars(b: BrandConfig = brand, opts: { dark?: boolean } = {}): string {
+  const light = `:root{color-scheme:light;${varLines(b.colors, b.tagColors)}}`;
+  return opts.dark === false ? light : light + brandDarkCssVars(b);
 }
