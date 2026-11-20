@@ -243,7 +243,7 @@ describe('admin: edits draft cards, rules and terms, with guard rails', () => {
     const r = await a.from('rate_cards').update({ name: 'Admin renamed draft', rates: { ...fx.activeRates, currency: 'USD' } }).eq('id', fx.draftCard).select('name');
     expect(r.error).toBeNull();
     expect(r.data).toHaveLength(1);
-    expect(r.data[0].name).toBe('Admin renamed draft');
+    expect(r.data![0].name).toBe('Admin renamed draft');
   });
 
   it('refuses to change rates on the ACTIVE card ("Only draft")', async () => {
@@ -305,8 +305,8 @@ describe('estimates: input columns only', () => {
       const r = await clients[role].from('estimates').update({ title: `Edited by ${role}`, inputs: { options: { labor_hours: 2 } }, notes_internal: 'n' }).eq('id', fx.estimate).select('title, inputs, version');
       expect(r.error).toBeNull();
       expect(r.data).toHaveLength(1);
-      expect(r.data[0].title).toBe(`Edited by ${role}`);
-      expect(r.data[0].inputs).toEqual({ options: { labor_hours: 2 } });
+      expect(r.data![0].title).toBe(`Edited by ${role}`);
+      expect(r.data![0].inputs).toEqual({ options: { labor_hours: 2 } });
     });
 
     it(`${role} cannot update computed or workflow columns (column grants)`, async () => {
@@ -372,7 +372,7 @@ describe('server_* RPCs are service-only', () => {
         for (const k of Object.keys(a)) if (a[k] === '') a[k] = k === 'p_estimate' ? fx.estimate : k === 'p_link' ? fx.link : k === 'p_terms' ? fx.terms : '';
         const r = await clients[role].rpc(fn, a);
         expect(r.error, `${role} ${fn}`).not.toBeNull();
-        expect(r.error.message, `${role} ${fn}`).toMatch(/permission denied|not found|could not find/i);
+        expect(r.error!.message, `${role} ${fn}`).toMatch(/permission denied|not found|could not find/i);
       }
       const e = await one(svc.from('estimates').select('total_cents').eq('id', fx.estimate).single());
       expect(Number(e.total_cents)).toBe(0);
