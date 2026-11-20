@@ -42,6 +42,8 @@ export type ServiceType =
 export interface EstimateItemInput {
   id: string;
   description: string;
+  /** Not used in pricing; carried for documents. */
+  artist_title?: string | null;
   medium?: string | null;
   height_in?: number | null;
   width_in?: number | null;

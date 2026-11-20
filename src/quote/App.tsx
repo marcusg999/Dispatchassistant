@@ -391,7 +391,7 @@ function Respond({ token, quote: q, reload, onDeclined }: { token: string; quote
             <input id="f-email" type="email" className="q-input" autoComplete="email" inputMode="email" value={f.email} onChange={set('email')} maxLength={200} required />
           </div>
           <div className="q-field">
-            <label htmlFor="f-sig">Signature (type your full name)</label>
+            <label htmlFor="f-sig">Signature (type your name to sign)</label>
             <input id="f-sig" className="q-input q-sig" autoComplete="off" autoCapitalize="words" spellCheck={false} value={f.signature} onChange={set('signature')} maxLength={120} required aria-describedby="sig-hint" />
             <p id="sig-hint" className={`q-hint ${sigState === 'match' ? 'q-hint-ok' : ''}`} aria-live="polite">
               {sigState === 'empty' && 'Type your name again exactly as above to sign.'}

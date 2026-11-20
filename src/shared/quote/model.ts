@@ -62,7 +62,7 @@ const str = (v: unknown) => (typeof v === 'string' ? v : '');
 const num = (v: unknown): number | null => (v == null || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
 const cat = (v: unknown): LineCategory => ((LINE_CATEGORIES as readonly string[]).includes(str(v)) ? (v as LineCategory) : 'other');
 
-export const STOP_KIND_TEXT: Record<string, string> = { pickup: 'Pickup', dropoff: 'Delivery', delivery: 'Delivery', stop: 'Stop', return: 'Return' };
+export const STOP_KIND_TEXT: Record<string, string> = { origin: 'Pickup', destination: 'Delivery', stop: 'Stop' };
 export const stopKindText = (k: string) => STOP_KIND_TEXT[k] ?? (k ? k.charAt(0).toUpperCase() + k.slice(1) : 'Stop');
 
 /** API JSON of GET /api/quote/:token (the `quote` object). */

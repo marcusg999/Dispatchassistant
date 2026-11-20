@@ -114,7 +114,7 @@ describe('quote Word and Excel', () => {
 
   it('client xlsx has headers, rows and a total, and no cost or margin', async () => {
     const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(await buildQuoteXlsx(doc));
+    await wb.xlsx.load((await buildQuoteXlsx(doc)) as unknown as ArrayBuffer);
     const ws = wb.getWorksheet('Quote')!;
     expect(String(ws.getCell(1, 1).value)).toContain(displayName());
     expect(ws.getRow(5).values).toEqual([undefined, 'Category', 'Description', 'Qty', 'Unit', 'Unit price', 'Amount']);
@@ -141,7 +141,7 @@ describe('quote Word and Excel', () => {
       notesInternal: 'Internal only',
     };
     const wb = new ExcelJS.Workbook();
-    await wb.xlsx.load(await buildInternalXlsx(doc, internal));
+    await wb.xlsx.load((await buildInternalXlsx(doc, internal)) as unknown as ArrayBuffer);
     const ws = wb.getWorksheet('Cost & margin')!;
     expect((ws.getRow(5).values as unknown[]).slice(1)).toEqual(['Category', 'Description', 'Qty', 'Unit', 'Unit price', 'Unit cost', 'Amount', 'Cost', 'Margin', 'Margin %', 'On quote']);
     const first = ws.getRow(6);

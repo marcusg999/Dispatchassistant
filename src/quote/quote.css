@@ -103,10 +103,6 @@
 .q-title:focus {
   outline: none;
 }
-.q-title:focus-visible {
-  outline: 3px solid var(--brand-focus);
-  outline-offset: 4px;
-}
 .q-notice-page .q-title {
   margin-bottom: 1rem;
 }
