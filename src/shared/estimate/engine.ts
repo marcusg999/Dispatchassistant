@@ -181,7 +181,7 @@ export interface EstimateResult {
 /** Inches (up to 2 decimals) → integer hundredths. */
 const h = (inches: number | null | undefined): number => Math.round((inches ?? 0) * 100);
 const fromH = (hundredths: number): number => hundredths / 100;
-const money = (c: number) => `$${(c / 100).toFixed(2)}`;
+const money = (c: number) => `$${(c / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const pctText = (bp: number) => `${(bp / 100).toFixed(bp % 100 === 0 ? 0 : 2)}%`;
 const SHEET_SQIN = 48 * 96;
 
