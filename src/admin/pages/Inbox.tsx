@@ -22,7 +22,7 @@ import {
   type SuggestionView,
 } from '../data';
 import { navigate } from '../router';
-import { ErrorNote, StatusPill, TagChip, fmtDate } from '../components/ui';
+import { ErrorNote, FiltersToggle, StatusPill, TagChip, fmtDate } from '../components/ui';
 
 const KEY = 'inbox-filters';
 function loadFilters(): Filters {
@@ -39,6 +39,7 @@ function toggle<T>(list: T[], v: T): T[] {
 
 export function Inbox() {
   const [filters, setFilters] = useState<Filters>(loadFilters);
+  const [showFilters, setShowFilters] = useState(false);
   const [qDraft, setQDraft] = useState(filters.q);
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState<SuggestionView[] | null>(null);
@@ -103,7 +104,9 @@ export function Inbox() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[17rem_1fr]">
-      <aside aria-label="Filters" className="a-panel h-fit p-4">
+      <div className="h-fit">
+      <FiltersToggle open={showFilters} active={Object.keys(active).length} onToggle={() => setShowFilters((v) => !v)} controls="inbox-filters" />
+      <aside id="inbox-filters" aria-label="Filters" className={`a-panel h-fit p-4 ${showFilters ? '' : 'phone-hidden'}`}>
         <label className="a-label" htmlFor="q">
           Search
         </label>
@@ -180,6 +183,7 @@ export function Inbox() {
           Clear filters
         </button>
       </aside>
+      </div>
 
       <section aria-labelledby="inbox-h" className="min-w-0">
         <div className="flex flex-wrap items-end gap-3">

@@ -71,3 +71,16 @@ export function ErrorNote({ error }: { error: string | null }) {
     </p>
   );
 }
+
+/**
+ * Phones only: a button that shows or hides a filter panel, so the list is on the first screen.
+ * On wider screens the button is hidden and the panel always shows.
+ */
+export function FiltersToggle({ open, active, onToggle, controls }: { open: boolean; active: number; onToggle: () => void; controls: string }) {
+  return (
+    <button type="button" className="a-btn mb-3 w-full sm:hidden" aria-expanded={open} aria-controls={controls} onClick={onToggle}>
+      {open ? 'Hide filters' : 'Show filters'}
+      {active > 0 ? ` (${active} on)` : ''}
+    </button>
+  );
+}

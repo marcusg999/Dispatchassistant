@@ -53,7 +53,7 @@ export function EstimatesSubnav({ path, role }: { path: string; role: StaffRole 
   ];
   return (
     <nav aria-label="Estimates" className="no-print border-b border-line bg-wall">
-      <div className="mx-auto flex max-w-[110rem] flex-wrap gap-x-1 px-4 lg:px-8">
+      <div className="nav-row mx-auto flex max-w-[110rem] flex-wrap gap-x-1 px-4 lg:px-8">
         {items.map((i) => {
           const active = i.active ?? (path === i.href || path.startsWith(`${i.href}/`));
           return (

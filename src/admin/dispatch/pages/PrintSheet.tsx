@@ -24,7 +24,12 @@ import { dayBounds, fmtDateTime, fmtYmd, getAppTz, todayYmd, tzHint } from '../t
  */
 type Raw =
   | { kind: 'day'; date: string; data: Awaited<ReturnType<typeof loadBoard>> }
-  | { kind: 'job'; job: NonNullable<Awaited<ReturnType<typeof getJob>>>; crew: Awaited<ReturnType<typeof listCrew>>; assets: Awaited<ReturnType<typeof listAssets>> };
+  | {
+      kind: 'job';
+      job: NonNullable<Awaited<ReturnType<typeof getJob>>>;
+      crew: Awaited<ReturnType<typeof listCrew>>;
+      assets: Awaited<ReturnType<typeof listAssets>>;
+    };
 
 export function PrintSheet({ jobId }: { jobId: string | null }) {
   const initialDate = new URLSearchParams(location.search).get('date') ?? todayYmd(getAppTz());
@@ -36,7 +41,9 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    appTimeZone().then(setTz).catch(() => undefined);
+    appTimeZone()
+      .then(setTz)
+      .catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -68,10 +75,20 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
     const opts = { includeOfficeNotes: includeOffice };
     if (raw.kind === 'job') {
       const j = raw.job;
-      return [toSheetJob(j, { assignments: j.assignments, jobAssets: j.job_assets, crew: raw.crew, assets: raw.assets }, opts)];
+      return [
+        toSheetJob(
+          j,
+          { assignments: j.assignments, jobAssets: j.job_assets, crew: raw.crew, assets: raw.assets },
+          opts,
+        ),
+      ];
     }
     const d = raw.data;
-    return toSheetJobs(d.jobs, { assignments: d.assignments, jobAssets: d.jobAssets, crew: d.crew, assets: d.assets }, opts);
+    return toSheetJobs(
+      d.jobs,
+      { assignments: d.assignments, jobAssets: d.jobAssets, crew: d.crew, assets: d.assets },
+      opts,
+    );
   }, [raw, includeOffice]);
 
   const label = raw?.kind === 'job' ? raw.job.job_number : fmtYmd(date);
@@ -83,7 +100,8 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
     try {
       const mod = await import('../print/dispatchExport');
       const meta = { label, exportedAt: new Date(), includeOfficeNotes: includeOffice, timeZone: tz };
-      const bytes = format === 'xlsx' ? await mod.buildDispatchXlsx(jobs, meta) : await mod.buildDispatchDocx(jobs, meta);
+      const bytes =
+        format === 'xlsx' ? await mod.buildDispatchXlsx(jobs, meta) : await mod.buildDispatchDocx(jobs, meta);
       const name = mod.dispatchFileName(format, raw?.kind === 'job' ? { jobNumber: raw.job.job_number } : { date });
       mod.downloadBytes(bytes, name, format === 'xlsx' ? mod.XLSX_MIME : mod.DOCX_MIME);
       await logDispatchExport(format, scope, includeOffice);
@@ -109,7 +127,9 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
       <div className="no-print a-panel mb-5 flex flex-wrap items-end gap-3 p-4">
         <div className="mr-auto">
           <h1 className="text-xl font-[800] tracking-tight">Dispatch sheet</h1>
-          <p className="text-muted">{raw?.kind === 'job' ? `One job · ${raw.job.job_number}` : 'All jobs for the day'}</p>
+          <p className="text-muted">
+            {raw?.kind === 'job' ? `One job · ${raw.job.job_number}` : 'All jobs for the day'}
+          </p>
         </div>
         {!jobId && (
           <label className="flex flex-col">
@@ -128,7 +148,12 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
           </label>
         )}
         <label className="flex min-h-[44px] items-center gap-2">
-          <input type="checkbox" className="size-4" checked={includeOffice} onChange={(e) => setIncludeOffice(e.currentTarget.checked)} />
+          <input
+            type="checkbox"
+            className="size-4"
+            checked={includeOffice}
+            onChange={(e) => setIncludeOffice(e.currentTarget.checked)}
+          />
           Include office notes
         </label>
         <button className="a-btn a-btn-primary" onClick={print} disabled={!raw}>
@@ -163,14 +188,26 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
           {jobs.map((j, i) => (
             <JobBlock key={j.id} job={j} tz={tz} first={i === 0} includeOffice={includeOffice} />
           ))}
-          <p className="dsheet-foot">Printed {fmtDateTime(new Date().toISOString(), tz)} · {tzHint(tz)}</p>
+          <p className="dsheet-foot">
+            Printed {fmtDateTime(new Date().toISOString(), tz)} · {tzHint(tz)}
+          </p>
         </article>
       )}
     </div>
   );
 }
 
-function JobBlock({ job: j, tz, first, includeOffice }: { job: SheetJob; tz?: string; first: boolean; includeOffice: boolean }) {
+function JobBlock({
+  job: j,
+  tz,
+  first,
+  includeOffice,
+}: {
+  job: SheetJob;
+  tz?: string;
+  first: boolean;
+  includeOffice: boolean;
+}) {
   const staggered = j.crew.filter((c) => c.call_time_override);
   return (
     <section className={`dsheet-job ${first ? '' : 'dsheet-break'}`} aria-labelledby={`h-${j.id}`}>
@@ -179,7 +216,8 @@ function JobBlock({ job: j, tz, first, includeOffice }: { job: SheetJob; tz?: st
           <span className="dsheet-num">{j.job_number}</span> {j.title}
         </h2>
         <p>
-          <strong>{JOB_TYPE_LABEL[j.job_type]}</strong> · {fmtDay(j.start_at, tz)} {fmtTime(j.start_at, tz)}–{fmtTime(j.end_at, tz)} · {JOB_STATUS_LABEL[j.status]}
+          <strong>{JOB_TYPE_LABEL[j.job_type]}</strong> · {fmtDay(j.start_at, tz)} {fmtTime(j.start_at, tz)}–
+          {fmtTime(j.end_at, tz)} · {JOB_STATUS_LABEL[j.status]}
           <Link href={`/admin/dispatch/print/${j.id}`} className="no-print ml-3 underline">
             Print this job only
           </Link>
@@ -199,13 +237,19 @@ function JobBlock({ job: j, tz, first, includeOffice }: { job: SheetJob; tz?: st
               '—'
             )}
             {staggered.length > 0 && (
-              <span className="block">Staggered: {staggered.map((c) => `${c.name} ${fmtTime(c.call_time_override, tz)}`).join(', ')}</span>
+              <span className="block">
+                Staggered: {staggered.map((c) => `${c.name} ${fmtTime(c.call_time_override, tz)}`).join(', ')}
+              </span>
             )}
           </dd>
         </div>
         <div>
           <dt>Team lead</dt>
-          <dd>{j.team_lead ? `${j.team_lead.name}${j.team_lead.phone ? ` · ${formatPhone(j.team_lead.phone)}` : ''}` : '—'}</dd>
+          <dd>
+            {j.team_lead
+              ? `${j.team_lead.name}${j.team_lead.phone ? ` · ${formatPhone(j.team_lead.phone)}` : ''}`
+              : '—'}
+          </dd>
         </div>
         <div>
           <dt>Crew</dt>
@@ -240,11 +284,15 @@ function JobBlock({ job: j, tz, first, includeOffice }: { job: SheetJob; tz?: st
                 <p>
                   <strong>
                     {i + 1}. {STOP_KIND_LABEL[s.kind]}
-                    {s.window_start ? ` · ${fmtTime(s.window_start, tz)}${s.window_end ? `–${fmtTime(s.window_end, tz)}` : ''}` : ''}
+                    {s.window_start
+                      ? ` · ${fmtTime(s.window_start, tz)}${s.window_end ? `–${fmtTime(s.window_end, tz)}` : ''}`
+                      : ''}
                   </strong>
                 </p>
                 <p>{[s.site_name, s.address].filter(Boolean).join(', ')}</p>
-                {(s.contact_name || s.contact_phone) && <p>Contact: {[s.contact_name, formatPhone(s.contact_phone)].filter(Boolean).join(' · ')}</p>}
+                {(s.contact_name || s.contact_phone) && (
+                  <p>Contact: {[s.contact_name, formatPhone(s.contact_phone)].filter(Boolean).join(' · ')}</p>
+                )}
                 {s.access_flags.length > 0 && <p>Access: {s.access_flags.map(accessLabel).join(', ')}</p>}
                 {s.access_notes && <p>Notes: {s.access_notes}</p>}
               </li>
@@ -256,48 +304,54 @@ function JobBlock({ job: j, tz, first, includeOffice }: { job: SheetJob; tz?: st
       {j.items.length > 0 && (
         <>
           <h3>Items</h3>
-          <table className="dsheet-table">
-            <thead>
-              <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Qty</th>
-                <th scope="col">H × W × D (in)</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Packing</th>
-                <th scope="col">Handling</th>
-              </tr>
-            </thead>
-            <tbody>
-              {j.items.map((it, i) => (
-                <tr key={i}>
-                  <td>{it.description}</td>
-                  <td>{it.quantity}</td>
-                  <td>{[it.height_in, it.width_in, it.depth_in].every((d) => d != null) ? `${it.height_in} × ${it.width_in} × ${it.depth_in}` : '—'}</td>
-                  <td>{it.weight_lbs != null ? `${it.weight_lbs} lb` : '—'}</td>
-                  <td>{it.packing ? (PACKING_LABEL[it.packing] ?? it.packing) : '—'}</td>
-                  <td>
-                    {it.handling_flags.length ? (
-                      <ul className="dsheet-flags">
-                        {it.handling_flags.map((f) => {
-                          const h = HANDLING_FLAG[f as HandlingFlag];
-                          return (
-                            <li key={f}>
-                              <span aria-hidden="true" className="dsheet-glyph">
-                                {h?.glyph}
-                              </span>{' '}
-                              {h?.label ?? f}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    ) : (
-                      '—'
-                    )}
-                  </td>
+          <div className="dsheet-scroll">
+            <table className="dsheet-table">
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">Qty</th>
+                  <th scope="col">H × W × D (in)</th>
+                  <th scope="col">Weight</th>
+                  <th scope="col">Packing</th>
+                  <th scope="col">Handling</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {j.items.map((it, i) => (
+                  <tr key={i}>
+                    <td>{it.description}</td>
+                    <td>{it.quantity}</td>
+                    <td>
+                      {[it.height_in, it.width_in, it.depth_in].every((d) => d != null)
+                        ? `${it.height_in} × ${it.width_in} × ${it.depth_in}`
+                        : '—'}
+                    </td>
+                    <td>{it.weight_lbs != null ? `${it.weight_lbs} lb` : '—'}</td>
+                    <td>{it.packing ? (PACKING_LABEL[it.packing] ?? it.packing) : '—'}</td>
+                    <td>
+                      {it.handling_flags.length ? (
+                        <ul className="dsheet-flags">
+                          {it.handling_flags.map((f) => {
+                            const h = HANDLING_FLAG[f as HandlingFlag];
+                            return (
+                              <li key={f}>
+                                <span aria-hidden="true" className="dsheet-glyph">
+                                  {h?.glyph}
+                                </span>{' '}
+                                {h?.label ?? f}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 

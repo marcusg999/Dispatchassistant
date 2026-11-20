@@ -64,6 +64,11 @@ export function App() {
     if (path === '/auth/callback' || ((path === '/admin' || path === '/admin/') && home !== '/admin')) navigate(home);
   }, [path, gate, roles]);
 
+  // On phones the menus are swipeable rows: keep the current section's tab in view.
+  useEffect(() => {
+    document.querySelectorAll('.nav-row [aria-current="page"]').forEach((el) => el.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
+  }, [path, gate]);
+
   if (!configured)
     return <Centered title="Not configured">Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.</Centered>;
   // Emailed links (confirm account, reset password) are handled before the role gate.
@@ -143,14 +148,14 @@ export function App() {
             {brand.logoPath ? <img src={brand.logoPath} alt="" className="mr-2 h-6" /> : null}
             {displayName()}
           </Link>
-          <nav aria-label="Admin" className="-mb-px flex flex-wrap">
+          <nav aria-label="Admin" className="nav-row -mb-px order-3 flex w-full flex-wrap sm:order-2 sm:w-auto">
             {nav.map((n) => (
               <Link key={n.href} href={n.href} className="nav-link" aria-current={n.active ? 'page' : undefined}>
                 {n.label}
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-3 py-2 text-[0.8125rem] text-muted">
+          <div className="order-2 ml-auto flex items-center gap-3 py-2 text-[0.8125rem] text-muted sm:order-3">
             <Link href="/admin/account" className="hidden underline sm:inline" aria-current={path === '/admin/account' ? 'page' : undefined}>
               {session?.user.email}
             </Link>

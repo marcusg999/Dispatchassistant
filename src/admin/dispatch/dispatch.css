@@ -168,6 +168,15 @@
   border-left: 3px solid #111;
   padding-left: 0.6rem;
 }
+.dsheet-scroll {
+  position: relative;
+  overflow-x: auto;
+}
+@media print {
+  .dsheet-scroll {
+    overflow: visible;
+  }
+}
 .dsheet-table {
   width: 100%;
   border-collapse: collapse;
@@ -882,4 +891,28 @@
   background: var(--brand-wall);
   color: var(--brand-ink);
   opacity: 1;
+}
+
+/* Phones: jobs first and stacked; the roster below at a sensible height; the week as a list of days. */
+@media (max-width: 767px) {
+  .board-jobs {
+    order: -1;
+    flex-direction: column;
+    overflow-x: visible;
+  }
+  .job-col {
+    flex: none;
+    min-height: 0;
+  }
+  .board-roster {
+    position: static;
+    max-height: 28rem;
+  }
+  .week-grid {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
+  .week-day {
+    min-height: 0;
+  }
 }

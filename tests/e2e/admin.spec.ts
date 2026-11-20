@@ -33,7 +33,8 @@ test('admin: search, re-tag, status, note, reply, publish, export both formats',
   await page.goto('/admin');
   await expect(page.getByRole('heading', { name: 'Inbox' })).toBeVisible();
 
-  // Full-text search runs in Postgres.
+  // Full-text search runs in Postgres. On a phone the filters start collapsed.
+  await page.getByRole('button', { name: 'Show filters' }).click();
   await page.getByLabel('Search').fill('hand truck tires');
   await expect(page.getByText('1 suggestion', { exact: true })).toBeVisible();
   await page.getByText(BODY).filter({ visible: true }).first().click();
