@@ -210,6 +210,17 @@ Supabase → **Advisors** → **Security Advisor** → run. Expect **no warnings
 6. **Netlify:** no new environment variables. The incident-photo function reuses `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY`; make sure `VITE_SUPABASE_PUBLISHABLE_KEY` also has the **Functions** scope.
 7. Run the Supabase security advisor again (section 11): it should show no warnings.
 
+## 11b. Phase 3: estimates and quotes
+
+1. Pull `main` and push the migrations: `npx supabase db push --remote`. They add the estimator role, clients, rate cards, estimates and quote links. Nothing in Phase 1 or 2 changes.
+2. **Enter your real rates:** sign in as admin → **Estimates → Rate cards → Start from sample rates**. This creates a draft card marked **SAMPLE**. Replace every value with your own rates (the live preview shows example prices as you type), then **Activate…** and **Mark reviewed**. Until a reviewed card is active, Estimates shows a red "Sample rates" banner. Later price changes: duplicate the active card as a draft, edit, activate.
+3. **Packing and crew rules:** Estimates → Packing & crew rules. Production starts empty; until you add rules, items get the rate card's default packing method and the crew rules on the card. Add your own (the local SAMPLE rules in `supabase/seed_estimates.sql` are a starting point).
+4. **Terms: have them reviewed.** Estimates → Terms → New version. Paste terms reviewed by your own counsel. Quotes can't be sent until current terms exist. The local placeholder text must not be used for real quotes.
+5. **Assign estimators:** Dispatch → Staff roles → add the email with role **estimator**. They land on Estimates after sign-in.
+6. **Clients:** Estimates → Clients → add your clients and contacts (or let estimators add them as they go).
+7. Netlify: no new environment variables. The estimate function uses `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY` (which must have the **Functions** scope, as in 11a).
+8. Run the Supabase security advisor again (section 11): it should show no warnings.
+
 ## 12. Print and share
 
 1. Admin → **Backup & flyer** → paste the portal link → **Print flyer** (or "Save as PDF").

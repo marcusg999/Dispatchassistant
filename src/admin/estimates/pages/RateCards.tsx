@@ -3,6 +3,7 @@ import { Confirm, ErrorNote, fmtDate, fmtDateTime } from '../../components/ui';
 import { Link, navigate } from '../../router';
 import { supabase } from '../../supabase';
 import { duplicateAsDraft, listRateCards, rateProblems, type RateCardRow } from '../rates/data';
+import { SAMPLE_RATES } from '../../../shared/estimate';
 
 type Pending = { kind: 'activate' | 'delete'; card: RateCardRow } | null;
 
@@ -39,6 +40,12 @@ export function RateCards({ isAdmin }: { isAdmin: boolean }) {
   const duplicate = (c: RateCardRow) =>
     run(async () => {
       const id = await duplicateAsDraft(c);
+      navigate(`/admin/estimates/rates/${id}`);
+    });
+
+  const startFromSample = () =>
+    run(async () => {
+      const id = await duplicateAsDraft({ name: 'SAMPLE rates', rates: SAMPLE_RATES as never, is_sample: true });
       navigate(`/admin/estimates/rates/${id}`);
     });
 
@@ -84,6 +91,21 @@ export function RateCards({ isAdmin }: { isAdmin: boolean }) {
         <p role="status" className="mt-2 border-l-4 border-ink pl-3 font-semibold">
           {notice}
         </p>
+      )}
+      {cards?.length === 0 && (
+        <div className="a-panel mt-4 p-5">
+          <p className="font-semibold">There is no rate card yet, so nothing can be priced.</p>
+          {isAdmin ? (
+            <>
+              <p className="mt-1 text-muted">Start from the built-in sample numbers, replace every value with your own rates, then activate and mark it reviewed.</p>
+              <button type="button" className="a-btn a-btn-primary mt-3" disabled={busy} onClick={startFromSample}>
+                Start from sample rates
+              </button>
+            </>
+          ) : (
+            <p className="mt-1 text-muted">Ask an admin to set up the rate card.</p>
+          )}
+        </div>
       )}
       <div className="a-panel mt-4 overflow-x-auto">
         <table className="a-table">

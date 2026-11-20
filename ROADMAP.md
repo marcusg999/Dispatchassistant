@@ -1,6 +1,6 @@
 # Roadmap
 
-**Phase 1** (the anonymous suggestion box, HR eyes only, sign-in with recovery) and **Phase 2** (the dispatch board) are built. The phases below Phase 2 are **not built yet**.
+**Phase 1** (suggestion box, HR eyes only, sign-in with recovery), **Phase 2** (dispatch board) and **Phase 3** (estimates and quotes) are built. Phase 4 and the future items are **not built yet**.
 
 ## Phase 2: Dispatch board ✅ built
 
@@ -13,7 +13,11 @@ Original brief:
 - New tables in the same Supabase project.
 - Role-based sign-in (**admin / dispatcher / viewer**) that extends the `admins` table into a roles model.
 
-## Phase 3: Estimates
+## Phase 3: Estimates ✅ built
+
+See README → Estimates and quotes, and `docs/ESTIMATE_EXAMPLE.md`.
+
+Original brief:
 
 - Quick estimates for clients: shipping, crating, sculpture removal, crew size, and total job.
 - All rates live in **admin-editable rate tables**, never hardcoded.
@@ -26,8 +30,14 @@ Original brief:
 
 ## Phase 4: Industry news and opportunities
 
+Opportunities could later link to a client and a draft estimate.
+
 - An art-logistics and art-world news feed.
 - Alerts for upcoming exhibitions, installs and transport opportunities.
+
+## Future: automatic mileage (not built)
+
+Look up miles per leg from addresses with a maps API (key server-side, cached), keeping the manual override. Estimate stops already store `miles_from_previous` per leg.
 
 ## Future: SMS dispatch (not built)
 

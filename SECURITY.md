@@ -111,6 +111,30 @@ The anonymous box stays exactly as private as before:
 - The portal is still a separate, sessionless build with no Supabase client. An E2E test signs a crew member in, then uses the portal in the same browser and proves the portal never reads auth storage and never sends an `Authorization` header; the stored suggestion has no link to the signed-in user.
 - Nothing in the dispatch module records who visited the portal.
 
+### 10. Phase 3: pricing confidentiality
+
+- Only **admin** and **estimator** can read clients, rate cards, rules, terms, estimates, lines, quote links or acceptances (`private.is_estimating()` in every policy). Dispatchers, viewers, crew, HR and anon get nothing; tests prove it per role and table.
+- Only admins edit rate cards, rules and terms; only **draft** cards can be edited (activate with an effective date; terms are immutable versions).
+- Signed-in users can change an estimate's **inputs** only (column grants). Totals, lines, status, approvals, the rate snapshot, links and acceptances are written only by the server functions through `server_*` database functions callable by the service role alone, which also record the real actor in the audit log.
+- The server re-prices with the shared engine and rejects any client-submitted total that doesn't match. Approval is voided if the price changes after approval.
+- Converted jobs carry no prices: only the estimate number and accepted date.
+
+### 11. Phase 3: quote links
+
+| Threat | Control |
+| --- | --- |
+| Guessing a link | 128-bit random token; only its SHA-256 is stored; rate-limited API |
+| A forwarded or leaked link | Expires with the quote; revoke anytime; sending again or revising retires the old link |
+| Old revision accepted after a new one was sent | Refused with a pointer to the latest link |
+| Tampered totals in the database | Every view and acceptance re-prices from the snapshot and refuses on mismatch |
+| Probing links | Expired, revoked, unknown and malformed tokens all return the same message |
+| Internal data leaking to clients | The API returns an explicit field list: no costs, margins, traces, internal notes or staff emails (tested with a deep key scan) |
+| Session leakage | The quote page is a separate sessionless build (no Supabase client, no storage); E2E proves no `Authorization` header or auth storage access with an office session in the same browser |
+
+### 12. Phase 3: acceptance records
+
+Acceptance is a **named business record**, not anonymous, and the page says so before submitting: name, title, email, typed signature (must match the name), terms version, total, time, IP address and browser are stored in `quote_acceptances`. One acceptance per estimate. This is a simple click-to-accept record; for contracts that need a qualified e-signature, use a dedicated e-signature service.
+
 ## Controls summary
 
 - **CSP per area.** Portal (`/s/*`): `default-src 'self'`, `connect-src 'self'`, no third parties. Admin (`/admin`, `/admin/*`, `/auth/callback`, `/auth/confirm`): same, plus only this project's Supabase origin in `connect-src` / `img-src` (generated into `_headers` at build). APIs: `default-src 'none'`.
