@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { JOB_STATUSES, JOB_STATUS_LABEL, JOB_TYPES, JOB_TYPE_LABEL, fmtTime } from '../../../shared/dispatch';
+import { JOB_STATUSES, JOB_STATUS_LABEL, JOB_TYPES, JOB_TYPE_LABEL } from '../../../shared/dispatch';
+import { fmtTime } from '../tz';
 import { Link, navigate } from '../../router';
 import { ErrorNote } from '../../components/ui';
 import { loadBoard, subscribeBoard, type BoardData } from '../data';
-import { JobStatusPill, ymd } from '../ui';
+import { JobStatusPill, TzNote, officeDayBounds, officeToday, ymd } from '../ui';
 import { addDays, dateFromQuery, setDateQuery, weekStart } from '../board/boardData';
 
 export function Week() {
@@ -17,7 +18,8 @@ export function Week() {
 
   const reload = useCallback(async () => {
     try {
-      setData(await loadBoard(start, addDays(start, 7)));
+      const b = officeDayBounds(start, 7);
+      setData(await loadBoard(b.start, b.end));
       setError(null);
     } catch (e) {
       setError((e as Error).message);
@@ -41,7 +43,7 @@ export function Week() {
     );
   }, [data, type, status, crew, asset]);
 
-  const today = ymd(new Date());
+  const today = ymd(officeToday());
   const end = addDays(start, 6);
 
   return (
@@ -58,9 +60,10 @@ export function Week() {
           <button className="a-btn" onClick={() => setStart((d) => addDays(d, 7))} aria-label="Next week">
             →
           </button>
-          <button className="a-btn" onClick={() => setStart(weekStart(new Date()))}>
+          <button className="a-btn" onClick={() => setStart(weekStart(officeToday()))}>
             This week
           </button>
+          <TzNote className="w-full" />
         </div>
       </div>
 
@@ -84,8 +87,9 @@ export function Week() {
         <div className="week-grid" role="list" aria-label="Days of the week">
           {days.map((d) => {
             const k = ymd(d);
-            const dayStart = d.getTime();
-            const dayEnd = addDays(d, 1).getTime();
+            const ob = officeDayBounds(d);
+            const dayStart = ob.start.getTime();
+            const dayEnd = ob.end.getTime();
             const list = jobs.filter((j) => new Date(j.start_at).getTime() < dayEnd && new Date(j.end_at).getTime() > dayStart);
             return (
               <section key={k} role="listitem" aria-labelledby={`wd-${k}`} className={`week-day ${k === today ? 'is-today' : ''}`}>

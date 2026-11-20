@@ -11,6 +11,7 @@ import {
   type JobType,
 } from '../../shared/dispatch';
 import type { Conflict } from './data';
+import { addDaysYmd, dayBounds, getAppTz, todayYmd, tzHint, utcToWallInput, wallInputToUtc, ymdInTz } from './tz';
 
 export function FlagBadge({ flag, big = false }: { flag: string; big?: boolean }) {
   const f = HANDLING_FLAG[flag as HandlingFlag];
@@ -84,14 +85,19 @@ export function ConflictBadges({ conflicts, detail = false }: { conflicts: Confl
   );
 }
 
-/** Local datetime-input helpers (value format yyyy-MM-ddTHH:mm in the browser's zone). */
+/**
+ * Datetime-input helpers: values are office wall time ('yyyy-MM-ddTHH:mm' in the
+ * app_settings time zone), whatever zone the device is in. See ./tz.ts.
+ */
 export function toLocalInput(iso: string | null | undefined): string {
-  if (!iso) return '';
-  const d = new Date(iso);
-  const p = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+  return utcToWallInput(iso, getAppTz());
 }
-export const fromLocalInput = (v: string) => (v ? new Date(v).toISOString() : null);
+export const fromLocalInput = (v: string) => wallInputToUtc(v, getAppTz());
+
+/**
+ * Calendar "date holders": a Date at LOCAL midnight whose y/m/d names an office day.
+ * Only use them for calendar math and labels; convert to instants with officeDayBounds().
+ */
 export function ymd(d: Date): string {
   const p = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
@@ -99,4 +105,18 @@ export function ymd(d: Date): string {
 export function parseYmd(s: string): Date {
   const [y, m, d] = s.split('-').map(Number);
   return new Date(y, m - 1, d);
+}
+/** Today in the office time zone, as a date holder. */
+export const officeToday = (): Date => parseYmd(todayYmd(getAppTz()));
+/** UTC instants bounding an office day (or several), for queries. */
+export function officeDayBounds(day: Date, days = 1): { start: Date; end: Date } {
+  const k = ymd(day);
+  return { start: dayBounds(k, getAppTz()).start, end: dayBounds(addDaysYmd(k, days - 1), getAppTz()).end };
+}
+/** Office calendar date of an instant, as 'yyyy-MM-dd'. */
+export const officeYmd = (iso: string): string => ymdInTz(iso, getAppTz());
+
+/** Small "Times in Pacific Standard Time (America/Los_Angeles)" note. */
+export function TzNote({ className = '' }: { className?: string }) {
+  return <p className={`text-[0.75rem] text-muted ${className}`}>{tzHint(getAppTz())}</p>;
 }

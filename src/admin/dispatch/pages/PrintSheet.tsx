@@ -14,7 +14,8 @@ import { ErrorNote } from '../../components/ui';
 import { Link, navigate } from '../../router';
 import { appTimeZone, getJob, listAssets, listCrew, loadBoard, logDispatchExport } from '../data';
 import { PACKING_LABEL, toSheetJob, toSheetJobs, type SheetJob } from '../print/sheetModel';
-import { accessLabel, parseYmd, ymd } from '../ui';
+import { accessLabel } from '../ui';
+import { dayBounds, fmtDateTime, fmtYmd, getAppTz, todayYmd, tzHint } from '../tz';
 
 /**
  * Printable dispatch sheet: /admin/dispatch/print?date=YYYY-MM-DD (all jobs that day)
@@ -26,10 +27,10 @@ type Raw =
   | { kind: 'job'; job: NonNullable<Awaited<ReturnType<typeof getJob>>>; crew: Awaited<ReturnType<typeof listCrew>>; assets: Awaited<ReturnType<typeof listAssets>> };
 
 export function PrintSheet({ jobId }: { jobId: string | null }) {
-  const initialDate = new URLSearchParams(location.search).get('date') ?? ymd(new Date());
-  const [date, setDate] = useState(/^\d{4}-\d{2}-\d{2}$/.test(initialDate) ? initialDate : ymd(new Date()));
+  const initialDate = new URLSearchParams(location.search).get('date') ?? todayYmd(getAppTz());
+  const [date, setDate] = useState(/^\d{4}-\d{2}-\d{2}$/.test(initialDate) ? initialDate : todayYmd(getAppTz()));
   const [raw, setRaw] = useState<Raw | null>(null);
-  const [tz, setTz] = useState<string | undefined>(undefined);
+  const [tz, setTz] = useState<string | undefined>(getAppTz());
   const [includeOffice, setIncludeOffice] = useState(false);
   const [busy, setBusy] = useState<'xlsx' | 'docx' | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -49,9 +50,8 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
           if (!job) throw new Error('Job not found.');
           if (live) setRaw({ kind: 'job', job, crew, assets });
         } else {
-          const from = parseYmd(date);
-          const to = new Date(from.getFullYear(), from.getMonth(), from.getDate() + 1);
-          const data = await loadBoard(from, to);
+          const { start, end } = dayBounds(date, getAppTz()); // the office's calendar day
+          const data = await loadBoard(start, end);
           if (live) setRaw({ kind: 'day', date, data });
         }
       } catch (e) {
@@ -74,7 +74,7 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
     return toSheetJobs(d.jobs, { assignments: d.assignments, jobAssets: d.jobAssets, crew: d.crew, assets: d.assets }, opts);
   }, [raw, includeOffice]);
 
-  const label = raw?.kind === 'job' ? raw.job.job_number : fmtDay(`${date}T12:00:00`, undefined);
+  const label = raw?.kind === 'job' ? raw.job.job_number : fmtYmd(date);
   const scope = raw?.kind === 'job' ? { job_id: raw.job.id, job_number: raw.job.job_number } : { date };
 
   async function exportAs(format: 'xlsx' | 'docx') {
@@ -163,7 +163,7 @@ export function PrintSheet({ jobId }: { jobId: string | null }) {
           {jobs.map((j, i) => (
             <JobBlock key={j.id} job={j} tz={tz} first={i === 0} includeOffice={includeOffice} />
           ))}
-          <p className="dsheet-foot">Printed {new Date().toLocaleString()}</p>
+          <p className="dsheet-foot">Printed {fmtDateTime(new Date().toISOString(), tz)} · {tzHint(tz)}</p>
         </article>
       )}
     </div>

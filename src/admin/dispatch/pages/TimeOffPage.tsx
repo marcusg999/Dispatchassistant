@@ -3,14 +3,14 @@ import type { FormEvent } from 'react';
 import { timeOffSchema, issues } from '../../../shared/dispatch';
 import { addTimeOff, deleteTimeOff, listCrew, listTimeOff, type TimeOff } from '../data';
 import { ErrorNote } from '../../components/ui';
-import { parseYmd, ymd } from '../ui';
+import { officeToday, parseYmd, ymd } from '../ui';
 
 type Crew = Awaited<ReturnType<typeof listCrew>>[number];
 
 /** "Unavailable" calendar. Never asks for a reason. */
 export function TimeOffPage({ canEdit }: { canEdit: boolean }) {
   const [month, setMonth] = useState(() => {
-    const d = new Date();
+    const d = officeToday();
     return new Date(d.getFullYear(), d.getMonth(), 1);
   });
   const [crew, setCrew] = useState<Crew[]>([]);
@@ -18,7 +18,7 @@ export function TimeOffPage({ canEdit }: { canEdit: boolean }) {
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [partial, setPartial] = useState(false);
-  const [form, setForm] = useState({ crew_member_id: '', start_date: ymd(new Date()), end_date: ymd(new Date()), start_time: '', end_time: '', note: '' });
+  const [form, setForm] = useState({ crew_member_id: '', start_date: ymd(officeToday()), end_date: ymd(officeToday()), start_time: '', end_time: '', note: '' });
 
   // Monday-start grid covering the month.
   const days = useMemo(() => {
@@ -40,7 +40,7 @@ export function TimeOffPage({ canEdit }: { canEdit: boolean }) {
 
   const name = (id: string) => crew.find((c) => c.id === id)?.display_name ?? 'Unknown';
   const onDay = (d: string) => entries.filter((e) => e.start_date <= d && e.end_date >= d);
-  const today = ymd(new Date());
+  const today = ymd(officeToday()); // time off is plain office dates
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();

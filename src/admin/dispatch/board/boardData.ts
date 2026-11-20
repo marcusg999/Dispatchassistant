@@ -2,13 +2,12 @@
 import type { KeyboardCoordinateGetter, UniqueIdentifier } from '@dnd-kit/core';
 import { KeyboardCode } from '@dnd-kit/core';
 import type { BoardData, Conflict } from '../data';
-import { parseYmd, ymd } from '../ui';
+import { officeToday, parseYmd, ymd } from '../ui';
 
 export function dateFromQuery(): Date {
   const q = new URLSearchParams(location.search).get('date');
   if (q && /^\d{4}-\d{2}-\d{2}$/.test(q)) return parseYmd(q);
-  const d = new Date();
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  return officeToday();
 }
 export function setDateQuery(d: Date) {
   const url = new URL(location.href);

@@ -76,7 +76,7 @@ export async function buildDispatchXlsx(jobs: SheetJob[], meta: DispatchExportMe
     ws.getCell(1, 1).value = `${displayName()}: Dispatch sheet · ${meta.label}`;
     ws.getCell(1, 1).font = { bold: true, size: 16, color: { argb: argb(brand.colors.ink) } };
     ws.mergeCells(2, 1, 2, headers.length);
-    ws.getCell(2, 1).value = `Exported ${meta.exportedAt.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })} · ${jobs.length} job${jobs.length === 1 ? '' : 's'}${meta.includeOfficeNotes ? ' · includes office notes' : ''}`;
+    ws.getCell(2, 1).value = `Exported ${meta.exportedAt.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short', timeZone: meta.timeZone })} · ${jobs.length} job${jobs.length === 1 ? '' : 's'}${meta.includeOfficeNotes ? ' · includes office notes' : ''}`;
     ws.getCell(2, 1).font = { size: 10, color: { argb: argb(brand.colors.muted) } };
     const header = ws.getRow(4);
     header.values = headers;
@@ -196,7 +196,7 @@ export async function buildDispatchDocx(jobs: SheetJob[], meta: DispatchExportMe
       spacing: { after: 200 },
       children: [
         new TextRun({
-          text: `${meta.label} · exported ${meta.exportedAt.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}${meta.includeOfficeNotes ? ' · includes office notes' : ''}`,
+          text: `${meta.label} · exported ${meta.exportedAt.toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short', timeZone: meta.timeZone })}${meta.includeOfficeNotes ? ' · includes office notes' : ''}`,
           size: 18,
           color: bare(brand.colors.muted),
         }),

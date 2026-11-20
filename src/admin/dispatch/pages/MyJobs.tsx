@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { ACCESS_FLAG_LABEL, ASSET_KIND_LABEL, JOB_TYPE_LABEL, STOP_KIND_LABEL, dims, formatPhone, type AccessFlag, type AssetKind, type JobType, type StopKind } from '../../../shared/dispatch';
 import { crewSetChecklist, myIncidents, myJobs, type MyJob } from '../data';
 import { Link } from '../../router';
-import { FlagList, ymd } from '../ui';
+import { FlagList, TzNote, officeYmd } from '../ui';
+import { addDaysYmd, fmtDay, fmtTime, fmtYmd, getAppTz, todayYmd } from '../tz';
 
-const time = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '');
-const day = (iso: string) => new Date(iso).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+// Office time zone, whatever zone the phone is in.
+const time = (iso: string | null | undefined) => fmtTime(iso);
+const day = (iso: string) => fmtDay(iso, getAppTz(), 'en-US', true);
 const mapsUrl = (address: string) => `https://maps.apple.com/?q=${encodeURIComponent(address)}`;
 const tel = (p: string) => `tel:${p}`;
 
@@ -14,9 +16,8 @@ export function MyJobs() {
   const [jobs, setJobs] = useState<MyJob[] | null>(null);
   const [incidents, setIncidents] = useState<Awaited<ReturnType<typeof myIncidents>>>([]);
   const [error, setError] = useState<string | null>(null);
-  const now = new Date();
-  const today = ymd(now);
-  const until = ymd(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 14));
+  const today = todayYmd(getAppTz());
+  const until = addDaysYmd(today, 14);
 
   const reload = () =>
     Promise.all([myJobs(today, until), myIncidents()])
@@ -27,7 +28,7 @@ export function MyJobs() {
       .catch(() => setError('Couldn’t load your jobs. Check your signal and pull to refresh.'));
   useEffect(() => void reload(), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const isToday = (j: MyJob) => ymd(new Date(j.start_at)) <= today && ymd(new Date(j.end_at)) >= today;
+  const isToday = (j: MyJob) => officeYmd(j.start_at) <= today && officeYmd(j.end_at) >= today;
   const todays = (jobs ?? []).filter(isToday);
   const later = (jobs ?? []).filter((j) => !isToday(j));
 
@@ -35,7 +36,8 @@ export function MyJobs() {
     <div className="crew-page">
       <header className="crew-head">
         <h1 className="text-[1.75rem] font-[850] leading-tight tracking-tight">My jobs</h1>
-        <p className="text-[1rem] text-muted">{now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        <p className="text-[1rem] text-muted">{fmtYmd(today, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        <TzNote />
       </header>
       {error && (
         <p role="alert" className="crew-alert">
@@ -70,7 +72,7 @@ export function MyJobs() {
             {incidents.map((i) => (
               <li key={i.id} className="crew-card !p-3 text-[1rem]">
                 <p className="font-bold">
-                  {i.job_number} · {new Date(i.occurred_at).toLocaleDateString()}
+                  {i.job_number} · {fmtYmd(officeYmd(i.occurred_at), { month: 'short', day: 'numeric', year: 'numeric' })}
                 </p>
                 <p className="line-clamp-2">{i.description}</p>
                 <p className="text-muted">Status: {i.status.replace('_', ' ')}</p>

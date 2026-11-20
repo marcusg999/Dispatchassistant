@@ -4,7 +4,8 @@ import { incidentSchema, issues } from '../../../shared/dispatch';
 import { crewReportIncident, myJobs, uploadIncidentPhoto, type MyJob } from '../data';
 import { Link } from '../../router';
 import { ACCEPTED_INPUT, PhotoError, scrubPhoto } from '../../../portal/photo';
-import { toLocalInput, ymd } from '../ui';
+import { fromLocalInput, toLocalInput } from '../ui';
+import { addDaysYmd, getAppTz, todayYmd } from '../tz';
 
 const MAX_PHOTOS = 4;
 
@@ -29,8 +30,8 @@ export function CrewIncident({ jobId }: { jobId: string }) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const now = new Date();
-    myJobs(ymd(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 60)), ymd(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30)))
+    const today = todayYmd(getAppTz());
+    myJobs(addDaysYmd(today, -60), addDaysYmd(today, 30))
       .then((list) => setJob(list.find((j) => j.id === jobId) ?? null))
       .catch(() => setJob(null));
   }, [jobId]);
@@ -61,7 +62,7 @@ export function CrewIncident({ jobId }: { jobId: string }) {
       const id = await crewReportIncident({
         job_id: job.id,
         job_item_id: input.job_item_id,
-        occurred_at: new Date(form.occurred_at).toISOString(),
+        occurred_at: fromLocalInput(form.occurred_at) ?? new Date().toISOString(),
         handlers_involved: form.handlers_involved,
         description: form.description,
         supervisor_notified: form.supervisor_notified,

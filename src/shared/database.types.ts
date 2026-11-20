@@ -954,6 +954,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      app_timezone: { Args: Record<PropertyKey, never>; Returns: string };
       board_conflicts: {
         Args: { p_from: string; p_to: string };
         Returns: {

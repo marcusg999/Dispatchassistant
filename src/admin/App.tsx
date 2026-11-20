@@ -3,7 +3,8 @@ import type { Session } from '@supabase/supabase-js';
 import { brand, displayName } from '../brand/brand.config';
 import { configured, supabase } from './supabase';
 import { amIAdmin } from './data';
-import { myStaffRole } from './dispatch/data';
+import { appTimeZone, myStaffRole } from './dispatch/data';
+import { setAppTz } from './dispatch/tz';
 import { homeFor, routeAllowed, type StaffRole } from '../shared/dispatch';
 import { DispatchRoutes, DispatchSubnav, isDispatchPath } from './dispatch/routes';
 import { MyJobs } from './dispatch/pages/MyJobs';
@@ -38,6 +39,8 @@ export function App() {
       if (!s) return setGate('signed-out');
       // UX checks only: the database enforces access with RLS regardless of what these say.
       const [admin, hr, staff] = await Promise.all([amIAdmin(), amIHr(), myStaffRole()]);
+      if (!alive) return;
+      if (admin || staff) await loadOfficeTz(admin ? 'admin' : staff);
       if (!alive) return;
       setRoles({ admin, hr, staff: admin ? 'admin' : staff });
       setGate(admin || hr || staff ? 'allowed' : 'not-admin');
@@ -161,6 +164,25 @@ export function App() {
       <main className={`mx-auto px-4 py-6 lg:px-8 ${isDispatchPath(path) ? 'max-w-[120rem]' : crewOnly ? 'max-w-[40rem] !px-0 !py-0' : 'max-w-[90rem]'}`}>{page}</main>
     </div>
   );
+}
+
+/**
+ * Load the office time zone once, before any dispatch screen renders, so every screen
+ * shows office time whatever zone the device is in. Office roles read app_settings;
+ * crew can't (RLS), so they use the app_timezone() RPC when the database has it.
+ */
+async function loadOfficeTz(role: StaffRole | null) {
+  try {
+    if (role === 'crew') {
+      const rpc = supabase as unknown as { rpc: (fn: string) => PromiseLike<{ data: unknown; error: unknown }> };
+      const r = await rpc.rpc('app_timezone');
+      if (!r.error && typeof r.data === 'string') return setAppTz(r.data);
+      return; // falls back to the device time zone
+    }
+    setAppTz(await appTimeZone());
+  } catch {
+    /* keep the device time zone */
+  }
 }
 
 function Centered({ title, children }: { title: string; children?: React.ReactNode }) {

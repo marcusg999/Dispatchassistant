@@ -26,7 +26,7 @@ import {
   type StopKind,
 } from '../../../shared/dispatch';
 import { Link, navigate } from '../../router';
-import { Confirm, ErrorNote, fmtDateTime } from '../../components/ui';
+import { Confirm, ErrorNote } from '../../components/ui';
 import {
   StaleJobError,
   addChecklistItem,
@@ -55,7 +55,8 @@ import {
   type Conflict,
   type JobFull,
 } from '../data';
-import { ConflictBadges, fromLocalInput, parseYmd, toLocalInput, ymd } from '../ui';
+import { ConflictBadges, TzNote, fromLocalInput, toLocalInput } from '../ui';
+import { fmtDateTime, getAppTz, todayYmd, wallTimeToUtc } from '../tz';
 import { OverrideDialog } from '../board/OverrideDialog';
 
 type CrewRow = Awaited<ReturnType<typeof listCrew>>[number];
@@ -158,8 +159,9 @@ function Editor({ id, canEdit, isAdmin }: { id: string | null; canEdit: boolean;
       setAssets(a);
       if (!id) {
         const q = new URLSearchParams(location.search).get('date');
-        const d = q && /^\d{4}-\d{2}-\d{2}$/.test(q) ? parseYmd(q) : new Date();
-        const at = (h: number) => toLocalInput(new Date(d.getFullYear(), d.getMonth(), d.getDate(), h).toISOString());
+        // New jobs default to 8–12 office time on the chosen (or today's office) date.
+        const d = q && /^\d{4}-\d{2}-\d{2}$/.test(q) ? q : todayYmd(getAppTz());
+        const at = (h: number) => `${d}T${String(h).padStart(2, '0')}:00`;
         setBasics({
           title: '',
           client_name: '',
@@ -382,7 +384,7 @@ function Editor({ id, canEdit, isAdmin }: { id: string | null; canEdit: boolean;
   const assignedIds = job?.assignments.map((a) => a.crew_member_id) ?? [];
   const activeCrew = crew.filter((c) => c.active);
   const crewName = (cid: string) => crew.find((c) => c.id === cid)?.display_name ?? 'Unknown';
-  const backDate = basics.start_at ? basics.start_at.slice(0, 10) : ymd(new Date());
+  const backDate = basics.start_at ? basics.start_at.slice(0, 10) : todayYmd(getAppTz());
 
   return (
     <div className="job-editor">
@@ -400,6 +402,7 @@ function Editor({ id, canEdit, isAdmin }: { id: string | null; canEdit: boolean;
             'New job'
           )}
         </h1>
+        <TzNote className="w-full" />
         {id && (
           <Link href={`/admin/dispatch/print/${id}`} className="a-btn no-underline">
             Print sheet
@@ -831,9 +834,8 @@ function Editor({ id, canEdit, isAdmin }: { id: string | null; canEdit: boolean;
             className="a-btn a-btn-primary"
             disabled={!dupDate}
             onClick={async () => {
-              const src = new Date(job!.start_at);
-              const d = parseYmd(dupDate);
-              d.setHours(src.getHours(), src.getMinutes());
+              // Same office wall-clock start time on the new date (DST-safe).
+              const d = wallTimeToUtc(dupDate, toLocalInput(job!.start_at).slice(11, 16), getAppTz());
               try {
                 const copy = await duplicateJob(id!, d);
                 setDialog(null);

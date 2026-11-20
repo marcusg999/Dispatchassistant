@@ -21,7 +21,6 @@ import {
   ASSET_CAPABILITIES,
   ASSET_CAPABILITY_LABEL,
   ASSET_KIND_LABEL,
-  fmtTime,
   type AssetCapability,
   type AssetKind,
 } from '../../../shared/dispatch';
@@ -40,7 +39,8 @@ import {
   type Conflict,
   type Skill,
 } from '../data';
-import { ConflictBadges, FlagList, JobStatusPill, jobTypeLabel, ymd } from '../ui';
+import { ConflictBadges, FlagList, JobStatusPill, TzNote, jobTypeLabel, officeDayBounds, officeToday, officeYmd, parseYmd, ymd } from '../ui';
+import { fmtDay, fmtTime } from '../tz';
 import {
   addDays,
   assetGroups,
@@ -78,7 +78,8 @@ export function Board({ canEdit }: { canEdit: boolean }) {
 
   const reload = useCallback(async () => {
     try {
-      const d = await loadBoard(day, addDays(day, 1));
+      const b = officeDayBounds(day);
+      const d = await loadBoard(b.start, b.end);
       setData(d);
       setError(null);
       return d;
@@ -213,7 +214,7 @@ export function Board({ canEdit }: { canEdit: boolean }) {
   const groupsCrew = data ? crewGroups(data, day) : null;
   const groupsAssets = data ? assetGroups(data) : null;
   const conflictsFor = (jobId: string) => data?.conflicts.filter((c) => c.job_id === jobId) ?? [];
-  const isToday = ymd(day) === ymd(new Date());
+  const isToday = ymd(day) === ymd(officeToday());
 
   return (
     <div>
@@ -231,15 +232,16 @@ export function Board({ canEdit }: { canEdit: boolean }) {
             type="date"
             className="a-input !w-auto"
             value={ymd(day)}
-            onChange={(e) => e.currentTarget.value && setDay(new Date(`${e.currentTarget.value}T00:00`))}
+            onChange={(e) => e.currentTarget.value && setDay(parseYmd(e.currentTarget.value))}
           />
           <button className="a-btn" onClick={() => setDay((d) => addDays(d, 1))} aria-label="Next day">
             →
           </button>
-          <button className="a-btn" onClick={() => setDay(new Date(new Date().setHours(0, 0, 0, 0)))} disabled={isToday}>
+          <button className="a-btn" onClick={() => setDay(officeToday())} disabled={isToday}>
             Today
           </button>
           <span className="ml-1 font-semibold">{day.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+          <TzNote className="w-full" />
         </div>
         <div className="ml-auto flex flex-wrap gap-2">
           <Link href={`/admin/dispatch/print?date=${ymd(day)}`} className="a-btn no-underline">
@@ -573,7 +575,7 @@ function JobColumn({
   const dest = [...job.stops].reverse().find((s) => s.kind === 'destination') ?? (job.stops.length > 1 ? job.stops[job.stops.length - 1] : undefined);
   const flags = [...new Set(job.items.flatMap((i) => i.handling_flags))];
   const done = job.checklist.filter((c) => c.checked_at).length;
-  const multiDay = ymd(new Date(job.start_at)) !== ymd(new Date(job.end_at));
+  const multiDay = officeYmd(job.start_at) !== officeYmd(job.end_at);
   const where = (s: typeof origin) => (s ? s.site_name || s.address : '');
 
   return (
@@ -594,7 +596,7 @@ function JobColumn({
         </div>
         <p className="mt-1 text-[0.8125rem] font-semibold">
           {fmtTime(job.start_at)}–{fmtTime(job.end_at)}
-          {multiDay && <span className="font-normal text-muted"> (ends {new Date(job.end_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })})</span>}
+          {multiDay && <span className="font-normal text-muted"> (ends {fmtDay(job.end_at)})</span>}
           {job.call_time && <span className="font-normal text-muted"> · call {fmtTime(job.call_time)}</span>}
         </p>
         {(origin || dest) && (

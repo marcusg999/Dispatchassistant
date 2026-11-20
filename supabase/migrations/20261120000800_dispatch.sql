@@ -641,3 +641,10 @@ create index crew_certs_type_idx on public.crew_certifications (type);
 create index incident_photos_incident_idx on public.incident_photos (incident_id);
 create index incidents_item_idx on public.incident_reports (job_item_id);
 create index jobs_team_lead_idx on public.jobs (team_lead_id);
+
+-- Office time zone for any signed-in staff/crew UI (not secret; crew can't read app_settings).
+create or replace function public.app_timezone()
+returns text language sql stable security invoker set search_path = ''
+as $$ select private.app_tz(); $$;
+revoke all on function public.app_timezone() from public, anon;
+grant execute on function public.app_timezone() to authenticated;
