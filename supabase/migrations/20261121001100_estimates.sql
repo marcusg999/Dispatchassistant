@@ -577,6 +577,7 @@ begin
     declined_at      = case when p_patch ? 'declined_at' then (p_patch ->> 'declined_at')::timestamptz else declined_at end,
     decline_reason   = case when p_patch ? 'decline_reason' then p_patch ->> 'decline_reason' else decline_reason end,
     rate_card_id     = case when p_patch ? 'rate_card_id' then (p_patch ->> 'rate_card_id')::uuid else rate_card_id end,
+    terms_version_id = case when p_patch ? 'terms_version_id' then (p_patch ->> 'terms_version_id')::uuid else terms_version_id end,
     rate_snapshot    = case when p_patch ? 'rate_snapshot' then p_patch -> 'rate_snapshot' else rate_snapshot end
   where id = p_estimate;
   if not found then raise exception 'not found' using errcode = 'P0002'; end if;

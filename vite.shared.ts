@@ -108,6 +108,8 @@ export function devApi(): Plugin {
         else if (url.pathname === '/api/board') mod = 'board';
         else if (url.pathname === '/api/incident-photo') mod = 'incident-photo';
         else if (url.pathname.startsWith('/api/status/')) mod = 'status';
+        else if (url.pathname.startsWith('/api/estimate/')) mod = 'estimate';
+        else if (url.pathname.startsWith('/api/quote/')) mod = 'quote';
         if (!mod) return next();
         try {
           const { default: handler } = await server.ssrLoadModule(`/netlify/functions/${mod}.mts`);
