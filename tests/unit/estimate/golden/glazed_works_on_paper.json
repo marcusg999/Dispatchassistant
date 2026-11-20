@@ -1,0 +1,131 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 2.58,
+      "unit_price": 1800,
+      "amount": 4644,
+      "cost": 1548,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 4,
+      "unit_price": 6000,
+      "amount": 24000,
+      "cost": 11200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 22,
+      "unit_price": 250,
+      "amount": 5500,
+      "cost": 2640,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:w1",
+      "category": "packing_crating",
+      "qty": 6,
+      "unit_price": 70650,
+      "amount": 423900,
+      "cost": 182700,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8500,
+      "amount": 34000,
+      "cost": 16800,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8000,
+      "amount": 32000,
+      "cost": 15200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 27000,
+      "amount": 27000,
+      "cost": 16200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 2732,
+      "amount": 2732,
+      "cost": 1231,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 553776,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 553776,
+    "cost_cents": 247519,
+    "margin_cents": 306257,
+    "margin_bp": 5530
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 2,
+    "positions": {
+      "driver": 1,
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 22,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 258,
+  "crates": [
+    {
+      "item": "w1",
+      "method": "padded_crate",
+      "outer": [
+        33.5,
+        27.5,
+        11.5
+      ],
+      "sheets": 1,
+      "lf": 49,
+      "bf": 40,
+      "cls": "Small",
+      "hours": 2
+    }
+  ],
+  "warnings": []
+}

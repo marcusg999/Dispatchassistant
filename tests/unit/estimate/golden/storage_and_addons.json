@@ -1,0 +1,166 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 0.81,
+      "unit_price": 1800,
+      "amount": 1458,
+      "cost": 486,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 2,
+      "unit_price": 6000,
+      "amount": 12000,
+      "cost": 5600,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 6,
+      "unit_price": 250,
+      "amount": 1500,
+      "cost": 720,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_min",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 10500,
+      "amount": 10500,
+      "cost": 0,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:st",
+      "category": "packing_crating",
+      "qty": 3,
+      "unit_price": 3500,
+      "amount": 10500,
+      "cost": 3000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8500,
+      "amount": 34000,
+      "cost": 16800,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8000,
+      "amount": 32000,
+      "cost": 15200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "addon:unpacking",
+      "category": "addons",
+      "qty": 3,
+      "unit_price": 4000,
+      "amount": 12000,
+      "cost": 4500,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "addon:debris_removal",
+      "category": "addons",
+      "qty": 1,
+      "unit_price": 12500,
+      "amount": 12500,
+      "cost": 5000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "addon:waiting_hour",
+      "category": "addons",
+      "qty": 1.5,
+      "unit_price": 15000,
+      "amount": 22500,
+      "cost": 11250,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "addon:storage_day",
+      "category": "storage",
+      "qty": 30,
+      "unit_price": 1500,
+      "amount": 45000,
+      "cost": 15000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 15000,
+      "amount": 15000,
+      "cost": 9000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 2037,
+      "amount": 2037,
+      "cost": 544,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 210995,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 210995,
+    "cost_cents": 87100,
+    "margin_cents": 123895,
+    "margin_bp": 5872
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 2,
+    "positions": {
+      "driver": 1,
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 6,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 81,
+  "crates": [],
+  "warnings": []
+}

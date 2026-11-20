@@ -1,0 +1,126 @@
+{
+  "lines": [
+    {
+      "key": "shipping.oversize:big",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 25000,
+      "amount": 25000,
+      "cost": 8000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 3.22,
+      "unit_price": 1800,
+      "amount": 5796,
+      "cost": 1932,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 5,
+      "unit_price": 8000,
+      "amount": 40000,
+      "cost": 19000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 40,
+      "unit_price": 400,
+      "amount": 16000,
+      "cost": 8000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:big",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 3500,
+      "amount": 3500,
+      "cost": 1000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 5,
+      "unit_price": 8500,
+      "amount": 42500,
+      "cost": 21000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 5,
+      "unit_price": 8000,
+      "amount": 40000,
+      "cost": 19000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 120000,
+      "amount": 120000,
+      "cost": 72000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 6944,
+      "amount": 6944,
+      "cost": 2955,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 299740,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 299740,
+    "cost_cents": 152887,
+    "margin_cents": 146853,
+    "margin_bp": 4899
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 2,
+    "positions": {
+      "driver": 1,
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 40,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 322,
+  "crates": [],
+  "warnings": []
+}

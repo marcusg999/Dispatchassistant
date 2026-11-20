@@ -1,0 +1,192 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 2,
+      "unit_price": 1800,
+      "amount": 3600,
+      "cost": 1200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 9,
+      "unit_price": 9500,
+      "amount": 85500,
+      "cost": 40500,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 380.5,
+      "unit_price": 360,
+      "amount": 136980,
+      "cost": 66968,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:p1",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 184350,
+      "amount": 184350,
+      "cost": 81770,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 8,
+      "unit_price": 8500,
+      "amount": 68000,
+      "cost": 33600,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor_ot:driver",
+      "category": "labor",
+      "qty": 1,
+      "unit_price": 12750,
+      "amount": 12750,
+      "cost": 6300,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:lead",
+      "category": "labor",
+      "qty": 8,
+      "unit_price": 9500,
+      "amount": 76000,
+      "cost": 38400,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor_ot:lead",
+      "category": "labor",
+      "qty": 1,
+      "unit_price": 14250,
+      "amount": 14250,
+      "cost": 7200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 8,
+      "unit_price": 8000,
+      "amount": 64000,
+      "cost": 30400,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor_ot:art_handler",
+      "category": "labor",
+      "qty": 1,
+      "unit_price": 12000,
+      "amount": 12000,
+      "cost": 5700,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "access:stairs_flight",
+      "category": "access",
+      "qty": 2,
+      "unit_price": 7500,
+      "amount": 15000,
+      "cost": 5000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "addon:placement",
+      "category": "addons",
+      "qty": 1,
+      "unit_price": 7500,
+      "amount": 7500,
+      "cost": 3000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 120000,
+      "amount": 120000,
+      "cost": 72000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 18086,
+      "amount": 18086,
+      "cost": 8693,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 818016,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 818016,
+    "cost_cents": 400731,
+    "margin_cents": 417285,
+    "margin_bp": 5101
+  },
+  "crew": {
+    "suggested": 3,
+    "applied": 3,
+    "positions": {
+      "driver": 1,
+      "lead": 1,
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 380.5,
+    "tier_label": "Long-haul",
+    "multiplier_bp": 8000
+  },
+  "billable_weight_lb": 200,
+  "crates": [
+    {
+      "item": "p1",
+      "method": "custom_crate",
+      "outer": [
+        69.5,
+        57.5,
+        12.5
+      ],
+      "sheets": 3,
+      "lf": 93,
+      "bf": 144,
+      "cls": "Large",
+      "hours": 6
+    }
+  ],
+  "warnings": []
+}

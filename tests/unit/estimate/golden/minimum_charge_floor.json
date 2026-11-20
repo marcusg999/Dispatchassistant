@@ -1,0 +1,85 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 0.05,
+      "unit_price": 1800,
+      "amount": 90,
+      "cost": 30,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:m1",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 5000,
+      "amount": 5000,
+      "cost": 1400,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8000,
+      "amount": 32000,
+      "cost": 15200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 7,
+      "amount": 7,
+      "cost": 2,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "policy.minimum",
+      "category": "other",
+      "qty": 1,
+      "unit_price": 7903,
+      "amount": 7903,
+      "cost": 0,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 45000,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 45000,
+    "cost_cents": 16632,
+    "margin_cents": 28368,
+    "margin_bp": 6304
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 1,
+    "positions": {
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": true
+  },
+  "distance": {
+    "total_miles": 2,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 5,
+  "crates": [],
+  "warnings": []
+}

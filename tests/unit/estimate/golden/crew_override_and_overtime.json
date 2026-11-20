@@ -1,0 +1,177 @@
+{
+  "lines": [
+    {
+      "key": "shipping.oversize:i1",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 25000,
+      "amount": 25000,
+      "cost": 8000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 2.13,
+      "unit_price": 1800,
+      "amount": 3834,
+      "cost": 1278,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 10,
+      "unit_price": 8000,
+      "amount": 80000,
+      "cost": 38000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 30,
+      "unit_price": 400,
+      "amount": 12000,
+      "cost": 6000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:i1",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 3500,
+      "amount": 3500,
+      "cost": 1000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 8,
+      "unit_price": 8500,
+      "amount": 68000,
+      "cost": 33600,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor_ot:driver",
+      "category": "labor",
+      "qty": 2,
+      "unit_price": 12750,
+      "amount": 25500,
+      "cost": 12600,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:lead",
+      "category": "labor",
+      "qty": 8,
+      "unit_price": 9500,
+      "amount": 76000,
+      "cost": 38400,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor_ot:lead",
+      "category": "labor",
+      "qty": 2,
+      "unit_price": 14250,
+      "amount": 28500,
+      "cost": 14400,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:installer",
+      "category": "labor",
+      "qty": 24,
+      "unit_price": 9000,
+      "amount": 216000,
+      "cost": 108000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor_ot:installer",
+      "category": "labor",
+      "qty": 6,
+      "unit_price": 13500,
+      "amount": 81000,
+      "cost": 40500,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "equipment:lift",
+      "category": "equipment",
+      "qty": 2,
+      "unit_price": 35000,
+      "amount": 70000,
+      "cost": 30000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 90000,
+      "amount": 90000,
+      "cost": 54000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 9667,
+      "amount": 9667,
+      "cost": 4262,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 789001,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 789001,
+    "cost_cents": 390040,
+    "margin_cents": 398961,
+    "margin_bp": 5057
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 5,
+    "positions": {
+      "driver": 1,
+      "lead": 1,
+      "installer": 3
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 30,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 213,
+  "crates": [],
+  "warnings": []
+}
