@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { displayName } from '../brand/brand.config';
+import { brand, displayName } from '../brand/brand.config';
 import { dayText, dimsText, groupLines, money, qtyText, quoteFileBase, quoteLabel, stopKindText, type QuoteDoc } from '../shared/quote/model';
 import { acceptQuote, declineQuote, loadQuote, quoteToken, type LoadResult } from './api';
 
@@ -67,7 +67,7 @@ export function App() {
       </main>
       <footer className="q-foot">
         <span>{displayName()}</span>
-        <span className="q-foot-note">Questions about this quote? Reply to the message that brought you here.</span>
+        <span className="q-foot-note">{brand.quoteContactLine}</span>
       </footer>
     </div>
   );

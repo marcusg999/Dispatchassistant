@@ -30,6 +30,8 @@ export interface BrandConfig {
   logoPath: string;
   /** One line shown in the footer: how to reach a human. Never a person's name. */
   supportLine: string;
+  /** Footer line on the client quote page: how clients reach a person about a quote. */
+  quoteContactLine: string;
   /** Who reads submissions, in plain words. Default copy never names a company. */
   officeNoun: string;
   colors: {
@@ -88,6 +90,7 @@ export const brand: BrandConfig = {
   companyName: '',
   logoPath: '',
   supportLine: 'Questions about this box? Ask the office for the printed flyer.',
+  quoteContactLine: 'Questions about this quote? Reply to the message that brought you here.',
   officeNoun: 'the office',
   colors: {
     wall: '#E9E6E0',
