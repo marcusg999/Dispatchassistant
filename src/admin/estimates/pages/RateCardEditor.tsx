@@ -198,7 +198,7 @@ export function RateCardEditor({ id, isAdmin }: { id: string; isAdmin: boolean }
                   <tbody className="[&_tr]:!cursor-default">
                     {changes.map((c) => {
                       const kind = kindForPath(c.path);
-                      const fmt = (v: unknown) => (v === undefined ? '(no such row)' : typeof v === 'object' && v !== null ? JSON.stringify(v) : displayStored(v, kind));
+                      const fmt = (v: unknown) => (v === undefined ? '(no such row)' : typeof v === 'object' && v !== null ? (Array.isArray(v) ? v.join(', ') || '(none)' : '(whole row)') : displayStored(v, kind));
                       return (
                         <tr key={c.path}>
                           <th scope="row" className="text-left font-normal">{pathLabel(c.path)}</th>
