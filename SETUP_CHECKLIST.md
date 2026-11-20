@@ -1,6 +1,6 @@
 # Setup checklist (production)
 
-Manual, one-time steps to take Dispatch Bro live at **https://dispatch-bro-app.netlify.app**. Do them in order. Dashboard menu names change from time to time; if a label differs slightly, look for the closest match.
+Manual, one-time steps to take Air Ride Op live at **https://dispatch-bro-app.netlify.app**. Do them in order. Dashboard menu names change from time to time; if a label differs slightly, look for the closest match.
 
 > **To confirm before go-live: the first admin email(s).** Everywhere below that says `FIRST_ADMIN@example.com`, use the Google account email(s) that should run the console.
 
@@ -20,7 +20,7 @@ You'll collect these values along the way. Keep them in a password manager, neve
 ## 1. Create the Supabase project
 
 1. Go to supabase.com → sign in → **New project**.
-2. Pick your organization, name it (e.g. `dispatch-bro`), set a strong database password (save it), choose the region closest to the crews, plan **Free**.
+2. Pick your organization, name it (e.g. `air-ride-op`), set a strong database password (save it), choose the region closest to the crews, plan **Free**.
 3. Click **Create new project** and wait until it says it's ready.
 4. Copy the **project ref**: it's the `<ref>` in the project URL `https://<ref>.supabase.co` (also under Settings → General).
 
@@ -131,7 +131,7 @@ Keep at least two admins (and two HR members) so this is rarely needed.
 
 ## 5. Google Cloud OAuth client (optional)
 
-1. Go to console.cloud.google.com → project picker → **New project** (e.g. `dispatch-bro-auth`) → **Create** → select it.
+1. Go to console.cloud.google.com → project picker → **New project** (e.g. `air-ride-op-auth`) → **Create** → select it.
 2. **APIs & Services** → **OAuth consent screen** (may appear as "Google Auth Platform → Branding/Audience"):
    - If admins all use one Google Workspace domain: user type **Internal**.
    - Otherwise: **External**, then under **Audience/Test users** add each admin's Google email (or publish the app).
@@ -209,6 +209,17 @@ Supabase → **Advisors** → **Security Advisor** → run. Expect **no warnings
 5. **Invite crew:** add each crew member under **Dispatch → Crew** with the same email as their role, then ask them to open `https://dispatch-bro-app.netlify.app/admin` → **First time? Create your password**. (Needs the email service from step 4.2a.)
 6. **Netlify:** no new environment variables. The incident-photo function reuses `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY`; make sure `VITE_SUPABASE_PUBLISHABLE_KEY` also has the **Functions** scope.
 7. Run the Supabase security advisor again (section 11): it should show no warnings.
+
+## 11b. Phase 3: estimates and quotes
+
+1. Pull `main` and push the migrations: `npx supabase db push --remote`. They add the estimator role, clients, rate cards, estimates and quote links. Nothing in Phase 1 or 2 changes.
+2. **Enter your real rates:** sign in as admin → **Estimates → Rate cards → Start from sample rates**. This creates a draft card marked **SAMPLE**. Replace every value with your own rates (the live preview shows example prices as you type), then **Activate…** and **Mark reviewed**. Until a reviewed card is active, Estimates shows a red "Sample rates" banner. Later price changes: duplicate the active card as a draft, edit, activate.
+3. **Packing and crew rules:** Estimates → Packing & crew rules. Production starts empty; until you add rules, items get the rate card's default packing method and the crew rules on the card. Add your own (the local SAMPLE rules in `supabase/seed_estimates.sql` are a starting point).
+4. **Terms: have them reviewed.** Estimates → Terms → New version. Paste terms reviewed by your own counsel. Quotes can't be sent until current terms exist. The local placeholder text must not be used for real quotes.
+5. **Assign estimators:** Dispatch → Staff roles → add the email with role **estimator**. They land on Estimates after sign-in.
+6. **Clients:** Estimates → Clients → add your clients and contacts (or let estimators add them as they go).
+7. Netlify: no new environment variables. The estimate function uses `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY` (which must have the **Functions** scope, as in 11a).
+8. Run the Supabase security advisor again (section 11): it should show no warnings.
 
 ## 12. Print and share
 

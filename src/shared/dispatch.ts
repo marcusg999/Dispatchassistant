@@ -119,7 +119,7 @@ export const CONFLICT_LABEL: Record<string, string> = {
   checklist_incomplete: 'Checklist open',
 };
 
-export const STAFF_ROLES = ['admin', 'dispatcher', 'viewer', 'crew'] as const;
+export const STAFF_ROLES = ['admin', 'estimator', 'dispatcher', 'viewer', 'crew'] as const;
 export type StaffRole = (typeof STAFF_ROLES)[number];
 
 /** Where each role lands after sign-in. HR-only users go to the HR inbox. */
@@ -127,6 +127,7 @@ export function homeFor(role: StaffRole | null, isHr: boolean): string {
   if (role === 'admin') return '/admin';
   if (role === 'dispatcher' || role === 'viewer') return '/admin/dispatch';
   if (role === 'crew') return '/admin/my-jobs';
+  if (role === 'estimator') return '/admin/estimates';
   return isHr ? '/admin/hr' : '/admin';
 }
 
@@ -137,6 +138,9 @@ export function routeAllowed(path: string, role: StaffRole | null, isHr: boolean
   if (path === '/admin/my-jobs' || path.startsWith('/admin/my-jobs/')) return role === 'crew';
   if (path === '/admin/dispatch/roles') return role === 'admin';
   if (path.startsWith('/admin/dispatch')) return role === 'admin' || role === 'dispatcher' || role === 'viewer';
+  // Phase 3 estimates: money is visible to admins and estimators only.
+  if (path === '/admin/estimates/approvals' || path === '/admin/estimates/rules' || path === '/admin/estimates/terms') return role === 'admin';
+  if (path === '/admin/estimates' || path.startsWith('/admin/estimates/')) return role === 'admin' || role === 'estimator';
   if (path === '/admin/audit') return role === 'admin' || isHr;
   // Phase 1 suggestion-box console: admins only.
   return role === 'admin';

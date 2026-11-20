@@ -26,7 +26,7 @@ import {
   type StopKind,
 } from '../../../shared/dispatch';
 import { Link, navigate } from '../../router';
-import { Confirm, ErrorNote } from '../../components/ui';
+import { Confirm, ErrorNote, fmtDate } from '../../components/ui';
 import {
   StaleJobError,
   addChecklistItem,
@@ -402,6 +402,12 @@ function Editor({ id, canEdit, isAdmin }: { id: string | null; canEdit: boolean;
             'New job'
           )}
         </h1>
+        {job?.source_estimate_number && (
+          <p className="w-full text-[0.8125rem] text-muted">
+            From estimate <strong className="text-ink">{job.source_estimate_number}</strong>
+            {job.estimate_accepted_at && <> · accepted {fmtDate(job.estimate_accepted_at)}</>}
+          </p>
+        )}
         <TzNote className="w-full" />
         {id && (
           <Link href={`/admin/dispatch/print/${id}`} className="a-btn no-underline">

@@ -1,4 +1,4 @@
-# Dispatch Bro
+# Air Ride Op
 
 An office-operations aid for companies that handle art and build crates, built as a **white-label** product: every name, color and line of copy comes from one file, `src/brand/brand.config.ts`.
 
@@ -267,6 +267,33 @@ The first admin is still created with SQL (SETUP_CHECKLIST); `public.admins` and
 ### Office time zone
 
 Day boundaries, the board and My jobs use the office time zone in `public.app_settings` (`timezone`, default `America/Los_Angeles`). Change it with SQL: `update public.app_settings set value = 'America/New_York' where key = 'timezone';`
+
+## Estimates and quotes (Phase 3)
+
+Admins and estimators price jobs at `/admin/estimates`. **Prices, costs and margins are visible only to admins and estimators.**
+
+| Screen | What it does |
+| --- | --- |
+| **Estimates** | List with filters (status, client, estimator, dates), total, margin %, expiry, and quick actions (duplicate, new revision, send, convert). Templates for recurring moves. |
+| **Estimate builder** | Client and contact, stops with **miles per leg** (entered by hand), items (dimensions, weight, medium, declared value, handling flags, suggested packing with override reason), crew and labor, vehicle, equipment, access surcharges, add-ons, discount. Prices update live; every calculated line has an **ⓘ how calculated** note; any line can be overridden with a reason (the original is kept). A sticky panel shows price, cost, margin % and approval status. Autosaves with a version check. |
+| **Approvals** (admin) | Estimates with a discount above the threshold or a margin below target. Approve or reject with a note. An estimate needing approval can't be sent until approved. |
+| **Clients** | Clients, contacts, default discount, and estimate and job history. |
+| **Rate cards** | Every number that affects a price lives here (labor, vehicles, equipment, distance tiers, shipping/dim weight, crating materials and shop labor, removal, insurance, access, add-ons, premiums, policy). Versioned: duplicate as draft, compare with the active card, preview prices, activate with an effective date, **Mark reviewed**. |
+| **Packing & crew rules / Terms** (admin) | Medium → packing rules, crew-size rules, and versioned quote terms. |
+
+**How pricing works.** One pure engine (`src/shared/estimate/`) prices everything in integer cents, rounding half-up once per line. The browser uses it for live totals; the server (`/api/estimate/:id/:action`) re-prices with the same engine on every save, approval, send and acceptance and **rejects totals that don't match**. Each estimate stores a snapshot of the rate card it was priced with, so editing rates never changes an old quote ("Reprice with current rate card" updates a draft on purpose). See `docs/ESTIMATE_EXAMPLE.md` for one estimate traced line by line.
+
+**Sending a quote.** *Send quote* creates a private link `/q/<token>` (128-bit random; only its SHA-256 is stored) and shows it **once**: copy it into your email. The link expires after the quote validity period (default 30 days). Sending again, revoking, or making a new revision retires the old link. The client page shows only client-visible lines, the totals, terms and validity, with **Download PDF**, **Accept** (typed name, title, email, typed signature, terms checkbox; a named business record that saves the time, IP address and browser) and **Decline**.
+
+**Convert to job.** On an accepted estimate, *Convert to job* creates a **draft** dispatch job with the stops, items (handling flags and packing), client and job type; the suggested crew size goes in the crew notes. No prices are copied. A dispatcher schedules it on the board and sees only the estimate number and accepted date.
+
+**Documents.** Quote PDF (brand header on every page), Word and Excel versions, an internal Excel with cost and margin (admins and estimators), and a **crate build sheet** for the shop (dimensions, materials takeoff, cushioning, orientation, stencil text; no prices). Every export is in the audit log.
+
+**Sample rates.** The seeded rate card is labelled **SAMPLE** and a red banner shows in Estimates until an admin enters real rates and marks the active card reviewed.
+
+### Appearance (day / night mode)
+
+Each person can choose **Account → Appearance: Light, Dark or Match this device**. It's saved on that device and applies to the signed-in console only; the public suggestion portal and client quote pages stay light. Dark colors live in `brand.config.ts` (`darkColors`) and are contrast-tested like the light ones.
 
 ## Sign-in and account recovery
 

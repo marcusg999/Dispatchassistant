@@ -1,0 +1,385 @@
+/* ═══ Estimates UI (list, builder, approvals, clients) ═══════════════════════ */
+
+.est-builder {
+  max-width: 110rem;
+}
+.est-narrow {
+  max-width: 34rem;
+}
+.est-h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.est-h2 {
+  font-size: 1rem;
+  font-weight: 750;
+}
+.est-head {
+  margin: 0.25rem 0 0.75rem;
+}
+.est-sub {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--brand-muted);
+}
+.est-mono {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+.est-money {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.est-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.est-r {
+  text-align: right;
+}
+.est-tap {
+  min-height: 44px;
+}
+.est-err {
+  margin-top: 0.3rem;
+  border-left: 4px solid var(--brand-danger);
+  padding-left: 0.5rem;
+  font-weight: 650;
+  color: var(--brand-danger);
+}
+.est-hint {
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  color: var(--brand-muted);
+}
+
+/* Layout: form column + sticky totals. */
+.est-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+.est-side {
+  order: -1;
+}
+@media (min-width: 1024px) {
+  .est-layout {
+    grid-template-columns: minmax(0, 1fr) 19rem;
+  }
+  .est-side {
+    order: 0;
+    position: sticky;
+    top: 0.75rem;
+    max-height: calc(100vh - 1.5rem);
+    overflow-y: auto;
+  }
+}
+@media (min-width: 1280px) {
+  .est-layout {
+    grid-template-columns: minmax(0, 1fr) 23rem;
+  }
+}
+.est-main > * + *,
+.est-fieldset > * + * {
+  margin-top: 1rem;
+}
+.est-main > .est-fieldset + * {
+  margin-top: 1rem;
+}
+.est-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.est-fieldset[disabled] .a-input,
+.est-fieldset[disabled] .a-select,
+.est-fieldset[disabled] .a-textarea {
+  background: var(--brand-wall);
+}
+
+.est-section {
+  padding: 1rem;
+}
+.est-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+.est-summary {
+  font-size: 0.8125rem;
+}
+.est-card {
+  border: 1px solid var(--brand-line);
+  background: var(--brand-wall);
+  padding: 0.75rem;
+}
+.est-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.est-add {
+  margin-top: 0.75rem;
+}
+.est-pack {
+  border-left: 4px solid var(--brand-accent);
+  padding-left: 0.75rem;
+}
+.est-suggest {
+  margin-bottom: 0.5rem;
+}
+.est-reasons {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+}
+.est-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.5rem 1rem;
+  align-items: end;
+}
+.est-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.est-check input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+/* Banners */
+.est-banner {
+  margin: 0.5rem 0 0.75rem;
+  border: 1.5px solid var(--brand-ink);
+  background: var(--brand-paper);
+  padding: 0.75rem 1rem;
+}
+.est-banner-warn {
+  border-color: var(--brand-danger);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.est-linkbox {
+  margin: 0.5rem 0 0.75rem;
+  border: 2px solid var(--brand-ink);
+  background: var(--brand-paper);
+  padding: 0.9rem 1rem;
+}
+.est-mono.a-input,
+.a-input.est-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.est-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.75rem;
+}
+.est-exports:empty {
+  display: none;
+}
+.est-exports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Totals */
+.est-totals {
+  padding: 1rem;
+}
+.est-save {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+.est-save-invalid,
+.est-save-error,
+.est-save-stale {
+  color: var(--brand-danger);
+}
+.est-dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.3rem 1rem;
+  margin: 0.5rem 0;
+}
+.est-dl dd {
+  text-align: right;
+}
+.est-total-row {
+  border-top: 2px solid var(--brand-ink);
+  padding-top: 0.4rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+.est-margin-flag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border: 1.5px solid currentColor;
+}
+.est-margin-low {
+  color: var(--brand-danger);
+}
+.est-margin-ok {
+  color: var(--brand-ink);
+}
+.est-margin {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+.est-approval,
+.est-warnings {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--brand-line);
+}
+
+/* Status pills (text is always present; border style adds a second cue). */
+.est-status {
+  display: inline-flex;
+  align-items: center;
+  height: 1.4rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--brand-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--brand-paper);
+  color: var(--brand-ink);
+}
+.est-status-draft {
+  border-style: dashed;
+  color: var(--brand-muted);
+}
+.est-status-pending_approval {
+  background: var(--brand-accent);
+  color: var(--brand-accent-text, var(--brand-ink));
+}
+.est-status-approved,
+.est-status-accepted,
+.est-status-converted {
+  background: var(--brand-ink);
+  color: var(--brand-paper);
+}
+.est-status-declined,
+.est-status-expired {
+  border-color: var(--brand-danger);
+  color: var(--brand-danger);
+}
+.est-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--brand-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Lines table */
+.est-table-wrap {
+  overflow-x: auto;
+}
+.est-lines td,
+.est-lines th {
+  vertical-align: top;
+}
+.est-lines tbody tr {
+  cursor: default;
+}
+.est-actions {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  justify-content: flex-start;
+}
+.est-trace-row td {
+  background: var(--brand-wall);
+}
+.est-trace {
+  max-width: 60rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.est-discount-tag {
+  font-size: 0.6875rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* List filters + tables */
+.est-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+  padding: 1rem;
+}
+.est-statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.est-list td.est-money,
+.est-list th.est-r {
+  text-align: right;
+}
+.est-list tbody tr {
+  cursor: pointer;
+}
+.est-rowactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+.est-queue > li {
+  border: 1px solid var(--brand-line);
+  background: var(--brand-paper);
+  padding: 1rem;
+}
+.est-queue-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+}

@@ -34,9 +34,6 @@ body {
   background: var(--brand-ink);
   color: var(--brand-paper);
 }
-.a-btn-primary:hover {
-  background: #000;
-}
 .a-btn-accent {
   background: var(--brand-accent);
 }

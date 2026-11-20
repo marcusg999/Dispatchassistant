@@ -1,0 +1,156 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 1.21,
+      "unit_price": 1800,
+      "amount": 2178,
+      "cost": 726,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 6,
+      "unit_price": 8000,
+      "amount": 48000,
+      "cost": 22800,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 29,
+      "unit_price": 400,
+      "amount": 11600,
+      "cost": 5800,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:a",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 3500,
+      "amount": 3500,
+      "cost": 1000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:b",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 3500,
+      "amount": 3500,
+      "cost": 1000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 6,
+      "unit_price": 8500,
+      "amount": 51000,
+      "cost": 25200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 6,
+      "unit_price": 8000,
+      "amount": 48000,
+      "cost": 22800,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "access:timed_access",
+      "category": "access",
+      "qty": 1,
+      "unit_price": 7500,
+      "amount": 7500,
+      "cost": 2500,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "access:security_checkin",
+      "category": "access",
+      "qty": 1,
+      "unit_price": 5000,
+      "amount": 5000,
+      "cost": 1500,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "access:coi",
+      "category": "access",
+      "qty": 1,
+      "unit_price": 7500,
+      "amount": 7500,
+      "cost": 1000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 42000,
+      "amount": 42000,
+      "cost": 25200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 4942,
+      "amount": 4942,
+      "cost": 2346,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 234720,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 234720,
+    "cost_cents": 111872,
+    "margin_cents": 122848,
+    "margin_bp": 5234
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 2,
+    "positions": {
+      "driver": 1,
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 29,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 121,
+  "crates": [],
+  "warnings": []
+}

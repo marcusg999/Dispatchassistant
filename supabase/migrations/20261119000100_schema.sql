@@ -1,5 +1,5 @@
 -- ─────────────────────────────────────────────────────────────────────────────
--- Dispatch Bro · Phase 1 · Anonymous suggestion box: core schema
+-- Air Ride Op · Phase 1 · Anonymous suggestion box: core schema
 --
 -- Anonymity by construction: the suggestions table has NO column that could
 -- identify a submitter (no name, email, phone, employee id, user id, IP or

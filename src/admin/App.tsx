@@ -7,6 +7,7 @@ import { appTimeZone, myStaffRole } from './dispatch/data';
 import { setAppTz } from './dispatch/tz';
 import { homeFor, routeAllowed, type StaffRole } from '../shared/dispatch';
 import { DispatchRoutes, DispatchSubnav, isDispatchPath } from './dispatch/routes';
+import { EstimatesRoutes, EstimatesSubnav, isEstimatesPath } from './estimates/routes';
 import { MyJobs } from './dispatch/pages/MyJobs';
 import { CrewIncident } from './dispatch/pages/CrewIncident';
 import { amIHr } from './hrData';
@@ -96,6 +97,7 @@ export function App() {
   const isHrPath = path === '/admin/hr' || path.startsWith('/admin/hr/');
   if (!routeAllowed(path, roles.staff, roles.hr) && !(path === '/admin' && roles.hr)) page = notAvailable;
   else if (isDispatchPath(path)) page = <DispatchRoutes path={path} role={roles.staff!} />;
+  else if (isEstimatesPath(path)) page = <EstimatesRoutes path={path} role={roles.staff!} />;
   else if (myIncident) page = <CrewIncident jobId={myIncident[1]} />;
   else if (path === '/admin/my-jobs') page = <MyJobs />;
   else if (detail) page = adminOnly(<Detail id={detail[1]} />);
@@ -111,6 +113,7 @@ export function App() {
   const office = roles.staff === 'admin' || roles.staff === 'dispatcher' || roles.staff === 'viewer';
   const nav = [
     ...(roles.admin ? [{ href: '/admin', label: 'Inbox', active: path === '/admin' || !!detail }] : []),
+    ...(roles.staff === 'admin' || roles.staff === 'estimator' ? [{ href: '/admin/estimates', label: 'Estimates', active: isEstimatesPath(path) }] : []),
     ...(office ? [{ href: '/admin/dispatch', label: 'Dispatch', active: isDispatchPath(path) }] : []),
     ...(crewOnly ? [{ href: '/admin/my-jobs', label: 'My jobs', active: path.startsWith('/admin/my-jobs') }] : []),
     ...(roles.hr
@@ -161,7 +164,8 @@ export function App() {
         </div>
       </header>
       {office && isDispatchPath(path) && <DispatchSubnav path={path} role={roles.staff!} />}
-      <main className={`mx-auto px-4 py-6 lg:px-8 ${isDispatchPath(path) ? 'max-w-[120rem]' : crewOnly ? 'max-w-[40rem] !px-0 !py-0' : 'max-w-[90rem]'}`}>{page}</main>
+      {(roles.staff === 'admin' || roles.staff === 'estimator') && isEstimatesPath(path) && <EstimatesSubnav path={path} role={roles.staff!} />}
+      <main className={`mx-auto px-4 py-6 lg:px-8 ${isDispatchPath(path) ? 'max-w-[120rem]' : isEstimatesPath(path) ? 'max-w-[110rem]' : crewOnly ? 'max-w-[40rem] !px-0 !py-0' : 'max-w-[90rem]'}`}>{page}</main>
     </div>
   );
 }

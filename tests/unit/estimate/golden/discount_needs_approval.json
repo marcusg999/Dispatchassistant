@@ -1,0 +1,138 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 0.94,
+      "unit_price": 1800,
+      "amount": 1692,
+      "cost": 564,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_time",
+      "category": "transport",
+      "qty": 3,
+      "unit_price": 6000,
+      "amount": 18000,
+      "cost": 8400,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.miles",
+      "category": "transport",
+      "qty": 12,
+      "unit_price": 250,
+      "amount": 3000,
+      "cost": 1440,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.vehicle_min",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 3000,
+      "amount": 3000,
+      "cost": 0,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:p1",
+      "category": "packing_crating",
+      "qty": 1,
+      "unit_price": 3500,
+      "amount": 3500,
+      "cost": 1000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:driver",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8500,
+      "amount": 34000,
+      "cost": 16800,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:art_handler",
+      "category": "labor",
+      "qty": 4,
+      "unit_price": 8000,
+      "amount": 32000,
+      "cost": 15200,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 20000,
+      "amount": 20000,
+      "cost": 12000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 2055,
+      "amount": 2055,
+      "cost": 832,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "discount",
+      "category": "discount",
+      "qty": 1,
+      "unit_price": -17587,
+      "amount": -17587,
+      "cost": 0,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 117247,
+    "discount_bp": 1500,
+    "discount_cents": 17587,
+    "tax_cents": 0,
+    "total_cents": 99660,
+    "cost_cents": 56236,
+    "margin_cents": 43424,
+    "margin_bp": 4357
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 2,
+    "positions": {
+      "driver": 1,
+      "art_handler": 1
+    }
+  },
+  "flags": {
+    "needs_approval": true,
+    "approval_reasons": [
+      "Discount 15% is above the 10% approval threshold."
+    ],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 12,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 94,
+  "crates": [],
+  "warnings": []
+}

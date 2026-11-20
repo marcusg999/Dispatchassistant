@@ -32,7 +32,7 @@ const rules = readFileSync(join(DIST, '_redirects'), 'utf8')
   });
 
 const vite = await createVite({ server: { middlewareMode: true }, appType: 'custom', configFile: false, logLevel: 'error' });
-const fnFor = (p) => (p === '/api/submit' ? 'submit' : p === '/api/board' ? 'board' : p === '/api/incident-photo' ? 'incident-photo' : p.startsWith('/api/status/') ? 'status' : null);
+const fnFor = (p) => (p === '/api/submit' ? 'submit' : p === '/api/board' ? 'board' : p === '/api/incident-photo' ? 'incident-photo' : p.startsWith('/api/status/') ? 'status' : p.startsWith('/api/estimate/') ? 'estimate' : p.startsWith('/api/quote/') ? 'quote' : null);
 
 function sendFile(res, file, status = 200) {
   res.statusCode = status;

@@ -24,6 +24,47 @@ describe('brand config', () => {
     expect(contrast(a, b)).toBeGreaterThanOrEqual(4.5);
   });
 
+  describe('dark palette', () => {
+    const d = brand.darkColors;
+    const t = brand.darkTagColors;
+    it.each([
+      ['ink on paper', d.ink, d.paper],
+      ['ink on wall', d.ink, d.wall],
+      ['muted on paper', d.muted, d.paper],
+      ['muted on wall', d.muted, d.wall],
+      ['onAccent on accent (buttons)', d.onAccent, d.accent],
+      ['accentText on paper', d.accentText, d.paper],
+      ['accentText on wall', d.accentText, d.wall],
+      ['danger on paper', d.danger, d.paper],
+      ['danger on wall', d.danger, d.wall],
+      ['just sayin tag', t.just_sayin.fg, t.just_sayin.bg],
+      ['casual tag', t.casual.fg, t.casual.bg],
+      ['important tag', t.important.fg, t.important.bg],
+      ['urgent tag', t.urgent.fg, t.urgent.bg],
+      ['crucial tag', t.crucial.fg, t.crucial.bg],
+    ])('dark: %s meets WCAG AA (4.5:1)', (_n, a, b) => {
+      expect(contrast(a, b)).toBeGreaterThanOrEqual(4.5);
+    });
+    it('dark: focus ring and hairlines are visible against the wall', () => {
+      expect(contrast(d.focus, d.wall)).toBeGreaterThanOrEqual(3);
+      expect(contrast(d.focus, d.paper)).toBeGreaterThanOrEqual(3);
+    });
+    it('light: onAccent on accent meets AA', () => {
+      expect(contrast(c.onAccent, c.accent)).toBeGreaterThanOrEqual(4.5);
+    });
+    it('dark and light palettes have the same keys', () => {
+      expect(Object.keys(d).sort()).toEqual(Object.keys(c).sort());
+      expect(Object.keys(t).sort()).toEqual(Object.keys(brand.tagColors).sort());
+    });
+    it('emits dark rules for data-theme and prefers-color-scheme; light-only build omits them', () => {
+      const css = brandCssVars();
+      expect(css).toContain(':root[data-theme="dark"]');
+      expect(css).toContain('@media (prefers-color-scheme: dark){:root:not([data-theme="light"])');
+      for (const v of Object.values(d)) expect(css).toContain(v);
+      expect(brandCssVars(brand, { dark: false })).not.toContain('dark');
+    });
+  });
+
   it('focus ring is visible against the wall (≥3:1)', () => {
     expect(contrast(c.focus, c.wall)).toBeGreaterThanOrEqual(3);
   });

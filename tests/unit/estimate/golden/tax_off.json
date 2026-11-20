@@ -1,0 +1,100 @@
+{
+  "lines": [
+    {
+      "key": "shipping.weight",
+      "category": "transport",
+      "qty": 1.64,
+      "unit_price": 1800,
+      "amount": 2952,
+      "cost": 984,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "packing:c1",
+      "category": "packing_crating",
+      "qty": 2,
+      "unit_price": 91450,
+      "amount": 182900,
+      "cost": 80060,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "labor:crater",
+      "category": "labor",
+      "qty": 8,
+      "unit_price": 8500,
+      "amount": 68000,
+      "cost": 32000,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "insurance",
+      "category": "insurance",
+      "qty": 1,
+      "unit_price": 6000,
+      "amount": 6000,
+      "cost": 3600,
+      "visible": true,
+      "overridden": false
+    },
+    {
+      "key": "transport.fuel",
+      "category": "transport",
+      "qty": 1,
+      "unit_price": 236,
+      "amount": 236,
+      "cost": 79,
+      "visible": true,
+      "overridden": false
+    }
+  ],
+  "totals": {
+    "subtotal_cents": 260088,
+    "discount_bp": 0,
+    "discount_cents": 0,
+    "tax_cents": 0,
+    "total_cents": 260088,
+    "cost_cents": 116723,
+    "margin_cents": 143365,
+    "margin_bp": 5512
+  },
+  "crew": {
+    "suggested": 2,
+    "applied": 2,
+    "positions": {
+      "crater": 2
+    }
+  },
+  "flags": {
+    "needs_approval": false,
+    "approval_reasons": [],
+    "below_target_margin": false,
+    "minimum_applied": false
+  },
+  "distance": {
+    "total_miles": 0,
+    "tier_label": "Local",
+    "multiplier_bp": 10000
+  },
+  "billable_weight_lb": 164,
+  "crates": [
+    {
+      "item": "c1",
+      "method": "double_boxed",
+      "outer": [
+        31.5,
+        25.5,
+        25.5
+      ],
+      "sheets": 2,
+      "lf": 55,
+      "bf": 56,
+      "cls": "Small",
+      "hours": 2
+    }
+  ],
+  "warnings": []
+}

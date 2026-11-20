@@ -11,19 +11,24 @@
 import type { Plugin, ViteDevServer } from 'vite';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { brand, brandCssVars, displayName } from './src/brand/brand.config.ts';
+import { brand, brandCssVars, brandDarkCssVars, displayName } from './src/brand/brand.config.ts';
 
 const VIRTUAL = 'virtual:brand.css';
 const RESOLVED = '\0virtual:brand.css';
+/** Night-mode variables: imported by the admin console only (portal and quote stay light). */
+const VIRTUAL_DARK = 'virtual:brand-dark.css';
+const RESOLVED_DARK = '\0virtual:brand-dark.css';
 
 export function brandPlugin(): Plugin {
   return {
     name: 'brand',
     resolveId(id) {
       if (id === VIRTUAL) return RESOLVED;
+      if (id === VIRTUAL_DARK) return RESOLVED_DARK;
     },
     load(id) {
-      if (id === RESOLVED) return brandCssVars(brand);
+      if (id === RESOLVED) return brandCssVars(brand, { dark: false });
+      if (id === RESOLVED_DARK) return brandDarkCssVars(brand);
     },
     transformIndexHtml(html) {
       return html
@@ -52,10 +57,11 @@ function escapeHtml(s: string) {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
-type Route = 'portal' | 'admin' | '404';
+type Route = 'portal' | 'admin' | 'quote' | '404';
 
 export function routeFor(pathname: string, portalKey: string | undefined): Route {
   if (portalKey && (pathname === `/s/${portalKey}` || pathname === `/s/${portalKey}/`)) return 'portal';
+  if (/^\/q\/[A-Za-z0-9_-]{20,64}$/.test(pathname)) return 'quote';
   if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/auth/callback' || pathname === '/auth/confirm') return 'admin';
   return '404';
 }
@@ -75,7 +81,7 @@ export function devRoutes(which: Route[]): Plugin {
           p.startsWith('/api/') ||
           /\.[a-z0-9]+$/i.test(p)
         ) {
-          if (p === '/portal.html' || p === '/admin.html') {
+          if (p === '/portal.html' || p === '/admin.html' || p === '/quote.html') {
             res.statusCode = 404;
             return res.end('Not found');
           }
@@ -87,7 +93,7 @@ export function devRoutes(which: Route[]): Plugin {
           res.setHeader('content-type', 'text/html');
           return res.end(readFileSync(resolve('public/404.html'), 'utf8'));
         }
-        const file = route === 'portal' ? 'portal.html' : 'admin.html';
+        const file = route === 'portal' ? 'portal.html' : route === 'quote' ? 'quote.html' : 'admin.html';
         const html = await server.transformIndexHtml(p, readFileSync(resolve(file), 'utf8'));
         res.setHeader('content-type', 'text/html');
         res.end(html);
@@ -108,6 +114,8 @@ export function devApi(): Plugin {
         else if (url.pathname === '/api/board') mod = 'board';
         else if (url.pathname === '/api/incident-photo') mod = 'incident-photo';
         else if (url.pathname.startsWith('/api/status/')) mod = 'status';
+        else if (url.pathname.startsWith('/api/estimate/')) mod = 'estimate';
+        else if (url.pathname.startsWith('/api/quote/')) mod = 'quote';
         if (!mod) return next();
         try {
           const { default: handler } = await server.ssrLoadModule(`/netlify/functions/${mod}.mts`);

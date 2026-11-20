@@ -200,6 +200,85 @@ export type Database = {
         };
         Relationships: [];
       };
+      client_contacts: {
+        Row: {
+          client_id: string;
+          created_at: string;
+          email: string | null;
+          id: string;
+          is_primary: boolean;
+          name: string;
+          phone: string | null;
+          role: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          client_id: string;
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          is_primary?: boolean;
+          name: string;
+          phone?: string | null;
+          role?: string | null;
+        };
+        Update: {
+          client_id?: string;
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          is_primary?: boolean;
+          name?: string;
+          phone?: string | null;
+          role?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'client_contacts_client_id_fkey';
+            columns: ['client_id'];
+            isOneToOne: false;
+            referencedRelation: 'clients';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      clients: {
+        Row: {
+          active: boolean;
+          billing_address: string | null;
+          created_at: string;
+          default_discount_bp: number;
+          id: string;
+          kind: Database['public']['Enums']['client_kind'];
+          name: string;
+          notes: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          active?: boolean;
+          billing_address?: string | null;
+          created_at?: string;
+          default_discount_bp?: number;
+          id?: string;
+          kind?: Database['public']['Enums']['client_kind'];
+          name: string;
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          active?: boolean;
+          billing_address?: string | null;
+          created_at?: string;
+          default_discount_bp?: number;
+          id?: string;
+          kind?: Database['public']['Enums']['client_kind'];
+          name?: string;
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       crew_certifications: {
         Row: {
           created_at: string;
@@ -289,6 +368,37 @@ export type Database = {
         };
         Relationships: [];
       };
+      crew_size_rules: {
+        Row: {
+          crew: number;
+          equipment_key: string | null;
+          id: string;
+          kind: string;
+          note: string;
+          param: string;
+          position: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          crew?: number;
+          equipment_key?: string | null;
+          id?: string;
+          kind: string;
+          note?: string;
+          param?: string;
+          position?: number;
+        };
+        Update: {
+          crew?: number;
+          equipment_key?: string | null;
+          id?: string;
+          kind?: string;
+          note?: string;
+          param?: string;
+          position?: number;
+        };
+        Relationships: [];
+      };
       crew_skills: {
         Row: {
           crew_member_id: string;
@@ -317,6 +427,389 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'skills';
             referencedColumns: ['slug'];
+          },
+        ];
+      };
+      estimate_items: {
+        Row: {
+          artist_title: string | null;
+          declared_value_cents: number | null;
+          depth_in: number | null;
+          description: string;
+          estimate_id: string;
+          handling_flags: string[];
+          height_in: number | null;
+          id: string;
+          medium: string | null;
+          packing_method: string | null;
+          packing_override_reason: string | null;
+          packing_suggested: string | null;
+          position: number;
+          quantity: number;
+          weight_lbs: number | null;
+          width_in: number | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          artist_title?: string | null;
+          declared_value_cents?: number | null;
+          depth_in?: number | null;
+          description: string;
+          estimate_id: string;
+          handling_flags?: string[];
+          height_in?: number | null;
+          id?: string;
+          medium?: string | null;
+          packing_method?: string | null;
+          packing_override_reason?: string | null;
+          packing_suggested?: string | null;
+          position?: number;
+          quantity?: number;
+          weight_lbs?: number | null;
+          width_in?: number | null;
+        };
+        Update: {
+          artist_title?: string | null;
+          declared_value_cents?: number | null;
+          depth_in?: number | null;
+          description?: string;
+          estimate_id?: string;
+          handling_flags?: string[];
+          height_in?: number | null;
+          id?: string;
+          medium?: string | null;
+          packing_method?: string | null;
+          packing_override_reason?: string | null;
+          packing_suggested?: string | null;
+          position?: number;
+          quantity?: number;
+          weight_lbs?: number | null;
+          width_in?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'estimate_items_estimate_id_fkey';
+            columns: ['estimate_id'];
+            isOneToOne: false;
+            referencedRelation: 'estimates';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      estimate_lines: {
+        Row: {
+          amount_cents: number;
+          category: string;
+          client_visible: boolean;
+          cost_cents: number;
+          description: string;
+          estimate_id: string;
+          estimate_item_id: string | null;
+          id: string;
+          key: string;
+          original: Json | null;
+          overridden: boolean;
+          override_reason: string | null;
+          qty: number;
+          sort: number;
+          source: string;
+          trace: string;
+          unit: string;
+          unit_cost_cents: number;
+          unit_price_cents: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount_cents: number;
+          category: string;
+          client_visible?: boolean;
+          cost_cents: number;
+          description: string;
+          estimate_id: string;
+          estimate_item_id?: string | null;
+          id?: string;
+          key: string;
+          original?: Json | null;
+          overridden?: boolean;
+          override_reason?: string | null;
+          qty: number;
+          sort?: number;
+          source: string;
+          trace?: string;
+          unit?: string;
+          unit_cost_cents: number;
+          unit_price_cents: number;
+        };
+        Update: {
+          amount_cents?: number;
+          category?: string;
+          client_visible?: boolean;
+          cost_cents?: number;
+          description?: string;
+          estimate_id?: string;
+          estimate_item_id?: string | null;
+          id?: string;
+          key?: string;
+          original?: Json | null;
+          overridden?: boolean;
+          override_reason?: string | null;
+          qty?: number;
+          sort?: number;
+          source?: string;
+          trace?: string;
+          unit?: string;
+          unit_cost_cents?: number;
+          unit_price_cents?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'estimate_lines_estimate_id_fkey';
+            columns: ['estimate_id'];
+            isOneToOne: false;
+            referencedRelation: 'estimates';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'estimate_lines_estimate_item_id_fkey';
+            columns: ['estimate_item_id'];
+            isOneToOne: false;
+            referencedRelation: 'estimate_items';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      estimate_stops: {
+        Row: {
+          access_flags: string[];
+          access_notes: string | null;
+          address: string;
+          contact_name: string | null;
+          contact_phone: string | null;
+          estimate_id: string;
+          id: string;
+          kind: Database['public']['Enums']['stop_kind'];
+          miles_from_previous: number | null;
+          position: number;
+          site_name: string | null;
+          window_end: string | null;
+          window_start: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          access_flags?: string[];
+          access_notes?: string | null;
+          address: string;
+          contact_name?: string | null;
+          contact_phone?: string | null;
+          estimate_id: string;
+          id?: string;
+          kind?: Database['public']['Enums']['stop_kind'];
+          miles_from_previous?: number | null;
+          position?: number;
+          site_name?: string | null;
+          window_end?: string | null;
+          window_start?: string | null;
+        };
+        Update: {
+          access_flags?: string[];
+          access_notes?: string | null;
+          address?: string;
+          contact_name?: string | null;
+          contact_phone?: string | null;
+          estimate_id?: string;
+          id?: string;
+          kind?: Database['public']['Enums']['stop_kind'];
+          miles_from_previous?: number | null;
+          position?: number;
+          site_name?: string | null;
+          window_end?: string | null;
+          window_start?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'estimate_stops_estimate_id_fkey';
+            columns: ['estimate_id'];
+            isOneToOne: false;
+            referencedRelation: 'estimates';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      estimates: {
+        Row: {
+          accepted_at: string | null;
+          approval_note: string | null;
+          approval_reasons: string[];
+          approved_at: string | null;
+          approved_by: string | null;
+          approved_total_cents: number | null;
+          client_id: string | null;
+          computed_at: string | null;
+          contact_id: string | null;
+          converted_job_id: string | null;
+          cost_cents: number;
+          created_at: string;
+          decline_reason: string | null;
+          declined_at: string | null;
+          deleted_at: string | null;
+          discount_bp: number;
+          discount_cents: number;
+          estimate_number: string;
+          estimator_email: string | null;
+          id: string;
+          inputs: NonNullable<Json>;
+          is_template: boolean;
+          margin_bp: number;
+          margin_cents: number;
+          needs_approval: boolean;
+          notes_client: string | null;
+          notes_internal: string | null;
+          rate_card_id: string | null;
+          rate_snapshot: Json | null;
+          requested_date: string | null;
+          revision: number;
+          sent_at: string | null;
+          service_type: Database['public']['Enums']['job_type'];
+          status: Database['public']['Enums']['estimate_status'];
+          subtotal_cents: number;
+          suggested_crew: number | null;
+          tax_cents: number;
+          template_name: string | null;
+          terms_version_id: string | null;
+          title: string;
+          total_cents: number;
+          updated_at: string;
+          valid_until: string | null;
+          version: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string | null;
+          approval_note?: string | null;
+          approval_reasons?: string[];
+          approved_at?: string | null;
+          approved_by?: string | null;
+          approved_total_cents?: number | null;
+          client_id?: string | null;
+          computed_at?: string | null;
+          contact_id?: string | null;
+          converted_job_id?: string | null;
+          cost_cents?: number;
+          created_at?: string;
+          decline_reason?: string | null;
+          declined_at?: string | null;
+          deleted_at?: string | null;
+          discount_bp?: number;
+          discount_cents?: number;
+          estimate_number?: string;
+          estimator_email?: string | null;
+          id?: string;
+          inputs?: NonNullable<Json>;
+          is_template?: boolean;
+          margin_bp?: number;
+          margin_cents?: number;
+          needs_approval?: boolean;
+          notes_client?: string | null;
+          notes_internal?: string | null;
+          rate_card_id?: string | null;
+          rate_snapshot?: Json | null;
+          requested_date?: string | null;
+          revision?: number;
+          sent_at?: string | null;
+          service_type?: Database['public']['Enums']['job_type'];
+          status?: Database['public']['Enums']['estimate_status'];
+          subtotal_cents?: number;
+          suggested_crew?: number | null;
+          tax_cents?: number;
+          template_name?: string | null;
+          terms_version_id?: string | null;
+          title: string;
+          total_cents?: number;
+          updated_at?: string;
+          valid_until?: string | null;
+          version?: number;
+        };
+        Update: {
+          accepted_at?: string | null;
+          approval_note?: string | null;
+          approval_reasons?: string[];
+          approved_at?: string | null;
+          approved_by?: string | null;
+          approved_total_cents?: number | null;
+          client_id?: string | null;
+          computed_at?: string | null;
+          contact_id?: string | null;
+          converted_job_id?: string | null;
+          cost_cents?: number;
+          created_at?: string;
+          decline_reason?: string | null;
+          declined_at?: string | null;
+          deleted_at?: string | null;
+          discount_bp?: number;
+          discount_cents?: number;
+          estimate_number?: string;
+          estimator_email?: string | null;
+          id?: string;
+          inputs?: NonNullable<Json>;
+          is_template?: boolean;
+          margin_bp?: number;
+          margin_cents?: number;
+          needs_approval?: boolean;
+          notes_client?: string | null;
+          notes_internal?: string | null;
+          rate_card_id?: string | null;
+          rate_snapshot?: Json | null;
+          requested_date?: string | null;
+          revision?: number;
+          sent_at?: string | null;
+          service_type?: Database['public']['Enums']['job_type'];
+          status?: Database['public']['Enums']['estimate_status'];
+          subtotal_cents?: number;
+          suggested_crew?: number | null;
+          tax_cents?: number;
+          template_name?: string | null;
+          terms_version_id?: string | null;
+          title?: string;
+          total_cents?: number;
+          updated_at?: string;
+          valid_until?: string | null;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'estimates_client_id_fkey';
+            columns: ['client_id'];
+            isOneToOne: false;
+            referencedRelation: 'clients';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'estimates_contact_id_fkey';
+            columns: ['contact_id'];
+            isOneToOne: false;
+            referencedRelation: 'client_contacts';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'estimates_converted_job_id_fkey';
+            columns: ['converted_job_id'];
+            isOneToOne: false;
+            referencedRelation: 'jobs';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'estimates_rate_card_id_fkey';
+            columns: ['rate_card_id'];
+            isOneToOne: false;
+            referencedRelation: 'rate_cards';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'estimates_terms_version_id_fkey';
+            columns: ['terms_version_id'];
+            isOneToOne: false;
+            referencedRelation: 'terms_versions';
+            referencedColumns: ['id'];
           },
         ];
       };
@@ -743,15 +1236,18 @@ export type Database = {
         Row: {
           call_location: string | null;
           call_time: string | null;
+          client_id: string | null;
           client_name: string | null;
           created_at: string;
           crew_notes: string | null;
           deleted_at: string | null;
           end_at: string;
+          estimate_accepted_at: string | null;
           id: string;
           job_number: string;
           job_type: Database['public']['Enums']['job_type'];
           office_notes: string | null;
+          source_estimate_number: string | null;
           start_at: string;
           status: Database['public']['Enums']['job_status'];
           team_lead_id: string | null;
@@ -763,15 +1259,18 @@ export type Database = {
         Insert: {
           call_location?: string | null;
           call_time?: string | null;
+          client_id?: string | null;
           client_name?: string | null;
           created_at?: string;
           crew_notes?: string | null;
           deleted_at?: string | null;
           end_at: string;
+          estimate_accepted_at?: string | null;
           id?: string;
           job_number?: string;
           job_type: Database['public']['Enums']['job_type'];
           office_notes?: string | null;
+          source_estimate_number?: string | null;
           start_at: string;
           status?: Database['public']['Enums']['job_status'];
           team_lead_id?: string | null;
@@ -782,15 +1281,18 @@ export type Database = {
         Update: {
           call_location?: string | null;
           call_time?: string | null;
+          client_id?: string | null;
           client_name?: string | null;
           created_at?: string;
           crew_notes?: string | null;
           deleted_at?: string | null;
           end_at?: string;
+          estimate_accepted_at?: string | null;
           id?: string;
           job_number?: string;
           job_type?: Database['public']['Enums']['job_type'];
           office_notes?: string | null;
+          source_estimate_number?: string | null;
           start_at?: string;
           status?: Database['public']['Enums']['job_status'];
           team_lead_id?: string | null;
@@ -800,6 +1302,13 @@ export type Database = {
         };
         Relationships: [
           {
+            foreignKeyName: 'jobs_client_id_fkey';
+            columns: ['client_id'];
+            isOneToOne: false;
+            referencedRelation: 'clients';
+            referencedColumns: ['id'];
+          },
+          {
             foreignKeyName: 'jobs_team_lead_id_fkey';
             columns: ['team_lead_id'];
             isOneToOne: false;
@@ -807,6 +1316,199 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      packing_rules: {
+        Row: {
+          condition: string;
+          id: string;
+          medium_match: string;
+          method: string;
+          note: string;
+          position: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          condition: string;
+          id?: string;
+          medium_match: string;
+          method: string;
+          note?: string;
+          position?: number;
+        };
+        Update: {
+          condition?: string;
+          id?: string;
+          medium_match?: string;
+          method?: string;
+          note?: string;
+          position?: number;
+        };
+        Relationships: [];
+      };
+      quote_acceptances: {
+        Row: {
+          accepted_at: string;
+          accepted_email: string;
+          accepted_name: string;
+          accepted_title: string | null;
+          agreed_to_terms: boolean;
+          estimate_id: string;
+          id: string;
+          ip: string | null;
+          quote_link_id: string | null;
+          revision: number;
+          signature_text: string;
+          terms_version_id: string | null;
+          total_cents: number;
+          user_agent: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          accepted_at?: string;
+          accepted_email: string;
+          accepted_name: string;
+          accepted_title?: string | null;
+          agreed_to_terms: boolean;
+          estimate_id: string;
+          id?: string;
+          ip?: string | null;
+          quote_link_id?: string | null;
+          revision: number;
+          signature_text: string;
+          terms_version_id?: string | null;
+          total_cents: number;
+          user_agent?: string | null;
+        };
+        Update: {
+          accepted_at?: string;
+          accepted_email?: string;
+          accepted_name?: string;
+          accepted_title?: string | null;
+          agreed_to_terms?: boolean;
+          estimate_id?: string;
+          id?: string;
+          ip?: string | null;
+          quote_link_id?: string | null;
+          revision?: number;
+          signature_text?: string;
+          terms_version_id?: string | null;
+          total_cents?: number;
+          user_agent?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'quote_acceptances_estimate_id_fkey';
+            columns: ['estimate_id'];
+            isOneToOne: true;
+            referencedRelation: 'estimates';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'quote_acceptances_quote_link_id_fkey';
+            columns: ['quote_link_id'];
+            isOneToOne: false;
+            referencedRelation: 'quote_links';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'quote_acceptances_terms_version_id_fkey';
+            columns: ['terms_version_id'];
+            isOneToOne: false;
+            referencedRelation: 'terms_versions';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      quote_links: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          estimate_id: string;
+          expires_at: string;
+          first_viewed_at: string | null;
+          id: string;
+          last_viewed_at: string | null;
+          revoked_at: string | null;
+          token_hash: string;
+          view_count: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          estimate_id: string;
+          expires_at: string;
+          first_viewed_at?: string | null;
+          id?: string;
+          last_viewed_at?: string | null;
+          revoked_at?: string | null;
+          token_hash: string;
+          view_count?: number;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          estimate_id?: string;
+          expires_at?: string;
+          first_viewed_at?: string | null;
+          id?: string;
+          last_viewed_at?: string | null;
+          revoked_at?: string | null;
+          token_hash?: string;
+          view_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'quote_links_estimate_id_fkey';
+            columns: ['estimate_id'];
+            isOneToOne: false;
+            referencedRelation: 'estimates';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      rate_cards: {
+        Row: {
+          created_at: string;
+          created_by: string | null;
+          effective_from: string | null;
+          id: string;
+          is_sample: boolean;
+          name: string;
+          rates: NonNullable<Json>;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          status: Database['public']['Enums']['rate_card_status'];
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          created_by?: string | null;
+          effective_from?: string | null;
+          id?: string;
+          is_sample?: boolean;
+          name: string;
+          rates: NonNullable<Json>;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: Database['public']['Enums']['rate_card_status'];
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string | null;
+          effective_from?: string | null;
+          id?: string;
+          is_sample?: boolean;
+          name?: string;
+          rates?: NonNullable<Json>;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: Database['public']['Enums']['rate_card_status'];
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       skills: {
         Row: {
@@ -907,6 +1609,37 @@ export type Database = {
         };
         Relationships: [];
       };
+      terms_versions: {
+        Row: {
+          body: string;
+          created_at: string;
+          created_by: string | null;
+          id: string;
+          is_current: boolean;
+          title: string;
+          version: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          body: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          is_current?: boolean;
+          title?: string;
+          version: number;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          created_by?: string | null;
+          id?: string;
+          is_current?: boolean;
+          title?: string;
+          version?: number;
+        };
+        Relationships: [];
+      };
       time_off: {
         Row: {
           created_at: string;
@@ -954,6 +1687,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      activate_rate_card: { Args: { p_card: string; p_effective: string }; Returns: undefined };
       app_timezone: { Args: Record<PropertyKey, never>; Returns: string };
       board_conflicts: {
         Args: { p_from: string; p_to: string };
@@ -966,6 +1700,7 @@ export type Database = {
         }[];
       };
       can_attach_incident_photo: { Args: { p_incident: string }; Returns: boolean };
+      convert_estimate_to_job: { Args: { p_estimate: string }; Returns: string };
       crew_report_incident: {
         Args: {
           p_description: string;
@@ -1001,7 +1736,10 @@ export type Database = {
         Args: { p_format: string; p_include_office_notes: boolean; p_scope: Json };
         Returns: undefined;
       };
+      log_estimate_export: { Args: { p_estimate: string; p_format: string; p_internal: boolean }; Returns: undefined };
       log_export: { Args: { p_filters: Json; p_format: string; p_row_count: number }; Returns: undefined };
+      make_terms_current: { Args: { p_terms: string }; Returns: undefined };
+      mark_rate_card_reviewed: { Args: { p_card: string }; Returns: undefined };
       my_incidents: { Args: Record<PropertyKey, never>; Returns: Json };
       my_jobs: { Args: { p_from: string; p_to: string }; Returns: Json };
       my_staff_role: { Args: Record<PropertyKey, never>; Returns: string };
@@ -1023,11 +1761,47 @@ export type Database = {
         }[];
       };
       record_conflict_override: { Args: { p_job: string; p_reason: string }; Returns: undefined };
+      server_accept_quote: {
+        Args: {
+          p_email: string;
+          p_ip: string;
+          p_link: string;
+          p_name: string;
+          p_signature: string;
+          p_terms: string;
+          p_title: string;
+          p_total: number;
+          p_ua: string;
+        };
+        Returns: undefined;
+      };
+      server_apply_estimate: {
+        Args: { p_actor: string; p_estimate: string; p_lines: Json; p_packing: Json; p_patch: Json };
+        Returns: undefined;
+      };
+      server_create_quote_link: {
+        Args: { p_actor: string; p_estimate: string; p_expires: string; p_token_hash: string };
+        Returns: string;
+      };
+      server_decline_quote: { Args: { p_link: string; p_reason: string }; Returns: undefined };
+      server_record_quote_view: { Args: { p_link: string }; Returns: undefined };
+      server_revoke_quote_links: { Args: { p_actor: string; p_estimate: string }; Returns: undefined };
     };
     Enums: {
       asset_kind: 'truck' | 'van' | 'trailer' | 'equipment';
       asset_status: 'in_service' | 'out_of_service' | 'maintenance';
+      client_kind: 'museum' | 'gallery' | 'collector' | 'designer' | 'corporate' | 'other';
       crew_position: 'driver' | 'art_handler' | 'crater' | 'installer' | 'lead' | 'other';
+      estimate_status:
+        | 'draft'
+        | 'pending_approval'
+        | 'approved'
+        | 'sent'
+        | 'viewed'
+        | 'accepted'
+        | 'declined'
+        | 'expired'
+        | 'converted';
       incident_status: 'open' | 'under_review' | 'closed';
       job_status: 'draft' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
       job_type:
@@ -1042,7 +1816,8 @@ export type Database = {
         | 'site_survey';
       packing_kind: 'crated' | 'soft_pack';
       priority_tag: 'just_sayin' | 'casual' | 'important' | 'urgent' | 'crucial';
-      staff_role: 'admin' | 'dispatcher' | 'viewer' | 'crew';
+      rate_card_status: 'draft' | 'active' | 'archived';
+      staff_role: 'admin' | 'dispatcher' | 'viewer' | 'crew' | 'estimator';
       stop_kind: 'origin' | 'destination' | 'stop';
       suggestion_category:
         'safety' | 'trucks_equipment' | 'scheduling_dispatch' | 'crating_shop' | 'pay_policy' | 'other';
@@ -1159,7 +1934,19 @@ export const Constants = {
     Enums: {
       asset_kind: ['truck', 'van', 'trailer', 'equipment'],
       asset_status: ['in_service', 'out_of_service', 'maintenance'],
+      client_kind: ['museum', 'gallery', 'collector', 'designer', 'corporate', 'other'],
       crew_position: ['driver', 'art_handler', 'crater', 'installer', 'lead', 'other'],
+      estimate_status: [
+        'draft',
+        'pending_approval',
+        'approved',
+        'sent',
+        'viewed',
+        'accepted',
+        'declined',
+        'expired',
+        'converted',
+      ],
       incident_status: ['open', 'under_review', 'closed'],
       job_status: ['draft', 'scheduled', 'in_progress', 'completed', 'cancelled'],
       job_type: [
@@ -1175,7 +1962,8 @@ export const Constants = {
       ],
       packing_kind: ['crated', 'soft_pack'],
       priority_tag: ['just_sayin', 'casual', 'important', 'urgent', 'crucial'],
-      staff_role: ['admin', 'dispatcher', 'viewer', 'crew'],
+      rate_card_status: ['draft', 'active', 'archived'],
+      staff_role: ['admin', 'dispatcher', 'viewer', 'crew', 'estimator'],
       stop_kind: ['origin', 'destination', 'stop'],
       suggestion_category: ['safety', 'trucks_equipment', 'scheduling_dispatch', 'crating_shop', 'pay_policy', 'other'],
       suggestion_status: ['new', 'reviewing', 'planned', 'done', 'declined'],
