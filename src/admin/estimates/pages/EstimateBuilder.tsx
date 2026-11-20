@@ -359,7 +359,14 @@ function Editor({ est, clients, isAdmin, notice, onReload }: { est: EstimateFull
   const reprice = () => act('reprice', { after: () => onReload('Re-priced with the current rate card. Line overrides were kept; check them.') });
   const revise = () => act('revise', { after: (r) => { if (r.id) navigate(`/admin/estimates/${r.id}`); } });
   const duplicate = (asTemplate = false) => act('duplicate', { body: { as_template: asTemplate }, after: (r) => { if (r.id) navigate(`/admin/estimates/${r.id}`); } });
-  const convert = () => act('convert', { after: (r) => { if (r.job_id) navigate(`/admin/dispatch/jobs/${r.job_id}`); } });
+  // Admins open the new job; estimators can't open the dispatch board, so they stay here with a note.
+  const convert = () =>
+    act('convert', {
+      after: (r) => {
+        if (r.job_id && isAdmin) navigate(`/admin/dispatch/jobs/${r.job_id}`);
+        else onReload('Converted to a draft job. A dispatcher will schedule it on the board.');
+      },
+    });
 
   // ── View model ─────────────────────────────────────────────────────────────
   const lines: EstimateLine[] = locked ? est.lines.map(toLine) : (result?.lines ?? []);

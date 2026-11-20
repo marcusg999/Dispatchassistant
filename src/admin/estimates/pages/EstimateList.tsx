@@ -28,6 +28,7 @@ export function EstimateList({ isAdmin }: { isAdmin: boolean }) {
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [estimators, setEstimators] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [sendFor, setSendFor] = useState<EstimateListRow | null>(null);
   const [link, setLink] = useState<{ number: string; path: string; valid_until: string | null } | null>(null);
@@ -104,6 +105,11 @@ export function EstimateList({ isAdmin }: { isAdmin: boolean }) {
         </div>
       </div>
       <ErrorNote error={error} />
+      {notice && (
+        <p role="status" className="mt-2 border-l-4 border-ink pl-3 font-semibold">
+          {notice}
+        </p>
+      )}
       {link ? <QuoteLinkPanel path={link.path} validUntil={link.valid_until} onClose={() => setLink(null)} /> : null}
 
       <section aria-label="Filters" className="a-panel est-filters mt-3">
@@ -230,7 +236,11 @@ export function EstimateList({ isAdmin }: { isAdmin: boolean }) {
                             disabled={busy === e.id}
                             onClick={async () => {
                               const r = await run(e, 'convert');
-                              if (r?.job_id) navigate(`/admin/dispatch/jobs/${r.job_id}`);
+                              if (r?.job_id && isAdmin) navigate(`/admin/dispatch/jobs/${r.job_id}`);
+                              else if (r?.job_id) {
+                                setNotice(`${e.estimate_number} converted to a draft job. A dispatcher will schedule it on the board.`);
+                                load();
+                              }
                             }}
                           >
                             Convert to job<span className="sr-only"> {e.estimate_number}</span>

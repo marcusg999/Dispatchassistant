@@ -217,14 +217,16 @@ test('e. estimator converts the accepted estimate to a draft job', async ({ brow
   await page.goto(`/admin/estimates/${estimateId}`);
   await page.getByRole('button', { name: 'Convert to job' }).click();
   await page.getByRole('dialog').getByRole('button', { name: 'Convert to job' }).click();
-  await expect(page).toHaveURL(/\/admin\/dispatch\/jobs\/[0-9a-f-]{36}$/, { timeout: 15_000 });
-  jobId = page.url().split('/').pop()!;
+  // Estimators can't open the dispatch board, so they stay on the estimate with a note.
+  await expect(page.getByRole('status').filter({ hasText: 'Converted to a draft job' })).toBeVisible({ timeout: 15_000 });
+  await expect(page).toHaveURL(new RegExp(`/admin/estimates/${estimateId}$`));
 
   const { data: job } = await svc
     .from('jobs')
-    .select('title, status, source_estimate_number, client_name, job_stops(position), job_items(description, medium, height_in, width_in, depth_in, weight_lbs)')
-    .eq('id', jobId)
+    .select('id, title, status, source_estimate_number, client_name, job_stops(position), job_items(description, medium, height_in, width_in, depth_in, weight_lbs)')
+    .eq('source_estimate_number', estimateNumber)
     .single();
+  jobId = job!.id;
   expect(job).toMatchObject({ title: TITLE, status: 'draft', source_estimate_number: estimateNumber, client_name: CLIENT });
   expect(job!.job_stops).toHaveLength(2);
   expect(job!.job_items).toHaveLength(1);
@@ -258,10 +260,7 @@ test('f. dispatcher sees the job without any money and cannot open estimates', a
   await close();
 });
 
-// BUG (reported): the dispatch job editor never renders jobs.source_estimate_number, so dispatchers
-// can't see which estimate a job came from. Marked fail so the suite stays green; remove test.fail once fixed.
 test('f2. dispatcher sees the source estimate number on the job', async ({ browser }) => {
-  test.fail(true, 'App gap: JobEditor does not display source_estimate_number');
   const { page, close } = await staffPage(browser, 'dispatcher@example.com');
   await page.goto(`/admin/dispatch/jobs/${jobId}`);
   await expect(page.getByLabel('Title', { exact: true })).toHaveValue(TITLE);
