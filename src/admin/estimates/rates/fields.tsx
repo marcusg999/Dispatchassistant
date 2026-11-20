@@ -32,7 +32,7 @@ function useChange(path: string, kind: Kind | 'text') {
   const now = getAt(draft, path);
   const was = getAt(base, path);
   if (same(now, was)) return { changed: false, note: null };
-  return { changed: true, note: was === undefined ? 'New row (not on the active card)' : `Changed. Active card: ${displayStored(was, kind)}` };
+  return { changed: true, note: was === undefined ? 'New row' : `Changed. Was ${displayStored(was, kind)}` };
 }
 
 function Wrap({ changed, note, children }: { changed: boolean; note: string | null; children: ReactNode }) {
@@ -86,9 +86,10 @@ export function NumberField({
       )}
       <div className="flex items-center gap-1.5">
         {AUTO_PREFIX[kind] && <span aria-hidden="true" className="text-muted">{AUTO_PREFIX[kind]}</span>}
+        <span className={`${width} shrink-0`}>
         <input
           id={id}
-          className={`a-input ${width} text-right tabular-nums ${parsed === null ? 'border-danger' : ''}`}
+          className={`a-input text-right tabular-nums ${parsed === null ? 'border-danger' : ''}`}
           inputMode="decimal"
           autoComplete="off"
           value={text}
@@ -104,7 +105,8 @@ export function NumberField({
           }}
           onBlur={() => setText(storedToText(value, kind))}
         />
-        {suffix && <span className="text-[0.8125rem] text-muted">{suffix}</span>}
+        </span>
+        {suffix && <span className="whitespace-nowrap text-[0.8125rem] text-muted">{suffix}</span>}
       </div>
       {help && (
         <p id={`${id}-h`} className="mt-1 text-[0.75rem] text-muted">
@@ -140,9 +142,11 @@ export function TextField({
           {label}
         </label>
       )}
+      <div className={width}>
       <input
         id={id}
-        className={`a-input ${width}`}
+        className="a-input"
+
         value={String(getAt(draft, path) ?? '')}
         readOnly={!editable}
         maxLength={maxLength}
@@ -150,6 +154,7 @@ export function TextField({
         aria-describedby={help ? `${id}-h` : undefined}
         onChange={(e) => set(path, e.currentTarget.value)}
       />
+      </div>
       {help && (
         <p id={`${id}-h`} className="mt-1 text-[0.75rem] text-muted">
           {help}
@@ -184,9 +189,10 @@ export function SelectField({
           {label}
         </label>
       )}
+      <div className={width}>
       <select
         id={id}
-        className={`a-select ${width}`}
+        className="a-select"
         value={String(getAt(draft, path) ?? '')}
         disabled={!editable}
         aria-label={compact ? label : undefined}
@@ -199,6 +205,7 @@ export function SelectField({
           </option>
         ))}
       </select>
+      </div>
       {help && (
         <p id={`${id}-h`} className="mt-1 text-[0.75rem] text-muted">
           {help}
