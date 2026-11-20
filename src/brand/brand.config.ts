@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- *  BRAND CONFIG: the ONLY file you edit to re-skin Dispatch Bro for a client.
+ *  BRAND CONFIG: the ONLY file you edit to re-skin Air Ride Op for a client.
  * ─────────────────────────────────────────────────────────────────────────────
  *
  *  Never put a company name anywhere else in the codebase. Everything that is
@@ -74,7 +74,7 @@ export interface BrandConfig {
 }
 
 export const brand: BrandConfig = {
-  appName: 'Dispatch Bro',
+  appName: 'Air Ride Op',
   companyName: '',
   logoPath: '',
   supportLine: 'Questions about this box? Ask the office for the printed flyer.',
@@ -113,7 +113,7 @@ export const brand: BrandConfig = {
   },
 };
 
-/** "Dispatch Bro" or "Dispatch Bro · Client Co." */
+/** "Air Ride Op" or "Air Ride Op · Client Co." */
 export function displayName(b: BrandConfig = brand): string {
   return b.companyName ? `${b.appName} · ${b.companyName}` : b.appName;
 }

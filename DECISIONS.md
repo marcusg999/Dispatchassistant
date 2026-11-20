@@ -116,3 +116,8 @@ Product owner asked for a named section for personal issues. Choices confirmed i
 - **Checkpoint 3 (2026-11-20):** the access model above is approved for production. Initially only the product owner (admin + HR); dispatchers, viewers and crew are added later in Dispatch → Staff roles. The product owner runs the production migration after merge (`npx supabase db push --remote`).
 - CI starts Supabase Realtime (it was excluded), so the two-browser live-update test runs there too.
 - Fixed in passing (Phase 1): the success-screen tag animation widened the page to 481px on 390px phones; clipped, with a regression check.
+
+## 2026-11-20: Product renamed to Air Ride Op
+
+- `appName` in `brand.config.ts` is now **Air Ride Op** (package name `air-ride-op`); docs updated. Earlier DECISIONS entries keep the old names as history. The local Supabase `project_id` (`dispatch-buddy`) is unchanged: it only names local Docker containers.
+- The GitHub repo and the Netlify site (`dispatch-bro-app.netlify.app`) are **not** renamed. To move to a new `*.netlify.app` name later: Netlify → Project configuration → Change project name; then Supabase → Authentication → URL Configuration (Site URL + the `/auth/callback` and `/auth/confirm` redirect URLs); Google OAuth client authorized origin (if Google sign-in is used); and reprint the flyer (the QR code holds the old URL). The old URL stops working immediately.

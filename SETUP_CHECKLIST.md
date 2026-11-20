@@ -1,6 +1,6 @@
 # Setup checklist (production)
 
-Manual, one-time steps to take Dispatch Bro live at **https://dispatch-bro-app.netlify.app**. Do them in order. Dashboard menu names change from time to time; if a label differs slightly, look for the closest match.
+Manual, one-time steps to take Air Ride Op live at **https://dispatch-bro-app.netlify.app**. Do them in order. Dashboard menu names change from time to time; if a label differs slightly, look for the closest match.
 
 > **To confirm before go-live: the first admin email(s).** Everywhere below that says `FIRST_ADMIN@example.com`, use the Google account email(s) that should run the console.
 
@@ -20,7 +20,7 @@ You'll collect these values along the way. Keep them in a password manager, neve
 ## 1. Create the Supabase project
 
 1. Go to supabase.com → sign in → **New project**.
-2. Pick your organization, name it (e.g. `dispatch-bro`), set a strong database password (save it), choose the region closest to the crews, plan **Free**.
+2. Pick your organization, name it (e.g. `air-ride-op`), set a strong database password (save it), choose the region closest to the crews, plan **Free**.
 3. Click **Create new project** and wait until it says it's ready.
 4. Copy the **project ref**: it's the `<ref>` in the project URL `https://<ref>.supabase.co` (also under Settings → General).
 
@@ -131,7 +131,7 @@ Keep at least two admins (and two HR members) so this is rarely needed.
 
 ## 5. Google Cloud OAuth client (optional)
 
-1. Go to console.cloud.google.com → project picker → **New project** (e.g. `dispatch-bro-auth`) → **Create** → select it.
+1. Go to console.cloud.google.com → project picker → **New project** (e.g. `air-ride-op-auth`) → **Create** → select it.
 2. **APIs & Services** → **OAuth consent screen** (may appear as "Google Auth Platform → Branding/Audience"):
    - If admins all use one Google Workspace domain: user type **Internal**.
    - Otherwise: **External**, then under **Audience/Test users** add each admin's Google email (or publish the app).
