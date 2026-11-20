@@ -24,6 +24,12 @@ test('submit without a photo, then check status with the tracking code', async (
   await page.getByRole('button', { name: /Send to the office/i }).click();
   await expect(page.getByRole('heading', { name: /Sent\. Thank you/ })).toBeVisible({ timeout: 15_000 });
 
+  // The swinging tag must never make the page wider than the phone (it used to reach 481px).
+  for (let i = 0; i < 15; i++) {
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+    await page.waitForTimeout(100);
+  }
+
   const code = await readTrackingCode(page);
   expect(code).toMatch(/^([A-Z]{3,8}-){4}\d{4}$/);
   // The plain code is never stored: only its hash.
