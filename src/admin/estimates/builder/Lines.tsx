@@ -120,9 +120,6 @@ export function LinesSection({ lines, d, set, readOnly }: { lines: EstimateLine[
                 <th scope="col" className="est-r">
                   Amount
                 </th>
-                <th scope="col">
-                  <span className="sr-only">Actions</span>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -149,15 +146,7 @@ export function LinesSection({ lines, d, set, readOnly }: { lines: EstimateLine[
                         {!l.client_visible ? <span className="est-badge">Internal only</span> : null}
                         {l.source === 'manual' ? <span className="est-badge">Manual</span> : null}
                         {l.overridden && l.override_reason ? <span className="est-hint block">Reason: {l.override_reason}</span> : null}
-                      </td>
-                      <td className="est-r est-money">{qtyText(l.qty)}</td>
-                      <td>{l.unit}</td>
-                      <td className="est-r est-money">{formatCents(l.unit_price_cents)}</td>
-                      <td className="est-r est-money">
-                        {isDiscount ? <span className="est-discount-tag">Discount </span> : null}
-                        {formatCents(l.amount_cents)}
-                      </td>
-                      <td className="est-actions">
+                        <div className="est-actions">
                         <button type="button" className="a-btn a-btn-sm est-tap" aria-expanded={open.has(l.key)} aria-controls={`trace-${l.key}`} onClick={() => toggle(l.key)}>
                           ⓘ <span className="sr-only">How </span>calculated<span className="sr-only">: {l.description}</span>
                         </button>
@@ -180,11 +169,19 @@ export function LinesSection({ lines, d, set, readOnly }: { lines: EstimateLine[
                             Clear override<span className="sr-only">: {l.description}</span>
                           </button>
                         ) : null}
+                      </div>
+                      </td>
+                      <td className="est-r est-money">{qtyText(l.qty)}</td>
+                      <td>{l.unit}</td>
+                      <td className="est-r est-money">{formatCents(l.unit_price_cents)}</td>
+                      <td className="est-r est-money">
+                        {isDiscount ? <span className="est-discount-tag">Discount </span> : null}
+                        {formatCents(l.amount_cents)}
                       </td>
                     </tr>
                     {open.has(l.key) ? (
                       <tr className="est-trace-row">
-                        <td colSpan={7} id={`trace-${l.key}`}>
+                        <td colSpan={6} id={`trace-${l.key}`}>
                           <p className="est-trace">{l.trace}</p>
                         </td>
                       </tr>

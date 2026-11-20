@@ -325,6 +325,7 @@
   cursor: default;
 }
 .est-actions {
+  margin-top: 0.4rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;

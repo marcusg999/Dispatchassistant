@@ -254,14 +254,14 @@ export function ItemsSection({ d, set, errors, result }: { d: Draft; set: SetDra
                   Remove item {n + 1}
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-6">
+              <div className="grid grid-cols-2 items-end gap-3 md:grid-cols-6">
                 <Field label="Description" error={errors[`${k}.description`]} className="col-span-2 md:col-span-3">
                   <input className="a-input" value={it.description} maxLength={300} onChange={(e) => patch(it.id, { description: e.target.value })} />
                 </Field>
                 <Field label="Artist / title" className="col-span-2 md:col-span-3">
                   <input className="a-input" value={it.artist_title} maxLength={200} onChange={(e) => patch(it.id, { artist_title: e.target.value })} />
                 </Field>
-                <Field label="Medium" hint="Used to suggest packing, e.g. oil on canvas." className="col-span-2 md:col-span-2">
+                <Field label="Medium (drives packing)" className="col-span-2 md:col-span-2">
                   <input className="a-input" value={it.medium} maxLength={120} onChange={(e) => patch(it.id, { medium: e.target.value })} />
                 </Field>
                 <Field label="Height (in)" error={errors[`${k}.height_in`]}>
@@ -279,7 +279,7 @@ export function ItemsSection({ d, set, errors, result }: { d: Draft; set: SetDra
                 <Field label="Quantity" error={errors[`${k}.quantity`]}>
                   <input className="a-input est-num" inputMode="numeric" value={it.quantity} onChange={(e) => patch(it.id, { quantity: e.target.value })} />
                 </Field>
-                <Field label="Declared value ($)" error={errors[`${k}.declared`]}>
+                <Field label="Declared value ($)" error={errors[`${k}.declared`]} className="col-span-2">
                   <input className="a-input est-num" inputMode="decimal" value={it.declared} onChange={(e) => patch(it.id, { declared: e.target.value })} />
                 </Field>
                 <fieldset className="col-span-2 md:col-span-6">
