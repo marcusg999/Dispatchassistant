@@ -39,7 +39,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,supavisor
+      - run: npx supabase start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor
       - name: Write local .env
         run: |
           npx supabase status -o env > sb.env
