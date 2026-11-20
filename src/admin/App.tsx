@@ -12,6 +12,7 @@ import { MyJobs } from './dispatch/pages/MyJobs';
 import { CrewIncident } from './dispatch/pages/CrewIncident';
 import { amIHr } from './hrData';
 import { Link, navigate, usePath } from './router';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Inbox } from './pages/Inbox';
 import { Detail } from './pages/Detail';
 import { Admins } from './pages/Admins';
@@ -170,7 +171,11 @@ export function App() {
       </header>
       {office && isDispatchPath(path) && <DispatchSubnav path={path} role={roles.staff!} />}
       {(roles.staff === 'admin' || roles.staff === 'estimator') && isEstimatesPath(path) && <EstimatesSubnav path={path} role={roles.staff!} />}
-      <main className={`mx-auto px-4 py-6 lg:px-8 ${isDispatchPath(path) ? 'max-w-[120rem]' : isEstimatesPath(path) ? 'max-w-[110rem]' : crewOnly ? 'max-w-[40rem] !px-0 !py-0' : 'max-w-[90rem]'}`}>{page}</main>
+      <main className={`mx-auto px-4 py-6 lg:px-8 ${isDispatchPath(path) ? 'max-w-[120rem]' : isEstimatesPath(path) ? 'max-w-[110rem]' : crewOnly ? 'max-w-[40rem] !px-0 !py-0' : 'max-w-[90rem]'}`}>
+        <ErrorBoundary key={path} where={path}>
+          {page}
+        </ErrorBoundary>
+      </main>
     </div>
   );
 }
