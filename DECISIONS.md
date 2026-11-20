@@ -113,3 +113,6 @@ Product owner asked for a named section for personal issues. Choices confirmed i
 - **Drag and drop:** `@dnd-kit/core` with keyboard sensor and screen-reader announcements, plus an Assign… menu on every card. Moving crew between jobs is assign-then-unassign (two calls), with rollback on error.
 - **SMS prep only:** phones stored in E.164 with consent timestamp/method; `call_time`, `call_location` and per-person `call_time_override`; `buildJobSummary(job, { forCrewMember })` in `src/shared/dispatch.ts` is the plain text the print sheet uses now and SMS will use later. **No texts are sent.**
 - Known limits: the brand header prints only on the first page of a multi-page day sheet; hard-deleting a job with incidents is refused (use trash).
+- **Checkpoint 3 (2026-11-20):** the access model above is approved for production. Initially only the product owner (admin + HR); dispatchers, viewers and crew are added later in Dispatch → Staff roles. The product owner runs the production migration after merge (`npx supabase db push --remote`).
+- CI starts Supabase Realtime (it was excluded), so the two-browser live-update test runs there too.
+- Fixed in passing (Phase 1): the success-screen tag animation widened the page to 481px on 390px phones; clipped, with a regression check.
