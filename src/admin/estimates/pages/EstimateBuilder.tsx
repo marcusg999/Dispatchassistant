@@ -29,6 +29,7 @@ import { BasicsSection, CrewSection, ExtrasSection, ItemsSection, StopsSection, 
 import { LinesSection, ManualLinesSection } from '../builder/Lines';
 import { TotalsPanel, type SaveState, type TotalsView } from '../builder/Totals';
 import { Field, NoteDialog, QuoteLinkPanel, StatusPill } from '../builder/shared';
+import { EstimateExports } from '../exports';
 
 export function EstimateBuilder({ id, isAdmin }: { id: string | null; isAdmin: boolean }) {
   return id ? <Loader key={id} id={id} isAdmin={isAdmin} /> : <NewEstimate />;
@@ -500,8 +501,9 @@ function Editor({ est, clients, isAdmin, notice, onReload }: { est: EstimateFull
         </Link>
       </div>
       <ErrorNote error={actionError} />
-      {/* Another worker adds the PDF / Word / Excel export buttons into this container. */}
-      <div id="estimate-exports" className="est-exports" />
+      <div id="estimate-exports" className="est-exports">
+        <EstimateExports estimateId={id} isAdmin={isAdmin} />
+      </div>
 
       <div className="est-layout">
         <div className="est-main">

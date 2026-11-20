@@ -25,7 +25,8 @@ const ESTIMATING = ['admin', 'estimator'];
 const BLOCKED = ROLES.filter((r) => !ESTIMATING.includes(r));
 const rand = () => randomUUID().slice(0, 8);
 
-const fx = {} as Record<string, string>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fx = {} as Record<string, any>;
 const cleanup: (() => Promise<unknown>)[] = [];
 
 async function one(q: PromiseLike<{ data: any; error: any }>) {
@@ -212,7 +213,7 @@ describe('estimator: edits clients/estimates, never rates/rules/terms', () => {
   it('cannot update or delete rate cards, rules or terms', async () => {
     const e = clients.estimator;
     expect(touched(await e.from('rate_cards').update({ name: 'HACKED' }).eq('id', fx.draftCard).select())).toBe(0);
-    expect(touched(await e.from('rate_cards').update({ rates: { ...(fx.activeRates as object), currency: 'EUR' } }).eq('id', fx.draftCard).select())).toBe(0);
+    expect(touched(await e.from('rate_cards').update({ rates: { ...fx.activeRates, currency: 'EUR' } }).eq('id', fx.draftCard).select())).toBe(0);
     expect(touched(await e.from('rate_cards').delete().eq('id', fx.draftCard).select())).toBe(0);
     expect(touched(await e.from('packing_rules').update({ note: 'HACKED' }).eq('id', fx.packing).select())).toBe(0);
     expect(touched(await e.from('crew_size_rules').update({ note: 'HACKED' }).eq('id', fx.crewRule).select())).toBe(0);
@@ -246,7 +247,7 @@ describe('admin: edits draft cards, rules and terms, with guard rails', () => {
   });
 
   it('refuses to change rates on the ACTIVE card ("Only draft")', async () => {
-    const r = await clients.admin.from('rate_cards').update({ rates: { ...(fx.activeRates as object), currency: 'EUR' } }).eq('id', fx.activeCard).select();
+    const r = await clients.admin.from('rate_cards').update({ rates: { ...fx.activeRates, currency: 'EUR' } }).eq('id', fx.activeCard).select();
     expect(r.error?.message).toMatch(/Only draft/i);
     const card = await one(svc.from('rate_cards').select('rates').eq('id', fx.activeCard).single());
     expect(card.rates.currency).toBe(fx.activeRates.currency);
