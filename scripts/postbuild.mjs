@@ -46,13 +46,16 @@ try {
 } catch {
   fail('VITE_SUPABASE_URL is not a valid URL.');
 }
+// Safari only lets a WebSocket through when connect-src names its wss:// (or ws://) origin explicitly;
+// Chrome accepts the https:// origin for it. Realtime (live board updates) needs this.
+const realtimeOrigin = supabaseOrigin ? supabaseOrigin.replace(/^http/, 'ws') : '';
 const adminCsp = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self'",
   `img-src 'self' blob:${supabaseOrigin ? ' ' + supabaseOrigin : ''}`,
   "font-src 'self'",
-  `connect-src 'self'${supabaseOrigin ? ' ' + supabaseOrigin : ''}`,
+  `connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin} ${realtimeOrigin}` : ''}`,
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'self'",

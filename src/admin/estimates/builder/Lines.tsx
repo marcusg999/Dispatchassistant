@@ -129,8 +129,8 @@ export function LinesSection({ lines, d, set, readOnly }: { lines: EstimateLine[
                 return (
                   <Fragment key={l.key}>
                     <tr className="est-line">
-                      <td>{LINE_CATEGORY_LABEL[l.category]}</td>
-                      <td>
+                      <td className="est-c-cat">{LINE_CATEGORY_LABEL[l.category]}</td>
+                      <td className="est-c-desc">
                         <span>{l.description}</span>
                         {l.overridden ? (
                           <span className="est-badge">
@@ -171,10 +171,13 @@ export function LinesSection({ lines, d, set, readOnly }: { lines: EstimateLine[
                         ) : null}
                       </div>
                       </td>
-                      <td className="est-r est-money">{qtyText(l.qty)}</td>
-                      <td>{l.unit}</td>
-                      <td className="est-r est-money">{formatCents(l.unit_price_cents)}</td>
-                      <td className="est-r est-money">
+                      <td className="est-r est-money est-c-qty">{qtyText(l.qty)}</td>
+                      <td className="est-c-unit">{l.unit}</td>
+                      <td className="est-r est-money est-c-price">
+                        <span className="est-c-x" aria-hidden="true">× </span>
+                        {formatCents(l.unit_price_cents)}
+                      </td>
+                      <td className="est-r est-money est-c-amt">
                         {isDiscount ? <span className="est-discount-tag">Discount </span> : null}
                         {formatCents(l.amount_cents)}
                       </td>

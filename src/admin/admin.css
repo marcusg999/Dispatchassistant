@@ -148,6 +148,13 @@ body {
   white-space: nowrap;
 }
 
+/* A sideways-scrolling box must contain its absolutely positioned children (screen-reader-only
+   labels in table cells); otherwise they escape it and make the whole page scroll sideways on phones. */
+.overflow-x-auto,
+.overflow-auto {
+  position: relative;
+}
+
 .a-table {
   width: 100%;
   border-collapse: collapse;
@@ -186,6 +193,24 @@ body {
   text-decoration: none;
   border-bottom: 3px solid transparent;
 }
+.nav-link {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Menus: wrap on wide screens; one swipeable row on phones (with a fade hinting there is more). */
+@media (max-width: 639.98px) {
+  .nav-row {
+    position: relative;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 1.5rem), transparent);
+  }
+  .nav-row::-webkit-scrollbar {
+    display: none;
+  }
+}
 .nav-link[aria-current='page'] {
   color: var(--brand-ink);
   border-bottom-color: var(--brand-accent);
@@ -221,5 +246,11 @@ dialog.a-dialog::backdrop {
   .flyer {
     aspect-ratio: auto;
     height: 10in;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .phone-hidden {
+    display: none !important;
   }
 }

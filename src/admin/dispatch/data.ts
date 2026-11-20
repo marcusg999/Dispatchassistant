@@ -389,12 +389,32 @@ export function subscribeBoard(onChange: () => void): () => void {
     clearTimeout(t);
     t = setTimeout(onChange, 250);
   };
-  const ch: RealtimeChannel = supabase.channel(`board-${Math.random().toString(36).slice(2)}`);
-  for (const table of ['jobs', 'job_assignments', 'job_assets', 'time_off'] as const)
-    ch.on('postgres_changes', { event: '*', schema: 'public', table }, ping);
-  ch.subscribe();
+  let ch: RealtimeChannel | null = null;
+  let poll: ReturnType<typeof setInterval> | undefined;
+  // If the browser refuses the live connection (some privacy browsers and security policies throw
+  // instead of failing quietly), keep the board working by refreshing once a minute.
+  const fallback = () => {
+    if (!poll) poll = setInterval(onChange, 60_000);
+  };
+  try {
+    ch = supabase.channel(`board-${Math.random().toString(36).slice(2)}`);
+    for (const table of ['jobs', 'job_assignments', 'job_assets', 'time_off'] as const)
+      ch.on('postgres_changes', { event: '*', schema: 'public', table }, ping);
+    ch.subscribe((status) => {
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') fallback();
+    });
+  } catch {
+    fallback();
+  }
   return () => {
     clearTimeout(t);
-    void supabase.removeChannel(ch);
+    clearInterval(poll);
+    if (ch) {
+      try {
+        void supabase.removeChannel(ch);
+      } catch {
+        /* already closed */
+      }
+    }
   };
 }

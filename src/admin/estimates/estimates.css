@@ -315,6 +315,7 @@
 
 /* Lines table */
 .est-table-wrap {
+  position: relative;
   overflow-x: auto;
 }
 .est-lines td,
@@ -330,6 +331,68 @@
   flex-wrap: wrap;
   gap: 0.25rem;
   justify-content: flex-start;
+}
+.est-c-x {
+  display: none;
+}
+/* Phones: each priced line becomes a card. Description on top, "qty unit × price" and the amount below. */
+@media (max-width: 639.98px) {
+  .est-lines thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .est-lines,
+  .est-lines tbody {
+    display: block;
+  }
+  .est-lines tr.est-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.35rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--brand-line);
+  }
+  .est-lines tr.est-line td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .est-lines .est-c-cat {
+    width: 100%;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+  .est-lines .est-c-desc {
+    width: 100%;
+    margin-bottom: 0.35rem;
+  }
+  .est-lines .est-c-qty,
+  .est-lines .est-c-unit,
+  .est-lines .est-c-price {
+    text-align: left;
+    color: var(--brand-muted);
+    font-size: 0.875rem;
+  }
+  .est-c-x {
+    display: inline;
+  }
+  .est-lines .est-c-amt {
+    margin-left: auto;
+    font-weight: 700;
+  }
+  .est-lines tr.est-trace-row {
+    display: block;
+  }
+  .est-lines tr.est-trace-row td {
+    display: block;
+  }
 }
 .est-trace-row td {
   background: var(--brand-wall);
@@ -382,4 +445,81 @@
   gap: 0.5rem 2rem;
   align-items: center;
   justify-content: space-between;
+}
+
+/* Phones: each estimate is a card (number + status, title, client, total + margin, valid until, actions). */
+@media (max-width: 639.98px) {
+  .est-list thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .est-list,
+  .est-list tbody {
+    display: block;
+  }
+  .est-list tbody tr {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'num status'
+      'title title'
+      'client client'
+      'total margin'
+      'valid valid'
+      'actions actions';
+    gap: 0.25rem 0.75rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--brand-line);
+  }
+  .est-list tbody td {
+    display: block;
+    padding: 0;
+    border: 0;
+    text-align: left;
+  }
+  .est-list tbody td:nth-child(1) {
+    grid-area: num;
+  }
+  .est-list tbody td:nth-child(1) .est-hint {
+    display: inline;
+    margin-left: 0.4rem;
+  }
+  .est-list tbody td:nth-child(2) {
+    grid-area: client;
+    color: var(--brand-muted);
+  }
+  .est-list tbody td:nth-child(3) {
+    grid-area: title;
+    font-weight: 700;
+  }
+  .est-list tbody td.est-money:nth-child(4) {
+    text-align: left;
+  }
+  .est-list tbody td:nth-child(4) {
+    grid-area: total;
+    font-weight: 700;
+  }
+  .est-list tbody td:nth-child(5) {
+    grid-area: margin;
+    justify-self: end;
+  }
+  .est-list tbody td:nth-child(6) {
+    grid-area: status;
+    justify-self: end;
+  }
+  .est-list tbody td:nth-child(7) {
+    grid-area: valid;
+    font-size: 0.8125rem;
+    color: var(--brand-muted);
+  }
+  .est-list tbody td:nth-child(7)::before {
+    content: 'Valid until ';
+  }
+  .est-list tbody td:nth-child(8) {
+    grid-area: actions;
+    margin-top: 0.35rem;
+  }
 }

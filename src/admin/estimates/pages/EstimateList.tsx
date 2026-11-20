@@ -1,7 +1,7 @@
 import '../estimates.css';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, navigate } from '../../router';
-import { Confirm, ErrorNote } from '../../components/ui';
+import { Confirm, ErrorNote, FiltersToggle } from '../../components/ui';
 import {
   ESTIMATE_STATUSES,
   STATUS_LABEL,
@@ -29,6 +29,7 @@ export function EstimateList({ isAdmin }: { isAdmin: boolean }) {
   const [estimators, setEstimators] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [sendFor, setSendFor] = useState<EstimateListRow | null>(null);
   const [link, setLink] = useState<{ number: string; path: string; valid_until: string | null } | null>(null);
@@ -112,7 +113,9 @@ export function EstimateList({ isAdmin }: { isAdmin: boolean }) {
       )}
       {link ? <QuoteLinkPanel path={link.path} validUntil={link.valid_until} onClose={() => setLink(null)} /> : null}
 
-      <section aria-label="Filters" className="a-panel est-filters mt-3">
+      <div className="mt-3" />
+      <FiltersToggle open={showFilters} active={status.length + [clientId, estimator, from, to].filter(Boolean).length} onToggle={() => setShowFilters((v) => !v)} controls="estimate-filters" />
+      <section id="estimate-filters" aria-label="Filters" className={`a-panel est-filters ${showFilters ? '' : 'phone-hidden'}`}>
         <fieldset className="col-span-full">
           <legend className="a-label">Status (choose any)</legend>
           <div className="est-statuses">
