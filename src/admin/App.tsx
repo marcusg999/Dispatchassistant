@@ -3,6 +3,12 @@ import type { Session } from '@supabase/supabase-js';
 import { brand, displayName } from '../brand/brand.config';
 import { configured, supabase } from './supabase';
 import { amIAdmin } from './data';
+import { appTimeZone, myStaffRole } from './dispatch/data';
+import { setAppTz } from './dispatch/tz';
+import { homeFor, routeAllowed, type StaffRole } from '../shared/dispatch';
+import { DispatchRoutes, DispatchSubnav, isDispatchPath } from './dispatch/routes';
+import { MyJobs } from './dispatch/pages/MyJobs';
+import { CrewIncident } from './dispatch/pages/CrewIncident';
 import { amIHr } from './hrData';
 import { Link, navigate, usePath } from './router';
 import { Inbox } from './pages/Inbox';
@@ -23,7 +29,7 @@ export function App() {
   const path = usePath();
   const [session, setSession] = useState<Session | null>(null);
   const [gate, setGate] = useState<Gate>('loading');
-  const [roles, setRoles] = useState({ admin: false, hr: false });
+  const [roles, setRoles] = useState<{ admin: boolean; hr: boolean; staff: StaffRole | null }>({ admin: false, hr: false, staff: null });
 
   useEffect(() => {
     let alive = true;
@@ -32,10 +38,12 @@ export function App() {
       setSession(s);
       if (!s) return setGate('signed-out');
       // UX checks only: the database enforces access with RLS regardless of what these say.
-      const [admin, hr] = await Promise.all([amIAdmin(), amIHr()]);
+      const [admin, hr, staff] = await Promise.all([amIAdmin(), amIHr(), myStaffRole()]);
       if (!alive) return;
-      setRoles({ admin, hr });
-      setGate(admin || hr ? 'allowed' : 'not-admin');
+      if (admin || staff) await loadOfficeTz(admin ? 'admin' : staff);
+      if (!alive) return;
+      setRoles({ admin, hr, staff: admin ? 'admin' : staff });
+      setGate(admin || hr || staff ? 'allowed' : 'not-admin');
     };
     supabase.auth.getSession().then(({ data }) => resolve(data.session));
     // Defer: calling Supabase inside the auth callback can deadlock supabase-js's auth lock.
@@ -49,8 +57,11 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (path === '/auth/callback' && gate !== 'loading') navigate('/admin');
-  }, [path, gate]);
+    if (gate !== 'allowed' && !(path === '/auth/callback' && gate !== 'loading')) return;
+    const home = homeFor(roles.staff, roles.hr);
+    // Land each role on its home: /admin is the suggestion console only for admins.
+    if (path === '/auth/callback' || ((path === '/admin' || path === '/admin/') && home !== '/admin')) navigate(home);
+  }, [path, gate, roles]);
 
   if (!configured)
     return <Centered title="Not configured">Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.</Centered>;
@@ -61,7 +72,7 @@ export function App() {
   if (gate === 'not-admin')
     return (
       <Centered title="This account isn’t allowed">
-        <p>{session?.user.email} is not on the admin or HR list. Ask an existing admin (or HR member) to add you.</p>
+        <p>{session?.user.email} doesn’t have access yet. Ask an admin (or an HR member) to add you.</p>
         <button className="a-btn mt-4" onClick={() => supabase.auth.signOut()}>
           Sign out
         </button>
@@ -76,12 +87,18 @@ export function App() {
   );
   const adminOnly = (el: React.ReactNode) => (roles.admin ? el : notAvailable);
   const hrOnly = (el: React.ReactNode) => (roles.hr ? el : notAvailable);
+  const crewOnly = roles.staff === 'crew' && !roles.admin;
+  const myIncident = path.match(/^\/admin\/my-jobs\/([0-9a-f-]{36})\/incident$/);
 
-  let page;
+  let page: React.ReactNode;
   const detail = path.match(/^\/admin\/s\/([0-9a-f-]{36})$/);
   const hrDetail = path.match(/^\/admin\/hr\/r\/([0-9a-f-]{36})$/);
   const isHrPath = path === '/admin/hr' || path.startsWith('/admin/hr/');
-  if (detail) page = adminOnly(<Detail id={detail[1]} />);
+  if (!routeAllowed(path, roles.staff, roles.hr) && !(path === '/admin' && roles.hr)) page = notAvailable;
+  else if (isDispatchPath(path)) page = <DispatchRoutes path={path} role={roles.staff!} />;
+  else if (myIncident) page = <CrewIncident jobId={myIncident[1]} />;
+  else if (path === '/admin/my-jobs') page = <MyJobs />;
+  else if (detail) page = adminOnly(<Detail id={detail[1]} />);
   else if (hrDetail) page = hrOnly(<HrDetail id={hrDetail[1]} />);
   else if (path === '/admin/hr/team') page = hrOnly(<HrStaff />);
   else if (isHrPath) page = hrOnly(<HrInbox />);
@@ -91,8 +108,11 @@ export function App() {
   else if (path === '/admin/account') page = <Account email={session?.user.email ?? ''} />;
   else page = roles.admin ? <Inbox /> : <HrInbox />;
 
+  const office = roles.staff === 'admin' || roles.staff === 'dispatcher' || roles.staff === 'viewer';
   const nav = [
     ...(roles.admin ? [{ href: '/admin', label: 'Inbox', active: path === '/admin' || !!detail }] : []),
+    ...(office ? [{ href: '/admin/dispatch', label: 'Dispatch', active: isDispatchPath(path) }] : []),
+    ...(crewOnly ? [{ href: '/admin/my-jobs', label: 'My jobs', active: path.startsWith('/admin/my-jobs') }] : []),
     ...(roles.hr
       ? [
           {
@@ -103,7 +123,7 @@ export function App() {
           { href: '/admin/hr/team', label: 'HR team', active: path === '/admin/hr/team' },
         ]
       : []),
-    { href: '/admin/audit', label: 'Audit log', active: path === '/admin/audit' },
+    ...(roles.admin || roles.hr ? [{ href: '/admin/audit', label: 'Audit log', active: path === '/admin/audit' }] : []),
     ...(roles.admin
       ? [
           { href: '/admin/admins', label: 'Admins', active: path === '/admin/admins' },
@@ -140,9 +160,29 @@ export function App() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-[90rem] px-4 py-6 lg:px-8">{page}</main>
+      {office && isDispatchPath(path) && <DispatchSubnav path={path} role={roles.staff!} />}
+      <main className={`mx-auto px-4 py-6 lg:px-8 ${isDispatchPath(path) ? 'max-w-[120rem]' : crewOnly ? 'max-w-[40rem] !px-0 !py-0' : 'max-w-[90rem]'}`}>{page}</main>
     </div>
   );
+}
+
+/**
+ * Load the office time zone once, before any dispatch screen renders, so every screen
+ * shows office time whatever zone the device is in. Office roles read app_settings;
+ * crew can't (RLS), so they use the app_timezone() RPC when the database has it.
+ */
+async function loadOfficeTz(role: StaffRole | null) {
+  try {
+    if (role === 'crew') {
+      const rpc = supabase as unknown as { rpc: (fn: string) => PromiseLike<{ data: unknown; error: unknown }> };
+      const r = await rpc.rpc('app_timezone');
+      if (!r.error && typeof r.data === 'string') return setAppTz(r.data);
+      return; // falls back to the device time zone
+    }
+    setAppTz(await appTimeZone());
+  } catch {
+    /* keep the device time zone */
+  }
 }
 
 function Centered({ title, children }: { title: string; children?: React.ReactNode }) {

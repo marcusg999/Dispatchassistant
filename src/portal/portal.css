@@ -8,6 +8,7 @@
 
 .portal {
   min-height: 100dvh;
+  overflow-x: clip;
   display: grid;
   grid-template-columns: 1fr;
 }
@@ -661,6 +662,9 @@
 
 .tag-stage {
   perspective: 900px;
+  /* The swing rotates the tag past the screen edge; never let that widen the page on phones. */
+  overflow-x: clip;
+  overflow-clip-margin: 0;
   display: flex;
   justify-content: center;
   padding: 0.5rem 0 0;

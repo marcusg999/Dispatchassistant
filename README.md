@@ -225,6 +225,49 @@ Free Supabase projects pause after a period of inactivity. `netlify/functions/ke
 
 ---
 
+## Dispatch board (Phase 2)
+
+Signed-in staff plan the day at `/admin/dispatch`.
+
+| Screen | What it does |
+| --- | --- |
+| **Day board** | One column per job (number, type, times, route, status, handling flags, checklist progress, warnings). Drag crew and trucks from the roster onto jobs, between jobs, or back to unassign. Every card also has an **Assign…** menu, and drag and drop works from the keyboard (Space to pick up, arrows to move between jobs, Space to drop). Changes from other dispatchers appear live. |
+| **Week** | Monday–Sunday grid with filters by job type, status, crew member or asset. |
+| **Job editor** | Basics, call time/location (with per-person overrides), stops with access flags and site contacts, items with dimensions, weight and handling flags, crew and assets, checklist, office notes vs crew notes, incidents. Duplicate, cancel, trash, or (admins) delete permanently. Edits use a version check, so a stale tab gets "someone else changed this job". |
+| **Crew / Assets / Time off** | People with skills, certifications (expired and expiring-soon warnings), phone in E.164 and recorded SMS consent; trucks and equipment with capabilities and status; time off shown only as "Unavailable" (no reasons). |
+| **Incidents** | Named damage/incident reports from crew or office, with private photos. |
+| **Print** | Per-day or per-job dispatch sheet: Print / Save as PDF, Word, Excel. Office notes only if ticked; every export is audited. |
+| **My jobs** (crew) | Phone-first view of today and the next 14 days: call time, addresses (tap for maps), contacts and teammates (tap to call), big handling-flag badges, checklist (team lead ticks), and "Report damage / incident". |
+
+**Warnings, not blocks.** The database checks every job for: crew double-booked, crew on time off, asset double-booked or unavailable, a two-person item with fewer than 2 crew, missing skills (art handler, installer, crater, driver), expired certifications the job relies on, and open checklist items within 24 hours of start. A dispatcher can save anyway but must type a reason, which goes in the audit log.
+
+### Roles
+
+| | admin | dispatcher | viewer | crew |
+| --- | --- | --- | --- | --- |
+| Suggestion box console | ✓ | — | — | — |
+| Board, jobs, crew, assets, time off: view | ✓ | ✓ | ✓ read-only | only their own jobs (My jobs) |
+| Create / edit / assign / delete | ✓ | ✓ | — | — |
+| Manage staff roles | ✓ | — | — | — |
+| Crew private fields (phone, office notes) | ✓ | ✓ | ✓ | teammates' names and phones on their own jobs only |
+| Incident reports | ✓ all | ✓ all | ✓ read | file on own jobs, read own |
+| Checklist ticking | ✓ | ✓ | — | team lead, own job |
+| Audit log | ✓ | — | — | — |
+
+HR stays separate: HR membership grants nothing on dispatch, and dispatch roles grant nothing in HR or the suggestion box.
+
+### Add staff and crew
+
+1. **Admins:** console → Dispatch → **Staff roles** → add the email with a role (admin, dispatcher, viewer or crew). One role per email.
+2. **Crew who should sign in:** also add them under **Crew** with the **same email**, so My jobs knows who they are. Crew without a login can still be scheduled.
+3. They open `/admin`, choose **First time? Create your password**, confirm by email, and land on their home screen (admins on the console, dispatchers/viewers on the board, crew on My jobs).
+
+The first admin is still created with SQL (SETUP_CHECKLIST); `public.admins` and `staff_roles` stay in sync automatically.
+
+### Office time zone
+
+Day boundaries, the board and My jobs use the office time zone in `public.app_settings` (`timezone`, default `America/Los_Angeles`). Change it with SQL: `update public.app_settings set value = 'America/New_York' where key = 'timezone';`
+
 ## Sign-in and account recovery
 
 - **Email + password** (primary) or **Google**, for emails on the admin or HR list only. The before-user-created hook refuses every other address.

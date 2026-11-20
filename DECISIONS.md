@@ -90,3 +90,29 @@ Product owner asked for a named section for personal issues. Choices confirmed i
 - Auth state callback work is deferred with `setTimeout` to avoid a supabase-js auth-lock deadlock when real sign-in events fire.
 - Production depends on custom SMTP; Supabase's built-in mailer is restricted and rate-limited.
 - Local E2E reads real emails from Mailpit (`supabase start` now includes it; local `email_sent` limit raised to 60/hour, local only).
+
+## 2026-11-20: Phase 2, dispatch board
+
+**Checkpoint 1 answers:** default lists approved (job types, statuses, handling flags, skills, certifications, checklist, asset kinds); crew sign in with email + password or Google (no SMS codes: per-code cost plus A2P 10DLC registration not worth it yet); no assignment emails in Phase 2 (notifications come with the SMS phase); crew can see **all teammates' phone numbers** on their own jobs.
+
+**Checkpoint 2:** UI approved as built; the 24-hour "checklist open" warning stays as written.
+
+- **Roles:** `staff_roles` (admin · dispatcher · viewer · crew, one per email). `public.admins` stays a **real table** and the source of truth for admin, mirrored both ways into `staff_roles` by triggers. Reason: a compatibility *view* can't take `upsert` (`ON CONFLICT`), which Phase 1 code and tests use, and keeping the table means `private.is_admin()` is literally unchanged. Last-admin guard runs on both tables.
+- `private.current_role()` is named **`private.current_staff_role()`** because `CURRENT_ROLE` is a reserved SQL word. `private.has_role(variadic text[])` is as specified; `is_office()` / `is_dispatcher()` are shorthands.
+- **Crew access only through definer functions** with explicit field lists, instead of column grants on shared tables: RLS is row-level, and a crew policy on `jobs` would expose `office_notes`. Office roles read tables directly (so Realtime works for them).
+- **Client name hidden from crew** (treated as billing context); dispatchers can add what crew need to the job title or crew notes.
+- **Skills** use a join table (`crew_skills`) with a foreign key to the editable `skills` lookup; certifications use `certification_types`. Handling, access and asset-capability flags are fixed lists validated by CHECK (labels live in `src/shared/dispatch.ts`).
+- **Office time zone** in `app_settings` (default `America/Los_Angeles`) drives day boundaries in SQL and all dispatch display/input in the UI.
+- **Job numbers** `J-YYYY-NNNN` from one sequence (the year is the creation year; the counter doesn't reset yearly).
+- **Optimistic locking:** `jobs.version` bumped by trigger; the client updates `where version = <loaded>` and shows "someone else changed this job" if 0 rows change.
+- **Conflict rules** live in `private.job_conflicts_raw()` (one place for UI and tests): `job_conflicts(job)`, `board_conflicts(from, to)`, and `record_conflict_override(job, reason)` (3–500 chars, audited with a snapshot of the warnings). "Missing skill" means: handling flags need an art handler; install/de-install need an installer; crating needs a crater; any truck/van/trailer needs a driver. "Expired certification" covers driver's license (vehicle + driver skill), CDL (asset marked requires_cdl), forklift and aerial lift (matching asset capability).
+- **Never hard-delete history:** `job_assignments` and `job_assets` use `on delete restrict` for crew and assets (deactivate instead); incident reports block job hard delete (use trash).
+- **Incident photos** go through a Netlify function (`/api/incident-photo`) that verifies the user's token, checks permission as that user, re-checks magic bytes/size/EXIF, then stores with the service key, the same pattern as the portal. Max 4 photos per incident.
+- **Audit:** every dispatch table has a trigger writing `dispatch_<table>_<op>` rows (plus `dispatch_jobs_status`, `dispatch_jobs_soft_delete`, `dispatch_conflict_override`, `dispatch_export`, `dispatch_role_*`). The Audit page filters by module. Audit stays admin-only (dispatchers don't see it).
+- **Realtime** on `jobs`, `job_assignments`, `job_assets`, `time_off`; the board debounces and reloads.
+- **Drag and drop:** `@dnd-kit/core` with keyboard sensor and screen-reader announcements, plus an Assign… menu on every card. Moving crew between jobs is assign-then-unassign (two calls), with rollback on error.
+- **SMS prep only:** phones stored in E.164 with consent timestamp/method; `call_time`, `call_location` and per-person `call_time_override`; `buildJobSummary(job, { forCrewMember })` in `src/shared/dispatch.ts` is the plain text the print sheet uses now and SMS will use later. **No texts are sent.**
+- Known limits: the brand header prints only on the first page of a multi-page day sheet; hard-deleting a job with incidents is refused (use trash).
+- **Checkpoint 3 (2026-11-20):** the access model above is approved for production. Initially only the product owner (admin + HR); dispatchers, viewers and crew are added later in Dispatch → Staff roles. The product owner runs the production migration after merge (`npx supabase db push --remote`).
+- CI starts Supabase Realtime (it was excluded), so the two-browser live-update test runs there too.
+- Fixed in passing (Phase 1): the success-screen tag animation widened the page to 481px on 390px phones; clipped, with a regression check.

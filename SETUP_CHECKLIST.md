@@ -200,6 +200,16 @@ Rate limits are declared in each function's `config.rateLimit` (submit: 10 reque
 
 Supabase → **Advisors** → **Security Advisor** → run. Expect **no warnings**. (Informational "unused index" notices under the Performance advisor are normal on a new project.) If anything appears, fix it with a new migration, not in the dashboard.
 
+## 11a. Phase 2: dispatch board
+
+1. Pull `main` and push the new migrations (`npx supabase db push --remote`). They add roles, dispatch tables, conflict checks and the private `incident-photos` bucket. Existing Phase 1 data and admins are kept (admins are copied into `staff_roles`).
+2. **Realtime:** the migration adds `jobs`, `job_assignments`, `job_assets` and `time_off` to the `supabase_realtime` publication. Check Supabase → **Database → Publications → supabase_realtime** lists them. Realtime respects RLS, so each person only receives changes they're allowed to read.
+3. **Office time zone:** if you're not in Pacific time, run `update public.app_settings set value = 'America/New_York' where key = 'timezone';` (use your IANA zone).
+4. **Assign roles:** sign in as an admin → **Dispatch → Staff roles** → add dispatchers, viewers and crew.
+5. **Invite crew:** add each crew member under **Dispatch → Crew** with the same email as their role, then ask them to open `https://dispatch-bro-app.netlify.app/admin` → **First time? Create your password**. (Needs the email service from step 4.2a.)
+6. **Netlify:** no new environment variables. The incident-photo function reuses `SUPABASE_URL`, `SUPABASE_SECRET_KEY` and `VITE_SUPABASE_PUBLISHABLE_KEY`; make sure `VITE_SUPABASE_PUBLISHABLE_KEY` also has the **Functions** scope.
+7. Run the Supabase security advisor again (section 11): it should show no warnings.
+
 ## 12. Print and share
 
 1. Admin → **Backup & flyer** → paste the portal link → **Print flyer** (or "Save as PDF").
